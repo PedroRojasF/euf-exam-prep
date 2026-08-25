@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """EUF Study Companion & Question Bank CLI.
-Fast local search, deliberate practice, problem rendering, twin A/B comparisons, progress tracking, QA audits, subtopic grouping, and PDF ingestion.
+Fast local search, deliberate practice, problem rendering, twin A/B comparisons, progress tracking, QA audits, subtopic grouping, PDF ingestion, and Web App launcher.
 """
 
 import os
@@ -112,7 +112,6 @@ def cmd_stats(args):
 
 
 def cmd_progress(args):
-    """Detailed mastery dashboard and error log analysis."""
     conn = get_db()
     cur = conn.cursor()
 
@@ -175,11 +174,22 @@ def cmd_progress(args):
     conn.close()
 
 
+def cmd_web(args):
+    """Launches the dedicated web app server."""
+    from webapp.server import start_server
+    import webbrowser
+    port = args.port or 8000
+    print(f"Opening browser at http://localhost:{port}...")
+    try:
+        webbrowser.open(f"http://localhost:{port}")
+    except Exception:
+        pass
+    start_server(port)
+
+
 def cmd_flag(args):
-    """Flags a problem with an official errata, typo note, or ambiguity."""
     conn = get_db()
     cur = conn.cursor()
-
     reason = args.reason.strip()
     flag_type = args.type or "errata"
 
@@ -199,7 +209,6 @@ def cmd_flag(args):
 
 
 def cmd_audit(args):
-    """Executes a full automated quality audit on the entire database."""
     conn = get_db()
     cur = conn.cursor()
 
@@ -485,12 +494,10 @@ def cmd_mark(args):
 
 
 def cmd_ingest(args):
-    """Ingests a new PDF exam file."""
     ingest_pdf(args.pdf_path)
 
 
 def cmd_sync(args):
-    """Syncs unindexed PDFs from workspace root."""
     sync_workspace()
 
 
@@ -503,6 +510,10 @@ def main():
 
     # progress
     subparsers.add_parser("progress", help="Detailed mastery report, review queue, and error logs")
+
+    # web
+    p_web = subparsers.add_parser("web", help="Launch the dedicated zero-install web workspace")
+    p_web.add_argument("-p", "--port", type=int, default=8000, help="Port to serve on (default: 8000)")
 
     # audit
     subparsers.add_parser("audit", help="Run automated quality assurance audit across all 988 questions")
@@ -565,6 +576,7 @@ def main():
     commands = {
         "stats": cmd_stats,
         "progress": cmd_progress,
+        "web": cmd_web,
         "audit": cmd_audit,
         "ingest": cmd_ingest,
         "sync": cmd_sync,

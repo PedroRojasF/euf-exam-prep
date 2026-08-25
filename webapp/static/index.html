@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EUF Exam Master: Unified Physics Workspace (2010-2026)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <style>
+    .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08); }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- Header Navigation -->
+  <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-xl shadow-inner">
+          Ψ
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight tracking-tight">EUF Physics Master</h1>
+          <p class="text-xs text-slate-400">USP • UNICAMP • UNESP • UFRJ • UFMG (2010–2026)</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center space-x-1 bg-slate-800 p-1 rounded-lg text-sm font-medium">
+        <button onclick="switchTab('practice')" id="tab-btn-practice" class="px-3 py-1.5 rounded-md bg-indigo-600 text-white transition">🎯 Practice</button>
+        <button onclick="switchTab('twins')" id="tab-btn-twins" class="px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition">👥 Twin A/B Lab</button>
+        <button onclick="switchTab('mindmap')" id="tab-btn-mindmap" class="px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition">🧠 Concept Map</button>
+        <button onclick="switchTab('progress')" id="tab-btn-progress" class="px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition">📊 Mastery & Errors</button>
+      </nav>
+
+      <!-- Profile Bar -->
+      <div class="flex items-center space-x-2">
+        <span class="text-xs text-slate-400">Profile:</span>
+        <select id="profile-select" onchange="switchProfile(this.value)" class="bg-slate-800 text-white text-xs px-2.5 py-1.5 rounded border border-slate-700 focus:outline-none focus:border-indigo-500">
+          <option value="default">default</option>
+        </select>
+        <button onclick="promptNewProfile()" title="Create New Profile" class="text-xs bg-indigo-600/80 hover:bg-indigo-600 px-2 py-1.5 rounded text-white transition flex items-center gap-1">
+          + New
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Overall Stat Cards Bar -->
+  <section class="bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 py-3 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+      <div class="p-2">
+        <div class="text-xs text-slate-500 font-medium">Bank Total</div>
+        <div class="text-xl font-bold text-slate-800" id="stat-total">909 Qs</div>
+      </div>
+      <div class="p-2">
+        <div class="text-xs text-slate-500 font-medium">Mastered / Solved</div>
+        <div class="text-xl font-bold text-emerald-600" id="stat-solved">0 (0.0%)</div>
+      </div>
+      <div class="p-2">
+        <div class="text-xs text-slate-500 font-medium">Flagged for Review</div>
+        <div class="text-xl font-bold text-amber-600" id="stat-review">0</div>
+      </div>
+      <div class="p-2">
+        <div class="text-xs text-slate-500 font-medium">To Retry (Failed)</div>
+        <div class="text-xl font-bold text-rose-600" id="stat-failed">0</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace Content -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+
+    <!-- TAB 1: PRACTICE & SOLVER -->
+    <div id="view-practice" class="space-y-6">
+      
+      <!-- Hierarchical Filter Bar -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+          
+          <!-- Area Selector -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">1. Subject Area</label>
+            <select id="filter-area" onchange="onAreaChange()" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
+              <option value="All Subject Areas">All Subject Areas</option>
+            </select>
+          </div>
+
+          <!-- Subtopic Selector -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">2. Specific Subtopic</label>
+            <select id="filter-subtopic" onchange="fetchQuestions()" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium text-indigo-700">
+              <option value="All Subtopics">All Subtopics</option>
+            </select>
+          </div>
+
+          <!-- Exam Year -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">3. Exam Year</label>
+            <select id="filter-exam" onchange="fetchQuestions()" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="All Exams">All Exams (2010–2026)</option>
+            </select>
+          </div>
+
+          <!-- Status -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">4. Status</label>
+            <select id="filter-status" onchange="fetchQuestions()" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="All Statuses">All Statuses</option>
+              <option value="unsolved">⏳ Unsolved Only</option>
+              <option value="solved">✅ Solved Only</option>
+              <option value="review">🔁 Needs Review</option>
+              <option value="failed">❌ Failed / To Retry</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Keyword Search & Random Action Row -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
+          <div class="flex-1 min-w-[240px]">
+            <input type="text" id="search-input" oninput="debounceSearch()" placeholder="Instant search concept (e.g. Poynting, Dirac, Carnot, Kepler, Hamilton)..." class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="pickRandomProblem()" class="text-xs font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 px-3 py-2 rounded-lg transition flex items-center gap-1.5">
+              🎲 Random Drill
+            </button>
+            <button onclick="nextProblem()" class="text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-2 rounded-lg transition flex items-center gap-1">
+              Next ➔
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Layout: Question List Drawer + Active Question Card -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Column: Question Selector List (4 Cols) -->
+        <div class="lg:col-span-4 bg-white rounded-xl border border-slate-200 card-shadow p-4 flex flex-col h-[750px]">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-2">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider" id="pool-count">Question Pool (0)</span>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600" id="subtopic-mastery-badge">0% Mastered</span>
+          </div>
+          
+          <div class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1" id="question-list-container">
+            <!-- Dynamically populated question item cards -->
+          </div>
+        </div>
+
+        <!-- Right Column: Active Question Workspace (8 Cols) -->
+        <div class="lg:col-span-8 space-y-4">
+          
+          <!-- Card Header & Metadata -->
+          <div class="bg-white rounded-xl border border-slate-200 card-shadow p-6 space-y-5" id="active-question-card">
+            
+            <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-lg font-extrabold text-slate-900" id="card-qid">Loading...</span>
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700" id="card-status-badge">⏳ Unsolved</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-1" id="card-meta">Exam: — | Area: —</div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <button onclick="toggleCardZoom()" title="Zoom Image" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded transition">🔍 Zoom</button>
+              </div>
+            </div>
+
+            <!-- Notice / Errata Callout (if any) -->
+            <div id="card-errata-banner" class="hidden bg-amber-50 border-l-4 border-amber-500 p-3 rounded text-xs text-amber-900"></div>
+
+            <!-- Official Vector-Sharp Question Crop Image -->
+            <div class="bg-white border border-slate-200 rounded-lg p-2 flex items-center justify-center min-h-[220px] overflow-x-auto">
+              <img id="card-img" src="" alt="Official Question Graphic" class="max-w-full rounded shadow-sm transition-all duration-200">
+            </div>
+
+            <!-- Socratic Hint Ladder Accordion -->
+            <div class="border border-slate-200 rounded-lg overflow-hidden text-sm">
+              <div class="bg-slate-50 px-4 py-2.5 font-bold text-xs text-slate-600 uppercase tracking-wider border-b border-slate-200 flex items-center gap-1.5">
+                💡 Socratic AI Hint Ladder (Self-Evaluation)
+              </div>
+              <div class="divide-y divide-slate-100 text-xs">
+                <details class="group p-3 hover:bg-slate-50 transition cursor-pointer">
+                  <summary class="font-semibold text-indigo-700 flex items-center justify-between">
+                    Level 1: Core Physical Principle & Conservation Law
+                    <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
+                  </summary>
+                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-1">
+                    Ask yourself: What fundamental conservation theorem (energy, linear/angular momentum, Gauss law, Maxwell equation) applies to this configuration?
+                  </p>
+                </details>
+
+                <details class="group p-3 hover:bg-slate-50 transition cursor-pointer">
+                  <summary class="font-semibold text-indigo-700 flex items-center justify-between">
+                    Level 2: Coordinates, Parameterization & Boundary Setup
+                    <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
+                  </summary>
+                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-2">
+                    Parameterize the generalized coordinates $q_i$ and check the kinetic energy $T$ and potential $V$, or the Gaussian/Amperian surface geometry.
+                  </p>
+                </details>
+
+                <details class="group p-3 hover:bg-slate-50 transition cursor-pointer">
+                  <summary class="font-semibold text-indigo-700 flex items-center justify-between">
+                    Level 3: Intermediate Mathematical Checkpoint
+                    <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
+                  </summary>
+                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-3">
+                    Check your intermediate differential equations and perform a strict Dimensional Analysis check on your units before solving for the target quantity.
+                  </p>
+                </details>
+
+                <details class="group p-3 hover:bg-slate-50 transition cursor-pointer">
+                  <summary class="font-semibold text-indigo-700 flex items-center justify-between">
+                    Level 4: Asymptotic Limits & Committee Option Traps
+                    <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
+                  </summary>
+                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-4">
+                    Test physical boundary limits ($\hbar \to 0, T \to 0, r \gg R$). Committee traps usually stem from missing factors of 2, inverted signs, or ignoring bound charges.
+                  </p>
+                </details>
+              </div>
+            </div>
+
+            <!-- Student Study Notes & Progress Updater -->
+            <div class="space-y-3 pt-2">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Learning Status</label>
+                  <select id="user-status-select" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <option value="unsolved">⏳ Unsolved</option>
+                    <option value="solved">✅ Mastered / Solved</option>
+                    <option value="review">🔁 Flagged for Review</option>
+                    <option value="failed">❌ Failed / To Retry</option>
+                  </select>
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Personal Notes / Error Diary</label>
+                  <input type="text" id="user-notes-input" placeholder="Notes, key equations, pitfall reminders..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-1">
+                <button onclick="saveQuestionStatus()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5">
+                  💾 Save Progress to Profile
+                </button>
+                <span id="save-feedback" class="text-xs text-emerald-600 font-semibold opacity-0 transition-opacity">Saved!</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB 2: TWIN A/B LAB -->
+    <div id="view-twins" class="hidden space-y-6">
+      <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-base font-bold text-slate-800">👥 Twin Question Lab (Variant A vs Variant B)</h2>
+          <p class="text-xs text-slate-500">Compare official twin problem variants side by side with zero OCR distortion.</p>
+        </div>
+        <div class="min-w-[300px]">
+          <select id="pair-select" onchange="onPairChange()" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-indigo-700">
+            <!-- Dynamically populated pairs -->
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Variant A -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 card-shadow space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span class="text-sm font-extrabold text-indigo-700" id="pair-label-a">🅰️ Variant A</span>
+          </div>
+          <div class="flex items-center justify-center p-2 bg-slate-50 border rounded-lg overflow-x-auto min-h-[300px]">
+            <img id="pair-img-a" src="" class="max-w-full rounded shadow-sm">
+          </div>
+        </div>
+
+        <!-- Variant B -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 card-shadow space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span class="text-sm font-extrabold text-indigo-700" id="pair-label-b">🅱️ Variant B</span>
+          </div>
+          <div class="flex items-center justify-center p-2 bg-slate-50 border rounded-lg overflow-x-auto min-h-[300px]">
+            <img id="pair-img-b" src="" class="max-w-full rounded shadow-sm">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: CONCEPT MIND MAP -->
+    <div id="view-mindmap" class="hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
+        <h2 class="text-base font-bold text-slate-800">🧠 Interactive EUF Syllabus Knowledge Tree</h2>
+        <p class="text-xs text-slate-500">Explore the 5 core domains, question frequency, and subtopic clusters. Click any subtopic to start a drill.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="concept-map-container">
+          <!-- Dynamically populated concept tiles -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: MASTERY & ERROR DIARY -->
+    <div id="view-progress" class="hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
+        <h2 class="text-base font-bold text-slate-800">📊 Profile Mastery & Error Queue (Spaced Repetition)</h2>
+        <p class="text-xs text-slate-500">Every problem flagged for review or marked as failed is queued here for deliberate re-testing.</p>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider">
+                <th class="p-3">ID</th>
+                <th class="p-3">Area & Subtopic</th>
+                <th class="p-3">Status</th>
+                <th class="p-3">Your Error Notes</th>
+                <th class="p-3">Action</th>
+              </tr>
+            </thead>
+            <tbody id="error-table-body" class="divide-y divide-slate-100">
+              <!-- Dynamically populated error rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 text-center py-4 text-xs text-slate-500">
+    EUF Master Workspace • Complete Unified Physics Exam Bank (2010–2026) • Multi-User Portable Profile
+  </footer>
+
+  <!-- Frontend Controller Script -->
+  <script>
+    let globalQuestions = [];
+    let currentQIndex = 0;
+    let isZoomed = false;
+    let subtopicsByArea = {};
+
+    async function initApp() {
+      await fetchStats();
+      await fetchProfiles();
+      await fetchConceptTree();
+      await fetchPairs();
+      await fetchQuestions();
+    }
+
+    async function fetchStats() {
+      const res = await fetch('/api/stats');
+      const data = await res.json();
+      document.getElementById('stat-total').innerText = `${data.total_questions} Qs`;
+      document.getElementById('stat-solved').innerText = `${data.solved} (${data.mastery_percentage}%)`;
+      document.getElementById('stat-review').innerText = data.review;
+      document.getElementById('stat-failed').innerText = data.failed;
+    }
+
+    async function fetchProfiles() {
+      const res = await fetch('/api/profiles');
+      const data = await res.json();
+      const sel = document.getElementById('profile-select');
+      sel.innerHTML = data.profiles.map(p => `<option value="${p}" ${p === data.active_profile ? 'selected' : ''}>${p}</option>`).join('');
+    }
+
+    async function switchProfile(name) {
+      await fetch('/api/profiles/switch', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({profile_name: name})
+      });
+      await fetchStats();
+      await fetchQuestions();
+    }
+
+    async function promptNewProfile() {
+      const name = prompt("Enter new profile name (e.g. carlos, guest):");
+      if (name && name.trim()) {
+        await switchProfile(name.trim());
+        await fetchProfiles();
+      }
+    }
+
+    async function fetchConceptTree() {
+      const res = await fetch('/api/concept-map');
+      const data = await res.json();
+      const tree = data.concept_tree;
+      subtopicsByArea = {};
+
+      const areaSel = document.getElementById('filter-area');
+      areaSel.innerHTML = '<option value="All Subject Areas">All Subject Areas</option>';
+
+      const container = document.getElementById('concept-map-container');
+      container.innerHTML = '';
+
+      for (const [area, info] of Object.entries(tree)) {
+        subtopicsByArea[area] = info.subtopics.map(s => s.name);
+        areaSel.innerHTML += `<option value="${area}">${area} (${info.total})</option>`;
+
+        let subList = info.subtopics.map(s => `
+          <div onclick="drillSubtopic('${area}', '${s.name}')" class="flex justify-between items-center p-1.5 hover:bg-indigo-50 rounded cursor-pointer transition text-xs">
+            <span class="text-slate-700">${s.name}</span>
+            <span class="font-bold text-indigo-600">${s.count}</span>
+          </div>
+        `).join('');
+
+        container.innerHTML += `
+          <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2">
+            <div class="flex justify-between items-center border-b pb-2">
+              <h3 class="font-bold text-sm text-slate-900">${area}</h3>
+              <span class="text-xs bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded-full">${info.total} Qs</span>
+            </div>
+            <div class="space-y-1">${subList}</div>
+          </div>
+        `;
+      }
+    }
+
+    function onAreaChange() {
+      const area = document.getElementById('filter-area').value;
+      const subSel = document.getElementById('filter-subtopic');
+      subSel.innerHTML = '<option value="All Subtopics">All Subtopics</option>';
+
+      if (area === "All Subject Areas") {
+        const allSubs = new Set();
+        Object.values(subtopicsByArea).forEach(list => list.forEach(s => allSubs.add(s)));
+        Array.from(allSubs).sort().forEach(s => subSel.innerHTML += `<option value="${s}">${s}</option>`);
+      } else if (subtopicsByArea[area]) {
+        subtopicsByArea[area].forEach(s => subSel.innerHTML += `<option value="${s}">${s}</option>`);
+      }
+      fetchQuestions();
+    }
+
+    async function fetchQuestions() {
+      const area = document.getElementById('filter-area').value;
+      const subtopic = document.getElementById('filter-subtopic').value;
+      const exam = document.getElementById('filter-exam').value;
+      const status = document.getElementById('filter-status').value;
+      const search = document.getElementById('search-input').value;
+
+      const params = new URLSearchParams({ area, subtopic, exam, status, search });
+      const res = await fetch(`/api/questions?${params.toString()}`);
+      const data = await res.json();
+      globalQuestions = data.questions;
+
+      document.getElementById('pool-count').innerText = `Question Pool (${globalQuestions.length})`;
+      
+      const solvedCnt = globalQuestions.filter(q => q.status === 'solved').length;
+      const pct = globalQuestions.length ? (solvedCnt / globalQuestions.length * 100).toFixed(1) : 0;
+      document.getElementById('subtopic-mastery-badge').innerText = `${pct}% Mastered`;
+
+      renderQuestionList();
+      if (globalQuestions.length > 0) {
+        selectQuestion(0);
+      } else {
+        showEmptyQuestionCard();
+      }
+      updateErrorTable();
+    }
+
+    function renderQuestionList() {
+      const container = document.getElementById('question-list-container');
+      if (!globalQuestions.length) {
+        container.innerHTML = '<div class="p-4 text-xs text-slate-400 text-center">No questions match current filters.</div>';
+        return;
+      }
+
+      container.innerHTML = globalQuestions.map((q, idx) => {
+        const icon = q.status === 'solved' ? '✅' : (q.status === 'review' ? '🔁' : (q.status === 'failed' ? '❌' : '⏳'));
+        const isSelected = idx === currentQIndex;
+        return `
+          <div onclick="selectQuestion(${idx})" class="p-2.5 rounded-lg border ${isSelected ? 'bg-indigo-50 border-indigo-300' : 'bg-slate-50 border-slate-200'} hover:border-indigo-300 cursor-pointer transition flex items-center justify-between text-xs">
+            <div class="truncate mr-2">
+              <span class="font-bold text-slate-800">${q.id}</span>
+              <div class="text-[11px] text-slate-500 truncate">${q.subtopic}</div>
+            </div>
+            <span class="text-sm">${icon}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectQuestion(index) {
+      if (index < 0 || index >= globalQuestions.length) return;
+      currentQIndex = index;
+      const q = globalQuestions[index];
+
+      renderQuestionList();
+
+      document.getElementById('card-qid').innerText = q.id;
+      document.getElementById('card-meta').innerText = `Exam: ${q.exam_id} (Page ${q.page}) | Area: ${q.area} ➔ ${q.subtopic}`;
+      
+      const statusBadges = {
+        'solved': '✅ Mastered',
+        'review': '🔁 Needs Review',
+        'failed': '❌ Failed / To Retry',
+        'unsolved': '⏳ Unsolved'
+      };
+      document.getElementById('card-status-badge').innerText = statusBadges[q.status] || '⏳ Unsolved';
+      
+      document.getElementById('card-img').src = q.image_url;
+      document.getElementById('user-status-select').value = q.status;
+      document.getElementById('user-notes-input').value = q.user_notes || '';
+
+      const errataBanner = document.getElementById('card-errata-banner');
+      if (q.flag || q.errata) {
+        errataBanner.classList.remove('hidden');
+        errataBanner.innerText = `⚠️ Notice: ${q.errata || 'Flagged question'}`;
+      } else {
+        errataBanner.classList.add('hidden');
+      }
+    }
+
+    async function saveQuestionStatus() {
+      if (!globalQuestions.length) return;
+      const q = globalQuestions[currentQIndex];
+      const newStatus = document.getElementById('user-status-select').value;
+      const newNotes = document.getElementById('user-notes-input').value;
+
+      await fetch(`/api/question/${q.id}/status`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ status: newStatus, notes: newNotes })
+      });
+
+      q.status = newStatus;
+      q.user_notes = newNotes;
+
+      if (newStatus === 'solved') {
+        confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
+      }
+
+      const fb = document.getElementById('save-feedback');
+      fb.classList.remove('opacity-0');
+      setTimeout(() => fb.classList.add('opacity-0'), 1500);
+
+      await fetchStats();
+      renderQuestionList();
+      selectQuestion(currentQIndex);
+    }
+
+    function toggleCardZoom() {
+      isZoomed = !isZoomed;
+      const img = document.getElementById('card-img');
+      img.style.transform = isZoomed ? 'scale(1.2)' : 'scale(1)';
+      img.style.transformOrigin = 'top center';
+    }
+
+    function nextProblem() {
+      if (currentQIndex < globalQuestions.length - 1) {
+        selectQuestion(currentQIndex + 1);
+      }
+    }
+
+    function pickRandomProblem() {
+      if (globalQuestions.length > 0) {
+        const rand = Math.floor(Math.random() * globalQuestions.length);
+        selectQuestion(rand);
+      }
+    }
+
+    function drillSubtopic(area, subtopic) {
+      switchTab('practice');
+      document.getElementById('filter-area').value = area;
+      onAreaChange();
+      document.getElementById('filter-subtopic').value = subtopic;
+      fetchQuestions();
+    }
+
+    async function fetchPairs() {
+      const res = await fetch('/api/pairs');
+      const data = await res.json();
+      const sel = document.getElementById('pair-select');
+      sel.innerHTML = data.pairs.map(p => `<option value="${p.exam_id}:::${p.stem}">${p.exam_id} | ${p.stem} (${p.area} - ${p.subtopic})</option>`).join('');
+      if (data.pairs.length) onPairChange();
+    }
+
+    async function onPairChange() {
+      const val = document.getElementById('pair-select').value;
+      if (!val) return;
+      const res = await fetch(`/api/pair/${val}`);
+      const data = await res.json();
+      document.getElementById('pair-label-a').innerText = `🅰️ Variant A (${data.qid_a})`;
+      document.getElementById('pair-label-b').innerText = `🅱️ Variant B (${data.qid_b})`;
+      document.getElementById('pair-img-a').src = data.image_a;
+      document.getElementById('pair-img-b').src = data.image_b;
+    }
+
+    function updateErrorTable() {
+      const tbody = document.getElementById('error-table-body');
+      const flaggedQs = globalQuestions.filter(q => q.status === 'failed' || q.status === 'review');
+      if (!flaggedQs.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">✨ Error queue clean! No failed or review problems in current pool.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = flaggedQs.map(q => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="p-3 font-bold text-slate-800">${q.id}</td>
+          <td class="p-3">${q.area} ➔ ${q.subtopic}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded font-bold ${q.status==='failed'?'bg-rose-100 text-rose-700':'bg-amber-100 text-amber-700'}">${q.status}</span></td>
+          <td class="p-3 text-slate-600">${q.user_notes || '—'}</td>
+          <td class="p-3"><button onclick="switchTab('practice'); fetchQuestions();" class="text-indigo-600 font-bold hover:underline">Solve Now ➔</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function switchTab(tabId) {
+      ['practice', 'twins', 'mindmap', 'progress'].forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        document.getElementById(`tab-btn-${t}`).className = 'px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition';
+      });
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+      document.getElementById(`tab-btn-${tabId}`).className = 'px-3 py-1.5 rounded-md bg-indigo-600 text-white transition';
+    }
+
+    let searchTimeout;
+    function debounceSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(fetchQuestions, 250);
+    }
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>
