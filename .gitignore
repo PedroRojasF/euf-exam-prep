@@ -1,0 +1,24 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Marimo temporary
+.marimo/
+
+# Large textbook PDFs (Libgen textbooks)
+*Nussenzveig*.pdf
+
+# User private profile state (keep default.json)
+profiles/*.json
+!profiles/default.json
+profiles/.active_profile
+
+# OS files
+.DS_Store
+Thumbs.db
