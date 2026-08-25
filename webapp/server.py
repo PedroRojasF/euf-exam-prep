@@ -17,6 +17,7 @@ from bank.profile import (
     update_question_user_state,
     list_profiles
 )
+from bank.hints import get_physics_clues
 from bank.ingest import ingest_pdf
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,7 +32,6 @@ def get_db():
 
 class EUFWebHandler(SimpleHTTPRequestHandler):
     def end_headers(self):
-        # Enable CORS and caching headers
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
@@ -239,6 +239,11 @@ class EUFWebHandler(SimpleHTTPRequestHandler):
             self.send_json({"error": "Question not found"}, status=404)
             return
 
+        area = row[3]
+        subtopic = row[4]
+        text = row[8]
+        clues = get_physics_clues(area, subtopic, qid, text)
+
         profile_name = get_active_profile_name()
         u_state = get_question_user_state(qid, profile_name)
 
@@ -257,7 +262,8 @@ class EUFWebHandler(SimpleHTTPRequestHandler):
             "errata": row[11],
             "status": u_state.get("status", "unsolved"),
             "user_notes": u_state.get("notes", ""),
-            "image_url": f"/images/{qid.replace('/', '_')}.png"
+            "image_url": f"/images/{qid.replace('/', '_')}.png",
+            "clues": clues
         })
 
     def handle_post_question_status(self, qid, body):

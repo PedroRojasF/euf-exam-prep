@@ -33,6 +33,7 @@ def _():
         update_question_user_state,
         list_profiles
     )
+    from bank.hints import get_physics_clues
 
     db_path = os.path.join(os.path.dirname(__file__), "bank", "euf_bank.sqlite")
     render_dir = os.path.join(os.path.dirname(__file__), "bank", "rendered")
@@ -40,6 +41,7 @@ def _():
     return (
         db_path,
         get_active_profile_name,
+        get_physics_clues,
         get_question_user_state,
         json,
         list_profiles,
@@ -295,6 +297,7 @@ def _(
 def _(
     all_questions_dict,
     current_profile,
+    get_physics_clues,
     get_question_user_state,
     mo,
     os,
@@ -316,6 +319,8 @@ def _(
         status = u_state.get("status", "unsolved")
         user_notes = u_state.get("notes", "")
 
+        clues = get_physics_clues(area, subtopic, qid, text)
+
         img_path = os.path.join(render_dir, f"{qid.replace('/', '_')}.png")
         if os.path.exists(img_path):
             img_element = mo.image(src=img_path, width=840)
@@ -331,33 +336,12 @@ def _(
         errata_input = mo.ui.text(value=errata or "", placeholder="e.g. Annulled by committee due to sign error in option B...", label="Errata Description:")
         save_btn = mo.ui.button(label="💾 Save Progress & Notes", kind="success")
 
-        # Socratic Hint Ladder
-        socratic_hints = mo.accordion({
-            "💡 Clue Level 1: Fundamental Physical Principle": mo.md(
-                f"""
-                **Topic:** `{area}` ➔ `{subtopic}`  
-                * Ask yourself: What fundamental conservation law (energy, momentum, angular momentum, charge) or boundary condition governs this system?  
-                * Does the formula sheet (*Formulário EUF.pdf*) provide the general potential, Hamiltonian, or Maxwell equation for this geometry?
-                """
-            ),
-            "📐 Clue Level 2: Coordinates, Setup & Constraints": mo.md(
-                """
-                * Identify generalized coordinates $q_i$ and any constraints (holonomic / rolling).  
-                * For Quantum/EM: identify the basis representation (eigenbasis $|n\\rangle$ or coordinate $\\vec{r}$) and symmetry (spherical, cylindrical, Cartesian).
-                """
-            ),
-            "🔍 Clue Level 3: Intermediate Math Checkpoint": mo.md(
-                """
-                * Check your intermediate equations before solving for the final variable.  
-                * **Dimensional Analysis**: Ensure both sides have identical physical units (e.g. $[M][L]^2[T]^{-2}$ for energy).
-                """
-            ),
-            "🎯 Clue Level 4: Limiting Cases & Exam Trap Check": mo.md(
-                """
-                * Evaluate asymptotic limits: $\\hbar \\to 0$, $T \\to 0$, $T \\to \\infty$, or $r \\gg R$.  
-                * Committee Trap: Did you account for factors of 2 in kinetic energy, boundary dielectric factors $\\epsilon_r$, or ladder normalization $\\sqrt{n+1}$?
-                """
-            )
+        # Dynamic Contextual Physics Clues
+        physics_clues = mo.accordion({
+            "💡 Level 1: Core Physical Principle & Conservation Law": mo.md(clues["level1"]),
+            "📐 Level 2: Coordinates, Setup & Equations of Motion": mo.md(clues["level2"]),
+            "🔍 Level 3: Intermediate Math Checkpoint & Dimensional Check": mo.md(clues["level3"]),
+            "🎯 Level 4: Physical Boundary Limits & Option Traps": mo.md(clues["level4"])
         })
 
         errata_banner = mo.md("")
@@ -383,7 +367,8 @@ def _(
             errata_banner,
             mo.md("#### 📸 Official Question Card (Original LaTeX Formulas, Diagrams & Options A-E):"),
             img_element,
-            socratic_hints,
+            mo.md("#### 📐 Physics Solution Strategy & Clues (Self-Evaluation):"),
+            physics_clues,
             mo.hstack([mark_status, notes_input], align="start"),
             mo.hstack([flag_select, errata_input, save_btn], align="center")
         ])
@@ -391,6 +376,7 @@ def _(
     content_pane
     return (
         area,
+        clues,
         content_pane,
         errata,
         errata_banner,
@@ -406,12 +392,12 @@ def _(
         mark_status,
         notes_input,
         page,
+        physics_clues,
         q_tag,
         qid,
         qtype,
         row,
         save_btn,
-        socratic_hints,
         status,
         status_icon,
         subtopic,
@@ -453,7 +439,6 @@ def _(
 
 @app.cell
 def _(all_questions_list, mo, pd, px):
-    # Interactive Visual Concept & Knowledge Map using Plotly Sunburst
     df_map = pd.DataFrame([{
         "Area": q[3],
         "Subtopic": q[4],

@@ -6,6 +6,8 @@
   <title>EUF Exam Master: Unified Physics Workspace (2010-2026)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <style>
@@ -55,7 +57,7 @@
     <div class="max-w-7xl mx-auto px-4 py-3 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
       <div class="p-2">
         <div class="text-xs text-slate-500 font-medium">Bank Total</div>
-        <div class="text-xl font-bold text-slate-800" id="stat-total">909 Qs</div>
+        <div class="text-xl font-bold text-slate-800" id="stat-total">829 Qs</div>
       </div>
       <div class="p-2">
         <div class="text-xs text-slate-500 font-medium">Mastered / Solved</div>
@@ -178,10 +180,11 @@
               <img id="card-img" src="" alt="Official Question Graphic" class="max-w-full rounded shadow-sm transition-all duration-200">
             </div>
 
-            <!-- Socratic Hint Ladder Accordion -->
-            <div class="border border-slate-200 rounded-lg overflow-hidden text-sm">
-              <div class="bg-slate-50 px-4 py-2.5 font-bold text-xs text-slate-600 uppercase tracking-wider border-b border-slate-200 flex items-center gap-1.5">
-                💡 Socratic AI Hint Ladder (Self-Evaluation)
+            <!-- Contextual Physics Clues Progression -->
+            <div class="border border-slate-200 rounded-lg overflow-hidden text-sm" id="clues-container">
+              <div class="bg-slate-50 px-4 py-2.5 font-bold text-xs text-slate-700 uppercase tracking-wider border-b border-slate-200 flex items-center justify-between">
+                <span>📐 Physics Solution Strategy & Clues (Self-Evaluation)</span>
+                <span class="text-[11px] font-semibold text-indigo-600" id="clue-topic-title">General Topic</span>
               </div>
               <div class="divide-y divide-slate-100 text-xs">
                 <details class="group p-3 hover:bg-slate-50 transition cursor-pointer">
@@ -189,39 +192,31 @@
                     Level 1: Core Physical Principle & Conservation Law
                     <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
                   </summary>
-                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-1">
-                    Ask yourself: What fundamental conservation theorem (energy, linear/angular momentum, Gauss law, Maxwell equation) applies to this configuration?
-                  </p>
+                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-1"></p>
                 </details>
 
                 <details class="group p-3 hover:bg-slate-50 transition cursor-pointer">
                   <summary class="font-semibold text-indigo-700 flex items-center justify-between">
-                    Level 2: Coordinates, Parameterization & Boundary Setup
+                    Level 2: Coordinates, Setup & Equations of Motion
                     <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
                   </summary>
-                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-2">
-                    Parameterize the generalized coordinates $q_i$ and check the kinetic energy $T$ and potential $V$, or the Gaussian/Amperian surface geometry.
-                  </p>
+                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-2"></p>
                 </details>
 
                 <details class="group p-3 hover:bg-slate-50 transition cursor-pointer">
                   <summary class="font-semibold text-indigo-700 flex items-center justify-between">
-                    Level 3: Intermediate Mathematical Checkpoint
+                    Level 3: Intermediate Mathematical Checkpoint & Dimensional Check
                     <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
                   </summary>
-                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-3">
-                    Check your intermediate differential equations and perform a strict Dimensional Analysis check on your units before solving for the target quantity.
-                  </p>
+                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-3"></p>
                 </details>
 
                 <details class="group p-3 hover:bg-slate-50 transition cursor-pointer">
                   <summary class="font-semibold text-indigo-700 flex items-center justify-between">
-                    Level 4: Asymptotic Limits & Committee Option Traps
+                    Level 4: Physical Boundary Limits & Option Traps
                     <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
                   </summary>
-                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-4">
-                    Test physical boundary limits ($\hbar \to 0, T \to 0, r \gg R$). Committee traps usually stem from missing factors of 2, inverted signs, or ignoring bound charges.
-                  </p>
+                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-4"></p>
                 </details>
               </div>
             </div>
@@ -301,7 +296,7 @@
     <div id="view-mindmap" class="hidden space-y-6">
       <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
         <h2 class="text-base font-bold text-slate-800">🧠 Interactive EUF Syllabus Knowledge Tree</h2>
-        <p class="text-xs text-slate-500">Explore the 5 core domains, question frequency, and subtopic clusters. Click any subtopic to start a drill.</p>
+        <p class="text-xs text-slate-500">Explore the 6 core domains, question frequency, and subtopic clusters. Click any subtopic to start a drill.</p>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="concept-map-container">
           <!-- Dynamically populated concept tiles -->
@@ -489,12 +484,15 @@
       }).join('');
     }
 
-    function selectQuestion(index) {
+    async function selectQuestion(index) {
       if (index < 0 || index >= globalQuestions.length) return;
       currentQIndex = index;
-      const q = globalQuestions[index];
+      const qSummary = globalQuestions[index];
 
       renderQuestionList();
+
+      const res = await fetch(`/api/question/${qSummary.id}`);
+      const q = await res.json();
 
       document.getElementById('card-qid').innerText = q.id;
       document.getElementById('card-meta').innerText = `Exam: ${q.exam_id} (Page ${q.page}) | Area: ${q.area} ➔ ${q.subtopic}`;
@@ -517,6 +515,25 @@
         errataBanner.innerText = `⚠️ Notice: ${q.errata || 'Flagged question'}`;
       } else {
         errataBanner.classList.add('hidden');
+      }
+
+      // Render problem-specific physics clues
+      if (q.clues) {
+        document.getElementById('clue-topic-title').innerText = q.clues.title || q.subtopic;
+        document.getElementById('hint-1').innerHTML = q.clues.level1;
+        document.getElementById('hint-2').innerHTML = q.clues.level2;
+        document.getElementById('hint-3').innerHTML = q.clues.level3;
+        document.getElementById('hint-4').innerHTML = q.clues.level4;
+
+        if (window.renderMathInElement) {
+          renderMathInElement(document.getElementById('clues-container'), {
+            delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+          });
+        }
       }
     }
 
