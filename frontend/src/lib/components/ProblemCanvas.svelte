@@ -7,7 +7,7 @@
   import { 
     CheckCircle2, Bookmark, XCircle, Clock, 
     ZoomIn, ZoomOut, Maximize2, Split, 
-    Play, Pause, RotateCcw, AlertTriangle, Moon, Sun
+    Play, Pause, RotateCcw, AlertTriangle, FileText
   } from 'lucide-svelte';
 
   let {
@@ -20,7 +20,6 @@
 
   let isZoomModalOpen = $state(false);
   let isImageExpanded = $state(false);
-  let isImageInverted = $state(false); // Invert black-on-white PDF crop to match dark mode
 
   // 15-Minute Countdown Timer
   let timerSeconds = $state(15 * 60);
@@ -63,8 +62,8 @@
 
     if (status === 'solved') {
       confetti({
-        particleCount: 60,
-        spread: 70,
+        particleCount: 50,
+        spread: 65,
         origin: { y: 0.6 }
       });
     }
@@ -84,65 +83,62 @@
 </script>
 
 {#if !question}
-  <div class="flex-1 h-full flex flex-col items-center justify-center text-slate-500 font-mono text-xs p-8 bg-tech-grid">
-    <div class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-slate-400 mb-3">
+  <div class="flex-1 h-full flex flex-col items-center justify-center text-slate-400 font-sans text-xs p-8 bg-study-grid">
+    <div class="w-12 h-12 rounded-2xl bg-white border border-[#E5DFD4] shadow-xs flex items-center justify-center text-slate-500 mb-3 text-lg font-serif">
       Ψ
     </div>
-    <span>Selecione uma questão no explorador lateral para carregar o canvas de física.</span>
+    <span>Selecione uma questão no painel lateral para começar o estudo.</span>
   </div>
 {:else}
-  <div class="flex-1 h-full flex flex-col bg-[#0b101d] overflow-hidden">
+  <div class="flex-1 h-full flex flex-col bg-[#FDFBF7] overflow-hidden">
     <!-- Top Cockpit Control Bar -->
-    <div class="px-4 py-2.5 bg-[#080d18] border-b border-white/8 flex flex-wrap items-center justify-between gap-3 shrink-0">
+    <div class="px-5 py-3 bg-white border-b border-[#E8E2D8] flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-2xs">
       <!-- Question Identifiers & Path -->
-      <div class="flex items-center space-x-2.5">
-        <span
-          class="px-2 py-0.5 rounded text-[11px] font-mono font-bold border"
-          style={theme ? `color: ${theme.accentHex}; border-color: ${theme.accentHex}40; background-color: ${theme.accentHex}15;` : ''}
-        >
+      <div class="flex items-center space-x-3">
+        <span class="px-2.5 py-1 rounded-lg text-xs font-sans font-bold border {theme?.badge || 'bg-slate-100 text-slate-800'}">
           {question.area}
         </span>
 
-        <span class="text-white font-mono font-extrabold text-sm tracking-tight">
+        <h2 class="text-slate-900 font-sans font-extrabold text-base tracking-tight">
           {question.id}
-        </span>
+        </h2>
 
-        <span class="text-slate-400 font-mono text-xs">
+        <span class="text-slate-500 font-sans text-xs">
           (Pág {question.page} • {question.question_type})
         </span>
       </div>
 
       <!-- Center Countdown Timer -->
-      <div class="flex items-center space-x-2 bg-slate-950 border border-white/10 px-2.5 py-1 rounded">
-        <span class="text-[10px] font-mono uppercase text-slate-400 font-bold">⏱️ Exame:</span>
-        <span class="font-mono font-bold text-xs {timerSeconds < 180 ? 'text-rose-400 animate-pulse' : 'text-sky-400'} w-11 text-center">
+      <div class="flex items-center space-x-2 bg-[#FAF8F5] border border-[#DDD6C8] px-3 py-1 rounded-xl shadow-2xs">
+        <span class="text-[10px] font-sans uppercase text-slate-500 font-bold">⏱️ Tempo:</span>
+        <span class="font-mono font-bold text-xs {timerSeconds < 180 ? 'text-rose-600 animate-pulse' : 'text-slate-800'} w-11 text-center">
           {formatTime(timerSeconds)}
         </span>
         <button
           onclick={toggleTimer}
-          class="text-slate-400 hover:text-white p-0.5 rounded transition"
-          title={isTimerRunning ? 'Pausar temporizador' : 'Iniciar cronômetro'}
+          class="text-slate-500 hover:text-slate-900 p-0.5 rounded transition cursor-pointer"
+          title={isTimerRunning ? 'Pausar' : 'Iniciar'}
         >
-          {#if isTimerRunning}<Pause size={12} />{:else}<Play size={12} />{/if}
+          {#if isTimerRunning}<Pause size={13} />{:else}<Play size={13} />{/if}
         </button>
         <button
           onclick={resetTimer}
-          class="text-slate-500 hover:text-slate-300 p-0.5 rounded transition"
+          class="text-slate-400 hover:text-slate-700 p-0.5 rounded transition cursor-pointer"
           title="Reiniciar (15 min)"
         >
-          <RotateCcw size={11} />
+          <RotateCcw size={12} />
         </button>
       </div>
 
-      <!-- Right Action Keycaps -->
-      <div class="flex items-center space-x-1.5 font-mono text-xs">
+      <!-- Right Action Pastel Buttons -->
+      <div class="flex items-center space-x-2 font-sans text-xs">
         <!-- Dominada (S) -->
         <button
           onclick={() => setStatus('solved')}
-          class="px-2.5 py-1 rounded font-bold transition flex items-center gap-1.5 border cursor-pointer {uState?.status === 'solved' ? 'bg-emerald-600 text-white border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]' : 'bg-slate-900 hover:bg-emerald-950 text-slate-300 border-white/10 hover:border-emerald-500/40'}"
-          title="Marcar Dominada (S)"
+          class="px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 border cursor-pointer {uState?.status === 'solved' ? 'bg-[#dcfce7] text-[#166534] border-[#86efac] shadow-xs' : 'bg-white hover:bg-[#f0fdf4] text-slate-700 border-[#DDD6C8]'}"
+          title="Marcar Dominada (Atalho: S)"
         >
-          <CheckCircle2 size={13} />
+          <CheckCircle2 size={14} class="text-[#16a34a]" />
           <span>Dominada</span>
           <span class="key-cap text-[8px]">S</span>
         </button>
@@ -150,21 +146,21 @@
         <!-- Revisar (R) -->
         <button
           onclick={() => setStatus('review')}
-          class="px-2.5 py-1 rounded font-bold transition flex items-center gap-1.5 border cursor-pointer {uState?.status === 'review' ? 'bg-amber-600 text-white border-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.3)]' : 'bg-slate-900 hover:bg-amber-950 text-slate-300 border-white/10 hover:border-amber-500/40'}"
-          title="Marcar Revisão (R)"
+          class="px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 border cursor-pointer {uState?.status === 'review' ? 'bg-[#fef3c7] text-[#92400e] border-[#fde68a] shadow-xs' : 'bg-white hover:bg-[#fffbeb] text-slate-700 border-[#DDD6C8]'}"
+          title="Marcar Revisão (Atalho: R)"
         >
-          <Bookmark size={13} />
-          <span>Revisão</span>
+          <Bookmark size={14} class="text-[#d97706]" />
+          <span>Revisar</span>
           <span class="key-cap text-[8px]">R</span>
         </button>
 
         <!-- Erro (X) -->
         <button
           onclick={() => setStatus('failed')}
-          class="px-2.5 py-1 rounded font-bold transition flex items-center gap-1.5 border cursor-pointer {uState?.status === 'failed' ? 'bg-rose-600 text-white border-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.3)]' : 'bg-slate-900 hover:bg-rose-950 text-slate-300 border-white/10 hover:border-rose-500/40'}"
-          title="Marcar Erro (X)"
+          class="px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 border cursor-pointer {uState?.status === 'failed' ? 'bg-[#ffe4e6] text-[#9f1239] border-[#fecdd3] shadow-xs' : 'bg-white hover:bg-[#fff1f2] text-slate-700 border-[#DDD6C8]'}"
+          title="Marcar Erro (Atalho: X)"
         >
-          <XCircle size={13} />
+          <XCircle size={14} class="text-[#e11d48]" />
           <span>Erro</span>
           <span class="key-cap text-[8px]">X</span>
         </button>
@@ -172,14 +168,14 @@
     </div>
 
     <!-- Secondary Context Bar: Subtopic + Errata / Flags + Toolbar -->
-    <div class="px-4 py-1.5 bg-[#090e1a] border-b border-white/6 flex items-center justify-between text-xs font-mono shrink-0">
+    <div class="px-5 py-2 bg-[#FAF8F5] border-b border-[#E8E2D8] flex items-center justify-between text-xs font-sans shrink-0">
       <div class="flex items-center space-x-2 truncate">
-        <span class="text-slate-500 uppercase text-[10px] font-bold">Subtópico:</span>
-        <span class="text-slate-200 font-semibold truncate">{question.subtopic}</span>
+        <span class="text-slate-400 uppercase text-[10px] font-bold">Subtópico:</span>
+        <span class="text-slate-800 font-semibold truncate">{question.subtopic}</span>
 
         {#if question.errata || question.flag}
-          <span class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] flex items-center gap-1">
-            <AlertTriangle size={11} />
+          <span class="px-2 py-0.5 rounded-full bg-[#fef3c7] text-[#92400e] border border-[#fde68a] text-[11px] font-semibold flex items-center gap-1">
+            <AlertTriangle size={12} />
             {question.flag || question.errata}
           </span>
         {/if}
@@ -190,49 +186,41 @@
         {#if question.twin_id && onJumpToTwin}
           <button
             onclick={() => onJumpToTwin?.(question!.twin_id!)}
-            class="px-2 py-0.5 rounded bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 flex items-center gap-1 text-[11px] transition"
+            class="px-2.5 py-1 rounded-lg bg-[#eff8ff] hover:bg-[#e0f2fe] text-[#0369a1] border border-[#bae6fd] flex items-center gap-1 text-xs font-medium transition cursor-pointer"
             title="Ir para Variante Irmã (T)"
           >
-            <Split size={12} />
+            <Split size={13} />
             <span>Gêmea ({question.twin_id})</span>
             <span class="key-cap text-[7px]">T</span>
           </button>
         {/if}
 
         <button
-          onclick={() => isImageInverted = !isImageInverted}
-          class="p-1 rounded text-slate-400 hover:text-white hover:bg-white/5 transition"
-          title={isImageInverted ? 'Modo Papel Claro Original' : 'Inverter Cores (Modo Escuro)'}
-        >
-          {#if isImageInverted}<Sun size={14} />{:else}<Moon size={14} />{/if}
-        </button>
-
-        <button
           onclick={() => isImageExpanded = !isImageExpanded}
-          class="p-1 rounded text-slate-400 hover:text-white hover:bg-white/5 transition"
-          title="Alternar Tamanho de Visualização"
+          class="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-[#EAE4D8] transition"
+          title="Alternar Tamanho"
         >
-          {#if isImageExpanded}<ZoomOut size={14} />{:else}<ZoomIn size={14} />{/if}
+          {#if isImageExpanded}<ZoomOut size={15} />{:else}<ZoomIn size={15} />{/if}
         </button>
 
         <button
           onclick={() => isZoomModalOpen = true}
-          class="p-1 rounded text-slate-400 hover:text-white hover:bg-white/5 transition"
+          class="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-[#EAE4D8] transition"
           title="Tela Cheia (Z)"
         >
-          <Maximize2 size={14} />
+          <Maximize2 size={15} />
         </button>
       </div>
     </div>
 
-    <!-- Main Problem Viewer Canvas (Expansive Scrolling Viewport) -->
-    <div class="flex-1 overflow-y-auto custom-scrollbar p-6 flex flex-col items-center justify-start bg-tech-grid min-h-0">
+    <!-- Main Problem Viewer Canvas (Expansive White Paper Card) -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-6 flex flex-col items-center justify-start bg-study-grid min-h-0">
       <!-- High-Resolution Card Frame -->
-      <div class="w-full max-w-4xl bg-white rounded-lg p-4 shadow-2xl transition-all duration-200 border border-slate-300 select-none {isImageInverted ? 'invert hue-rotate-180 bg-slate-900 border-slate-700' : ''}">
+      <div class="w-full max-w-4xl bg-white rounded-xl p-5 shadow-sm transition-all duration-200 border border-[#E5DFD4] select-none">
         <img
           src={question.image}
           alt={`Problema ${question.id}`}
-          class="w-full h-auto object-contain mx-auto transition-transform {isImageExpanded ? 'scale-110 my-6' : ''}"
+          class="w-full h-auto object-contain mx-auto transition-transform {isImageExpanded ? 'scale-110 my-4' : ''}"
           loading="eager"
           onerror={(e) => {
             (e.currentTarget as HTMLElement).style.display = 'none';
@@ -242,8 +230,11 @@
 
       <!-- OCR Mathematical Backup if available -->
       {#if question.text}
-        <div class="w-full max-w-4xl mt-4 p-4 rounded-lg bg-slate-900/90 border border-white/10 text-slate-200 text-xs font-serif leading-relaxed">
-          <div class="text-[10px] font-mono uppercase font-bold text-slate-500 mb-1">Transcrição Matemática (OCR KaTeX):</div>
+        <div class="w-full max-w-4xl mt-4 p-5 rounded-xl bg-white border border-[#E5DFD4] text-slate-800 text-xs font-serif leading-relaxed shadow-2xs">
+          <div class="text-[10px] font-sans uppercase font-bold text-slate-400 mb-1 flex items-center gap-1">
+            <FileText size={12} />
+            <span>Transcrição Matemática:</span>
+          </div>
           <div use:mathAction={question.text}></div>
         </div>
       {/if}
@@ -251,10 +242,10 @@
   </div>
 {/if}
 
-<!-- Fullscreen High-Precision Zoom Modal -->
+<!-- Fullscreen Zoom Modal -->
 {#if isZoomModalOpen && question}
   <div
-    class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
+    class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
     role="dialog"
     aria-modal="true"
     tabindex="-1"
@@ -264,13 +255,13 @@
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
-      class="bg-white rounded-lg p-4 max-w-6xl max-h-[95vh] overflow-auto shadow-2xl relative select-none {isImageInverted ? 'invert hue-rotate-180 bg-slate-900' : ''}"
+      class="bg-white rounded-2xl p-5 max-w-6xl max-h-[95vh] overflow-auto shadow-2xl relative select-none border border-[#E5DFD4]"
       role="document"
       onclick={(e) => e.stopPropagation()}
     >
       <button
         onclick={() => isZoomModalOpen = false}
-        class="absolute top-3 right-3 bg-slate-900 text-white rounded px-2.5 py-1 font-mono text-xs hover:bg-slate-800 transition z-10"
+        class="absolute top-4 right-4 bg-[#FAF8F5] hover:bg-[#F2ECE0] text-slate-700 rounded-lg px-3 py-1 font-sans text-xs font-semibold transition z-10 border border-[#DDD6C8]"
       >
         ✕ Fechar (Esc)
       </button>

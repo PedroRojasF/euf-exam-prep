@@ -3,9 +3,8 @@
   import { AREA_THEMES } from '../constants';
   import type { BankData } from '../types';
   import { 
-    Orbit, Zap, Atom, Flame, BarChart2, Radio, 
     Layers, Split, LayoutGrid, FileText, 
-    HelpCircle, User, Download, Upload, UserPlus, Sparkles
+    HelpCircle, User, Download, Upload, UserPlus, Compass
   } from 'lucide-svelte';
 
   let {
@@ -66,71 +65,71 @@
   );
 </script>
 
-<aside class="w-14 shrink-0 bg-[#060911] border-r border-white/8 flex flex-col items-center justify-between py-3 z-30 select-none">
+<aside class="w-16 shrink-0 bg-[#F4EFE6] border-r border-[#E6DFD3] flex flex-col items-center justify-between py-4 z-30 select-none shadow-xs">
   <!-- Top Logo & View Modes -->
   <div class="flex flex-col items-center space-y-4 w-full">
-    <!-- Brand Stamp -->
+    <!-- Brand Avatar / Logo -->
     <button
       onclick={() => { activeTab = 'practice'; selectedAreaFilter = 'All'; }}
-      class="w-9 h-9 rounded-md bg-linear-to-br from-sky-500 to-indigo-600 flex items-center justify-center font-mono font-bold text-xs text-white shadow-[0_0_15px_-3px_rgba(56,189,248,0.5)] cursor-pointer hover:scale-105 transition"
-      title="EUF Exam Master"
+      class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-400 via-indigo-400 to-rose-300 flex items-center justify-center font-serif font-bold text-base text-white shadow-sm hover:scale-105 transition cursor-pointer"
+      title="EUF Exam Master — Início"
     >
       Ψ
     </button>
 
-    <div class="w-7 h-px bg-white/10"></div>
+    <div class="w-8 h-px bg-[#E2D9CB]"></div>
 
-    <!-- Navigation Modes -->
-    <div class="flex flex-col items-center space-y-1.5 w-full px-2">
-      <!-- Cockpit View -->
+    <!-- Navigation View Mode Buttons -->
+    <div class="flex flex-col items-center space-y-2 w-full px-2">
+      <!-- Cockpit -->
       <button
         onclick={() => activeTab = 'practice'}
-        class="w-10 h-10 rounded-md flex flex-col items-center justify-center transition {activeTab === 'practice' ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-[0_0_10px_rgba(56,189,248,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'}"
-        title="1. Cockpit de Prática (P)"
+        class="w-11 h-11 rounded-xl flex flex-col items-center justify-center transition {activeTab === 'practice' ? 'bg-white text-sky-800 shadow-sm border border-[#E0D8CA]' : 'text-slate-500 hover:text-slate-800 hover:bg-[#EAE4D8]'}"
+        title="Modo Estudo / Prática (P)"
       >
-        <Layers size={17} />
-        <span class="text-[8px] font-mono mt-0.5 font-semibold">TREINO</span>
+        <Layers size={18} />
+        <span class="text-[8px] font-sans font-bold mt-0.5">Estudo</span>
       </button>
 
-      <!-- Twin Lab View -->
+      <!-- Twin Lab -->
       <button
         onclick={() => activeTab = 'twins'}
-        class="w-10 h-10 rounded-md flex flex-col items-center justify-center transition {activeTab === 'twins' ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-[0_0_10px_rgba(56,189,248,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'}"
-        title="2. Laboratório de Gêmeas A/B (T)"
+        class="w-11 h-11 rounded-xl flex flex-col items-center justify-center transition {activeTab === 'twins' ? 'bg-white text-emerald-800 shadow-sm border border-[#E0D8CA]' : 'text-slate-500 hover:text-slate-800 hover:bg-[#EAE4D8]'}"
+        title="Gêmeas A/B (T)"
       >
-        <Split size={17} />
-        <span class="text-[8px] font-mono mt-0.5 font-semibold">GÊMEAS</span>
+        <Split size={18} />
+        <span class="text-[8px] font-sans font-bold mt-0.5">Gêmeas</span>
       </button>
 
-      <!-- Taxonomy Map View -->
+      <!-- Taxonomy Map -->
       <button
         onclick={() => activeTab = 'concept'}
-        class="w-10 h-10 rounded-md flex flex-col items-center justify-center transition {activeTab === 'concept' ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-[0_0_10px_rgba(56,189,248,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'}"
-        title="3. Mapa de Domínio & Áreas (M)"
+        class="w-11 h-11 rounded-xl flex flex-col items-center justify-center transition {activeTab === 'concept' ? 'bg-white text-indigo-800 shadow-sm border border-[#E0D8CA]' : 'text-slate-500 hover:text-slate-800 hover:bg-[#EAE4D8]'}"
+        title="Mapa de Tópicos (M)"
       >
-        <LayoutGrid size={17} />
-        <span class="text-[8px] font-mono mt-0.5 font-semibold">MAPA</span>
+        <LayoutGrid size={18} />
+        <span class="text-[8px] font-sans font-bold mt-0.5">Mapa</span>
       </button>
 
-      <!-- Formula Sheet View -->
+      <!-- Formulas -->
       <button
         onclick={() => activeTab = 'formula'}
-        class="w-10 h-10 rounded-md flex flex-col items-center justify-center transition {activeTab === 'formula' ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-[0_0_10px_rgba(56,189,248,0.2)]' : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'}"
-        title="4. Formulário Oficial (F)"
+        class="w-11 h-11 rounded-xl flex flex-col items-center justify-center transition {activeTab === 'formula' ? 'bg-white text-amber-800 shadow-sm border border-[#E0D8CA]' : 'text-slate-500 hover:text-slate-800 hover:bg-[#EAE4D8]'}"
+        title="Formulário Oficial (F)"
       >
-        <FileText size={17} />
-        <span class="text-[8px] font-mono mt-0.5 font-semibold">FORM</span>
+        <FileText size={18} />
+        <span class="text-[8px] font-sans font-bold mt-0.5">Fórmulas</span>
       </button>
     </div>
 
-    <div class="w-7 h-px bg-white/10"></div>
+    <div class="w-8 h-px bg-[#E2D9CB]"></div>
 
-    <!-- Quick Area Filters Rail -->
-    <div class="flex flex-col items-center space-y-1 w-full px-2">
+    <!-- Quick Area Filters Pill Rail -->
+    <div class="flex flex-col items-center space-y-1.5 w-full px-2">
       <button
         onclick={() => { activeTab = 'practice'; selectedAreaFilter = 'All'; }}
-        class="w-9 h-7 rounded text-[10px] font-mono font-bold flex items-center justify-center transition {selectedAreaFilter === 'All' && activeTab === 'practice' ? 'bg-white text-slate-950 font-extrabold' : 'text-slate-400 hover:text-white hover:bg-white/5'}"
-        title="Todas as 6 Áreas"
+        class="w-10 h-7 rounded-lg text-[10px] font-mono font-bold flex items-center justify-center transition {selectedAreaFilter === 'All' && activeTab === 'practice' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-600 hover:bg-[#EAE4D8]'}"
+        title="Todas as Áreas"
       >
         ALL
       </button>
@@ -138,26 +137,25 @@
       {#each Object.entries(AREA_THEMES) as [areaName, theme]}
         <button
           onclick={() => { activeTab = 'practice'; selectedAreaFilter = areaName; }}
-          class="w-9 h-7 rounded text-[10px] font-mono font-bold flex items-center justify-center transition border {selectedAreaFilter === areaName && activeTab === 'practice' ? `${theme.badge} shadow-xs` : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5'}"
+          class="w-10 h-7 rounded-lg text-[10px] font-mono font-bold flex items-center justify-center transition border {selectedAreaFilter === areaName && activeTab === 'practice' ? `${theme.badge} shadow-xs font-extrabold ring-1 ring-slate-400` : 'border-transparent text-slate-600 hover:bg-[#EAE4D8]'}"
           title={theme.name}
-          style={selectedAreaFilter === areaName && activeTab === 'practice' ? `border-color: ${theme.accentHex}` : ''}
         >
-          <span style={`color: ${theme.accentHex}`}>{theme.code.toUpperCase()}</span>
+          {theme.code.toUpperCase()}
         </button>
       {/each}
     </div>
   </div>
 
-  <!-- Bottom Profile & Help Trigger -->
+  <!-- Bottom User Profile & Shortcuts Help -->
   <div class="flex flex-col items-center space-y-2 relative">
-    <!-- Profile Button & Popover -->
+    <!-- Profile Button -->
     <div class="relative">
       <button
         onclick={() => isProfileMenuOpen = !isProfileMenuOpen}
-        class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500 transition cursor-pointer"
-        title={`Perfil Ativo: ${profileStore.activeProfileName} (${totalSolved} dominadas)`}
+        class="w-10 h-10 rounded-full bg-white border border-[#DDD6C8] flex items-center justify-center text-slate-700 hover:text-slate-900 shadow-xs hover:scale-105 transition cursor-pointer"
+        title={`Perfil Ativo: ${profileStore.activeProfileName} (${totalSolved} resolvidas)`}
       >
-        <User size={15} />
+        <User size={17} />
       </button>
 
       {#if isProfileMenuOpen}
@@ -171,15 +169,15 @@
           onkeydown={(e) => { if (e.key === 'Escape') isProfileMenuOpen = false; }}
         ></button>
 
-        <!-- Menu Popover -->
-        <div class="absolute bottom-0 left-12 z-50 w-56 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl p-2.5 space-y-2 text-xs font-mono">
-          <div class="text-[10px] text-slate-400 uppercase font-bold px-1 flex items-center justify-between">
+        <!-- Menu Popover Card -->
+        <div class="absolute bottom-0 left-14 z-50 w-60 bg-white border border-[#DDD6C8] rounded-xl shadow-xl p-3 space-y-2.5 text-xs font-sans">
+          <div class="text-[10px] text-slate-500 uppercase font-bold px-1 flex items-center justify-between">
             <span>Perfil de Estudo</span>
-            <span class="text-emerald-400">{totalSolved} Dominadas</span>
+            <span class="text-emerald-700 font-semibold">{totalSolved} Dominadas</span>
           </div>
 
           <select
-            class="w-full bg-slate-950 border border-slate-700 rounded p-1 text-slate-200 text-xs focus:outline-none"
+            class="w-full bg-[#FAF8F5] border border-[#DDD6C8] rounded-lg p-2 text-slate-800 text-xs font-semibold focus:outline-none"
             value={profileStore.activeProfileName}
             onchange={(e) => { profileStore.switchProfile((e.target as HTMLSelectElement).value); isProfileMenuOpen = false; }}
           >
@@ -188,26 +186,26 @@
             {/each}
           </select>
 
-          <div class="grid grid-cols-2 gap-1 pt-1 border-t border-slate-800">
+          <div class="grid grid-cols-2 gap-1.5 pt-1 border-t border-slate-100">
             <button
               onclick={handleCreateProfile}
-              class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded flex items-center justify-center gap-1 text-[11px] transition"
+              class="p-2 bg-[#FAF8F5] hover:bg-[#F2ECE0] text-slate-700 rounded-lg flex items-center justify-center gap-1 text-[11px] font-medium transition"
             >
-              <UserPlus size={11} />
+              <UserPlus size={12} />
               <span>Novo</span>
             </button>
             <button
               onclick={handleExportProfile}
-              class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded flex items-center justify-center gap-1 text-[11px] transition"
+              class="p-2 bg-[#FAF8F5] hover:bg-[#F2ECE0] text-slate-700 rounded-lg flex items-center justify-center gap-1 text-[11px] font-medium transition"
             >
-              <Download size={11} />
+              <Download size={12} />
               <span>Exportar</span>
             </button>
           </div>
 
-          <label class="block p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-center text-[11px] cursor-pointer transition">
+          <label class="block p-2 bg-[#FAF8F5] hover:bg-[#F2ECE0] text-slate-700 rounded-lg text-center text-[11px] font-medium cursor-pointer transition">
             <span class="flex items-center justify-center gap-1">
-              <Upload size={11} />
+              <Upload size={12} />
               <span>Importar Perfil (.json)</span>
             </span>
             <input type="file" accept=".json" onchange={handleImportProfile} class="hidden" />
@@ -219,10 +217,10 @@
     <!-- Help (?) Modal Button -->
     <button
       onclick={onOpenHelp}
-      class="w-8 h-8 rounded text-slate-500 hover:text-slate-300 hover:bg-white/5 flex items-center justify-center transition"
-      title="Atalhos de Teclado Científicos (?)"
+      class="w-8 h-8 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-[#EAE4D8] flex items-center justify-center transition"
+      title="Atalhos de Teclado (?)"
     >
-      <HelpCircle size={15} />
+      <HelpCircle size={17} />
     </button>
   </div>
 </aside>

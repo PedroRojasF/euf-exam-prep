@@ -125,8 +125,8 @@
   }
 </script>
 
-<div class="h-screen w-screen overflow-hidden flex flex-row bg-[#080c14] text-slate-100 antialiased font-sans">
-  <!-- 1. Left Narrow Tool & Area Rail (56px) -->
+<div class="h-screen w-screen overflow-hidden flex flex-row bg-[#FBF9F5] text-slate-800 antialiased font-sans">
+  <!-- 1. Left Narrow Tool & Area Rail (64px) -->
   <SidebarRail
     {bankData}
     bind:activeTab
@@ -136,16 +136,16 @@
 
   <!-- 2. Main Workspace Dynamic Layout -->
   {#if isLoading}
-    <div class="flex-1 h-full flex flex-col items-center justify-center space-y-3 font-mono text-xs text-slate-400 bg-tech-grid">
-      <div class="w-9 h-9 border-2 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-      <div class="tracking-wider">INICIALIZANDO CONSOLE CIENTÍFICO EUF...</div>
+    <div class="flex-1 h-full flex flex-col items-center justify-center space-y-3 font-sans text-xs text-slate-500 bg-study-grid">
+      <div class="w-9 h-9 border-3 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="font-medium tracking-wide">Carregando banco de questões de física...</div>
     </div>
   {:else if loadError}
-    <div class="flex-1 h-full flex flex-col items-center justify-center p-8 text-center font-mono text-xs text-rose-400 bg-tech-grid">
-      <div class="p-6 rounded-lg bg-rose-950/40 border border-rose-500/30 max-w-md space-y-2">
-        <div class="font-bold text-sm text-rose-300">⚠️ Erro ao carregar questions.json:</div>
+    <div class="flex-1 h-full flex flex-col items-center justify-center p-8 text-center font-sans text-xs text-rose-800 bg-study-grid">
+      <div class="p-6 rounded-2xl bg-white border border-[#E5DFD4] shadow-sm max-w-md space-y-2">
+        <div class="font-bold text-sm text-rose-700">⚠️ Erro ao carregar banco:</div>
         <div>{loadError}</div>
-        <div class="text-[11px] text-slate-400 mt-2">Execute <code class="text-sky-300 bg-slate-900 px-1 py-0.5 rounded">python bank/exporter.py</code> para compilar o banco de dados.</div>
+        <div class="text-[11px] text-slate-500 mt-2">Execute <code class="text-slate-800 bg-slate-100 px-1.5 py-0.5 rounded font-mono">python bank/exporter.py</code> para exportar os dados.</div>
       </div>
     </div>
   {:else}

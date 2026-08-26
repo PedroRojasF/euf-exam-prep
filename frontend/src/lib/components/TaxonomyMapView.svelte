@@ -2,7 +2,7 @@
   import type { BankData } from '../types';
   import { profileStore } from '../storage.svelte';
   import { AREA_THEMES } from '../constants';
-  import { LayoutGrid, ChevronRight, CheckCircle2, Award, Zap } from 'lucide-svelte';
+  import { LayoutGrid, ChevronRight } from 'lucide-svelte';
 
   let {
     bankData,
@@ -37,19 +37,19 @@
   }
 </script>
 
-<div class="flex-1 h-full flex flex-col bg-[#0b101d] overflow-hidden">
+<div class="flex-1 h-full flex flex-col bg-[#FDFBF7] overflow-hidden">
   <!-- Map Header -->
-  <div class="px-6 py-3 bg-[#080d18] border-b border-white/8 flex items-center justify-between shrink-0 select-none">
+  <div class="px-6 py-3 bg-white border-b border-[#E8E2D8] flex items-center justify-between shrink-0 select-none shadow-2xs">
     <div class="flex items-center space-x-3">
-      <div class="p-1.5 rounded bg-sky-500/20 text-sky-400 border border-sky-500/30">
-        <LayoutGrid size={16} />
+      <div class="p-2 rounded-xl bg-[#f5f3ff] text-[#5b21b6] border border-[#ddd6fe]">
+        <LayoutGrid size={17} />
       </div>
       <div>
-        <h2 class="text-sm font-bold text-white font-mono flex items-center gap-2">
-          Taxonomia Oficial e Mapa de Conhecimento EUF
+        <h2 class="text-sm font-bold text-slate-900 font-sans flex items-center gap-2">
+          Taxonomia Oficial e Mapa de Domínio EUF
         </h2>
-        <p class="text-[11px] text-slate-500 font-mono">
-          Matriz de proficiência por área da física e subtópicos da pós-graduação.
+        <p class="text-[11px] text-slate-500 font-sans">
+          Acompanhe seu avanço percentual e clique em qualquer subtópico para treinar especificamente nele.
         </p>
       </div>
     </div>
@@ -57,57 +57,54 @@
 
   <!-- Content Grid -->
   {#if !bankData}
-    <div class="flex-1 flex items-center justify-center text-slate-500 font-mono text-xs">
+    <div class="flex-1 flex items-center justify-center text-slate-400 font-sans text-xs">
       Carregando mapa de conhecimento...
     </div>
   {:else}
-    <div class="flex-1 overflow-y-auto custom-scrollbar p-6 bg-tech-grid">
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-6 bg-study-grid">
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         {#each Object.entries(bankData.concept_tree) as [area, info]}
           {@const aStats = getAreaStats(area)}
           {@const theme = AREA_THEMES[area]}
 
-          <div class="rounded-lg bg-[#0e1526] border border-white/8 p-4 flex flex-col justify-between space-y-4 shadow-xl">
+          <div class="rounded-2xl bg-white border border-[#E5DFD4] p-5 flex flex-col justify-between space-y-4 shadow-xs">
             <div>
               <!-- Area Header -->
-              <div class="flex items-center justify-between pb-2.5 border-b border-white/8">
-                <span
-                  class="px-2.5 py-0.5 rounded text-xs font-mono font-bold border"
-                  style={theme ? `color: ${theme.accentHex}; border-color: ${theme.accentHex}40; background-color: ${theme.accentHex}15;` : ''}
-                >
+              <div class="flex items-center justify-between pb-3 border-b border-[#E8E2D8]">
+                <span class="px-2.5 py-1 rounded-lg text-xs font-sans font-bold border {theme?.badge || 'bg-slate-100 text-slate-800'}">
                   {area}
                 </span>
-                <span class="font-mono text-xs font-bold text-slate-200">
-                  {aStats.solved} / {aStats.total} <span class="text-slate-400 font-normal">({aStats.pct}%)</span>
+                <span class="font-sans text-xs font-bold text-slate-700">
+                  {aStats.solved} / {aStats.total} <span class="text-slate-500 font-normal">({aStats.pct}%)</span>
                 </span>
               </div>
 
               <!-- Mastery Bar -->
-              <div class="w-full bg-slate-900 rounded-full h-1.5 mt-2.5 overflow-hidden">
+              <div class="w-full bg-[#EAE4D8] rounded-full h-2 mt-3 overflow-hidden">
                 <div
                   class="h-full rounded-full transition-all duration-300"
-                  style="width: {aStats.pct}%; background-color: {theme?.accentHex || '#38bdf8'};"
+                  style="width: {aStats.pct}%; background-color: {theme?.accentHex || '#0284c7'};"
                 ></div>
               </div>
 
               <!-- Subtopics List -->
-              <div class="space-y-1 mt-4 max-h-[360px] overflow-y-auto custom-scrollbar pr-1 divide-y divide-white/4">
+              <div class="space-y-1 mt-4 max-h-[360px] overflow-y-auto custom-scrollbar pr-1 divide-y divide-[#EFE9DF]">
                 {#each info.subtopics as sub}
                   {@const sStats = getSubtopicStats(sub.name)}
                   <button
                     onclick={() => onFilterBySubtopic(area, sub.name)}
-                    class="w-full text-left py-2 px-1.5 rounded flex items-center justify-between hover:bg-white/5 transition group cursor-pointer"
+                    class="w-full text-left py-2.5 px-2 rounded-lg flex items-center justify-between hover:bg-[#FAF8F5] transition group cursor-pointer"
                   >
                     <div class="min-w-0 pr-2">
-                      <div class="text-xs text-slate-300 font-medium truncate group-hover:text-sky-300 font-sans">
+                      <div class="text-xs text-slate-700 font-medium truncate group-hover:text-sky-800 font-sans">
                         {sub.name}
                       </div>
                     </div>
                     <div class="shrink-0 flex items-center space-x-1.5 font-mono text-[10px]">
-                      <span class={sStats.pct === 100 ? 'text-emerald-400 font-bold' : 'text-slate-500'}>
+                      <span class={sStats.pct === 100 ? 'text-emerald-700 font-bold' : 'text-slate-500'}>
                         {sStats.solved}/{sStats.total}
                       </span>
-                      <ChevronRight size={12} class="text-slate-500 group-hover:text-sky-400" />
+                      <ChevronRight size={13} class="text-slate-400 group-hover:text-sky-700" />
                     </div>
                   </button>
                 {/each}

@@ -21,19 +21,19 @@
   });
 </script>
 
-<div class="flex-1 h-full flex flex-col bg-[#0b101d] overflow-hidden">
+<div class="flex-1 h-full flex flex-col bg-[#FDFBF7] overflow-hidden">
   <!-- Formula Header -->
-  <div class="px-6 py-3 bg-[#080d18] border-b border-white/8 flex flex-wrap items-center justify-between gap-3 shrink-0 select-none">
+  <div class="px-6 py-3 bg-white border-b border-[#E8E2D8] flex flex-wrap items-center justify-between gap-3 shrink-0 select-none shadow-2xs">
     <div class="flex items-center space-x-3">
-      <div class="p-1.5 rounded bg-sky-500/20 text-sky-400 border border-sky-500/30">
-        <FileText size={16} />
+      <div class="p-2 rounded-xl bg-[#fffbeb] text-[#92400e] border border-[#fde68a]">
+        <FileText size={17} />
       </div>
       <div>
-        <h2 class="text-sm font-bold text-white font-mono flex items-center gap-2">
+        <h2 class="text-sm font-bold text-slate-900 font-sans flex items-center gap-2">
           Formulário Oficial EUF (Tabela de Referência Rápida)
         </h2>
-        <p class="text-[11px] text-slate-500 font-mono">
-          Equações fundamentais e relações canônicas dos cadernos de prova oficiais.
+        <p class="text-[11px] text-slate-500 font-sans">
+          Relações canônicas e equações fornecidas nos cadernos oficiais de prova do Exame Unificado.
         </p>
       </div>
     </div>
@@ -43,30 +43,30 @@
       <input
         type="text"
         bind:value={searchQuery}
-        placeholder="Buscar fórmula (ex: Maxwell, Poisson, Carnot)..."
-        class="w-full text-xs bg-slate-950 text-slate-200 border border-white/10 rounded px-7 py-1.5 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono"
+        placeholder="Buscar fórmula (ex: Maxwell, Poisson)..."
+        class="w-full text-xs bg-[#FAF8F5] text-slate-800 border border-[#DDD6C8] rounded-lg pl-8 pr-3 py-1.5 placeholder-slate-400 focus:outline-none focus:border-sky-500 font-sans"
       />
-      <Search size={12} class="absolute left-2.5 top-2.5 text-slate-500" />
+      <Search size={13} class="absolute left-2.5 top-2.5 text-slate-400" />
     </div>
   </div>
 
   <!-- Equations Grid -->
-  <div class="flex-1 overflow-y-auto custom-scrollbar p-6 bg-tech-grid">
+  <div class="flex-1 overflow-y-auto custom-scrollbar p-6 bg-study-grid">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
       {#each filteredCategories() as cat}
-        <div class="rounded-lg bg-[#0e1526] border border-white/8 p-4 space-y-3 shadow-xl">
-          <h3 class="text-xs font-mono font-bold text-sky-300 uppercase pb-2 border-b border-white/8 flex items-center justify-between">
+        <div class="rounded-2xl bg-white border border-[#E5DFD4] p-5 space-y-3 shadow-xs">
+          <h3 class="text-xs font-sans font-bold text-slate-900 uppercase pb-2 border-b border-[#E8E2D8] flex items-center justify-between">
             <span>{cat.category}</span>
-            <span class="text-[10px] text-slate-500 font-normal">{cat.formulas.length} equações</span>
+            <span class="text-[11px] text-slate-400 font-normal">{cat.formulas.length} equações</span>
           </h3>
 
-          <div class="space-y-2.5">
+          <div class="space-y-3">
             {#each cat.formulas as f}
-              <div class="p-3 bg-slate-950/80 border border-white/6 rounded-md space-y-1">
-                <div class="text-[11px] font-mono font-semibold text-slate-400">
+              <div class="p-3.5 bg-[#FAF8F5] border border-[#E8E2D8] rounded-xl space-y-1 shadow-2xs">
+                <div class="text-[11px] font-sans font-bold text-slate-600">
                   {f.name}:
                 </div>
-                <div class="text-xs text-white overflow-x-auto py-1" use:mathAction={`$$${f.eq}$$`}></div>
+                <div class="text-xs text-slate-900 overflow-x-auto py-1" use:mathAction={`$$${f.eq}$$`}></div>
               </div>
             {/each}
           </div>
