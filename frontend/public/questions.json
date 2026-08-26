@@ -1,0 +1,125 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-08-26T17:55:00Z",
+  "stats": {
+    "total_questions": 4,
+    "total_pairs": 2,
+    "total_exams": 2,
+    "areas_count": 4
+  },
+  "exams": [
+    {
+      "id": "2026-1",
+      "year": 2026,
+      "semester": 1,
+      "total_questions": 80
+    },
+    {
+      "id": "2025-2",
+      "year": 2025,
+      "semester": 2,
+      "total_questions": 80
+    }
+  ],
+  "concept_tree": {
+    "Mecânica Clássica": {
+      "total": 1,
+      "subtopics": [
+        {
+          "name": "Lagrangian Mechanics & Generalized Coordinates",
+          "count": 1
+        }
+      ]
+    },
+    "Eletromagnetismo": {
+      "total": 1,
+      "subtopics": [
+        {
+          "name": "Poynting Vector & EM Wave Propagation",
+          "count": 1
+        }
+      ]
+    },
+    "Mecânica Quântica": {
+      "total": 1,
+      "subtopics": [
+        {
+          "name": "Harmonic Oscillator & Ladder Operators",
+          "count": 1
+        }
+      ]
+    },
+    "Termodinâmica": {
+      "total": 1,
+      "subtopics": [
+        {
+          "name": "Thermodynamic Potentials & Maxwell Relations",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "pairs": [
+    {
+      "exam_id": "2026-1",
+      "stem": "emPT1",
+      "area": "Eletromagnetismo",
+      "subtopic": "Poynting Vector & EM Wave Propagation",
+      "qid_a": "2026-1-emPT1a",
+      "qid_b": "2026-1-emPT1b",
+      "text_a": "Uma onda eletromagnética plana monocromática propaga-se no vácuo ao longo do eixo z com campo elétrico dado por E(z,t) = E_0 cos(kz - wt) x. Determine o vetor de Poynting médio temporal.",
+      "text_b": "Uma onda eletromagnética plana monocromática propaga-se em um meio dielétrico não-magnético de índice de refração n ao longo do eixo z com campo elétrico E(z,t) = E_0 cos(kz - wt) y. Determine a intensidade média.",
+      "diff": "Diferença: No caso A temos vácuo e polarização em x. No caso B temos meio dielétrico com índice n e polarização em y.",
+      "image_a": "images/2026-1-emPT1a.png",
+      "image_b": "images/2026-1-emPT1b.png"
+    }
+  ],
+  "questions": [
+    {
+      "id": "2026-1-emPT1a",
+      "exam_id": "2026-1",
+      "tag": "emPT1a",
+      "area": "Eletromagnetismo",
+      "subtopic": "Poynting Vector & EM Wave Propagation",
+      "question_type": "múltipla escolha",
+      "page": 5,
+      "has_image": true,
+      "text": "Uma onda eletromagnética plana monocromática propaga-se no vácuo ao longo do eixo $z$ com campo elétrico $\\vec{E}(z,t) = E_0 \\cos(kz - \\omega t)\\hat{x}$.",
+      "flag": null,
+      "errata": null,
+      "image": "images/2026-1-emPT1a.png",
+      "clues": {
+        "title": "Poynting Vector & EM Wave Propagation",
+        "level1": "O vetor de Poynting instantâneo é dado por $\\vec{S} = \\frac{1}{\\mu_0}(\\vec{E} \\times \\vec{B})$. A intensidade média temporal é $\\langle S \\rangle = \\frac{1}{2\\mu_0 c} E_0^2$.",
+        "level2": "O campo magnético associado no vácuo possui amplitude $B_0 = E_0 / c$ e aponta na direção ortogonal de propagação $\\hat{k} \\times \\hat{E} = \\hat{z} \\times \\hat{x} = \\hat{y}$.",
+        "level3": "A média temporal da função quadrática $\\langle \\cos^2(kz - \\omega t) \\rangle = \\frac{1}{2}$.",
+        "level4": "Atenção com as unidades de $\\mu_0$ e $c$: lembre-se que $c = 1/\\sqrt{\\mu_0 \\varepsilon_0}$."
+      },
+      "twin_id": "2026-1-emPT1b",
+      "twin_stem": "emPT1"
+    },
+    {
+      "id": "2026-1-emPT1b",
+      "exam_id": "2026-1",
+      "tag": "emPT1b",
+      "area": "Eletromagnetismo",
+      "subtopic": "Poynting Vector & EM Wave Propagation",
+      "question_type": "múltipla escolha",
+      "page": 5,
+      "has_image": true,
+      "text": "Uma onda eletromagnética plana monocromática propaga-se em um dielétrico.",
+      "flag": null,
+      "errata": null,
+      "image": "images/2026-1-emPT1b.png",
+      "clues": {
+        "title": "Poynting Vector & EM Wave Propagation",
+        "level1": "Em um meio dielétrico de índice de refração $n$, a velocidade de propagação é $v = c/n$.",
+        "level2": "A amplitude do campo magnético passa a ser $B_0 = \\frac{n}{c} E_0$.",
+        "level3": "A intensidade média temporal transmitida no meio é $I = \\frac{1}{2} n \\varepsilon_0 c E_0^2$.",
+        "level4": "Cuidado para não usar a permissividade do vácuo $\\varepsilon_0$ sem o fator dielétrico $\\varepsilon = n^2 \\varepsilon_0$."
+      },
+      "twin_id": "2026-1-emPT1a",
+      "twin_stem": "emPT1"
+    }
+  ]
+}
