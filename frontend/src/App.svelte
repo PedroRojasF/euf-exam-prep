@@ -5,7 +5,6 @@
   import SidebarRail from './lib/components/SidebarRail.svelte';
   import QuestionExplorer from './lib/components/QuestionExplorer.svelte';
   import ProblemCanvas from './lib/components/ProblemCanvas.svelte';
-  import InspectorTray from './lib/components/InspectorTray.svelte';
   import TwinLabView from './lib/components/TwinLabView.svelte';
   import TaxonomyMapView from './lib/components/TaxonomyMapView.svelte';
   import FormulaSheet from './lib/components/FormulaSheet.svelte';
@@ -22,7 +21,6 @@
   // References to child components
   let explorerComponent = $state<any>(null);
   let canvasComponent = $state<any>(null);
-  let inspectorComponent = $state<any>(null);
 
   onMount(async () => {
     try {
@@ -88,7 +86,7 @@
       }
     } else if (['1', '2', '3', '4'].includes(key)) {
       e.preventDefault();
-      inspectorComponent?.toggleClueByLevel(parseInt(key, 10));
+      canvasComponent?.toggleClueByLevel(parseInt(key, 10));
     } else if (key === 'p') {
       e.preventDefault();
       activeTab = 'practice';
@@ -150,9 +148,9 @@
     </div>
   {:else}
     {#if activeTab === 'practice'}
-      <!-- 3-Pane Deliberate Practice Cockpit (Explorer + Master Canvas + Inspector) -->
+      <!-- 2-Pane Integrated Academic Workstation (Explorer + Expansive Dual Problem Canvas) -->
       <div class="flex-1 h-full flex flex-row overflow-hidden">
-        <!-- Pane 1: Question Explorer (Index & Filters) -->
+        <!-- Column 1: Question Explorer (320px) -->
         <QuestionExplorer
           bind:this={explorerComponent}
           {bankData}
@@ -161,18 +159,10 @@
           onSelectQuestion={handleSelectQuestion}
         />
 
-        <!-- Pane 2: Expansive Problem Canvas -->
+        <!-- Column 2: Expansive Problem Canvas & Study Companion -->
         <ProblemCanvas
           bind:this={canvasComponent}
           question={selectedQuestion}
-          onJumpToTwin={jumpToTwin}
-        />
-
-        <!-- Pane 3: Tabbed Socratic Inspector & Scratchpad -->
-        <InspectorTray
-          bind:this={inspectorComponent}
-          question={selectedQuestion}
-          {bankData}
           onJumpToTwin={jumpToTwin}
         />
       </div>
