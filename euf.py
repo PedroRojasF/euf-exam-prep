@@ -547,10 +547,10 @@ def cmd_export(args):
     if not out_path:
         out_path = os.path.join(BASE_DIR, "bank", "questions.json")
     export_bank_to_json(out_path)
-    # If EUF-web frontend public exists, copy there too
-    web_public_json = os.path.join(os.path.dirname(BASE_DIR), "EUF-web", "frontend", "public", "questions.json")
-    if os.path.exists(os.path.dirname(web_public_json)):
-        export_bank_to_json(web_public_json)
+    # Also sync directly to local frontend/public/questions.json if present
+    local_frontend_json = os.path.join(BASE_DIR, "frontend", "public", "questions.json")
+    if os.path.exists(os.path.dirname(local_frontend_json)):
+        export_bank_to_json(local_frontend_json)
 
 
 def main():
