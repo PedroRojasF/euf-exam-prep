@@ -11,6 +11,7 @@ import random
 import pymupdf
 from bank.differ import find_twin_pair, list_all_pairs, format_inline_diff, get_twin_stem
 from bank.ingest import ingest_pdf, sync_workspace
+from bank.exporter import export_bank_to_json
 
 # Set standard output encoding to UTF-8
 if sys.platform == "win32":
@@ -493,12 +494,63 @@ def cmd_mark(args):
     conn.close()
 
 
+def cmd_diff(args):
+    conn = get_db()
+    pair_data = find_twin_pair(conn, args.question_id)
+    if not pair_data or 'a' not in pair_data or 'b' not in pair_data:
+        print(f"Error: Could not find complete twin pair for '{args.question_id}'.")
+        conn.close()
+        return
+
+    q_a = pair_data['a']
+    q_b = pair_data['b']
+    print("\n" + "=" * 70)
+    print(f"🧬 TWIN A/B VARIANT COMPARISON: {q_a[0]} vs {q_b[0]}")
+    print(f"📚 Area: {q_a[6]} | Subtopic: {q_a[7]}")
+    print("=" * 70)
+    diff_output = format_inline_diff(q_a[3], q_b[3])
+    print(diff_output)
+    print("=" * 70 + "\n")
+    conn.close()
+
+
+def cmd_pair(args):
+    conn = get_db()
+    pair_data = find_twin_pair(conn, args.stem_or_id)
+    if not pair_data or ('a' not in pair_data and 'b' not in pair_data):
+        print(f"Error: No twin pair found for '{args.stem_or_id}'.")
+        conn.close()
+        return
+
+    print("\n" + "=" * 70)
+    print(f"🧬 TWIN PAIR DETAILS: {args.stem_or_id}")
+    print("=" * 70)
+    for variant in ['a', 'b']:
+        if variant in pair_data:
+            q = pair_data[variant]
+            print(f"\n--- Variant {variant.upper()} [{q[0]}] (Page {q[4]}) ---")
+            print(q[3])
+    print("=" * 70 + "\n")
+    conn.close()
+
+
 def cmd_ingest(args):
     ingest_pdf(args.pdf_path)
 
 
 def cmd_sync(args):
     sync_workspace()
+
+
+def cmd_export(args):
+    out_path = args.output
+    if not out_path:
+        out_path = os.path.join(BASE_DIR, "bank", "questions.json")
+    export_bank_to_json(out_path)
+    # If EUF-web frontend public exists, copy there too
+    web_public_json = os.path.join(os.path.dirname(BASE_DIR), "EUF-web", "frontend", "public", "questions.json")
+    if os.path.exists(os.path.dirname(web_public_json)):
+        export_bank_to_json(web_public_json)
 
 
 def main():
@@ -514,6 +566,10 @@ def main():
     # web
     p_web = subparsers.add_parser("web", help="Launch the dedicated zero-install web workspace")
     p_web.add_argument("-p", "--port", type=int, default=8000, help="Port to serve on (default: 8000)")
+
+    # export
+    p_exp = subparsers.add_parser("export", help="Export static questions.json for Svelte/Cloudflare web app")
+    p_exp.add_argument("-o", "--output", help="Custom output path for questions.json")
 
     # audit
     subparsers.add_parser("audit", help="Run automated quality assurance audit across all 988 questions")
@@ -544,6 +600,14 @@ def main():
     # show
     p_show = subparsers.add_parser("show", help="Show full statement of a question")
     p_show.add_argument("question_id", help="Question ID (e.g. 2025-1-mcPT1a, 2016-1-Q01)")
+
+    # diff
+    p_diff = subparsers.add_parser("diff", help="Compare differences between Twin Variants A and B")
+    p_diff.add_argument("question_id", help="Question ID or stem (e.g. 2025-1-mcPT1a)")
+
+    # pair
+    p_pair = subparsers.add_parser("pair", help="Inspect twin pair variants A and B")
+    p_pair.add_argument("stem_or_id", help="Question stem or ID (e.g. 2025-1-mcPT1)")
 
     # render
     p_render = subparsers.add_parser("render", help="Render PDF page of question to high-res PNG")
@@ -576,6 +640,7 @@ def main():
     commands = {
         "stats": cmd_stats,
         "progress": cmd_progress,
+        "export": cmd_export,
         "web": cmd_web,
         "audit": cmd_audit,
         "ingest": cmd_ingest,
@@ -583,6 +648,8 @@ def main():
         "flag": cmd_flag,
         "list": cmd_list,
         "show": cmd_show,
+        "diff": cmd_diff,
+        "pair": cmd_pair,
         "render": cmd_render,
         "search": cmd_search,
         "practice": cmd_practice,

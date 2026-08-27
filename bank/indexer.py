@@ -54,50 +54,86 @@ STANDARD_80_TAGS = [
 ]
 
 SUBTOPIC_RULES = {
-    "Mecânica Clássica": [
-        ("Lagrangian Mechanics & Constraints", [r"lagrang", r"graus de liberdade", r"coordenadas generalizadas", r"v[íi]nculo", r"multiplicador"]),
-        ("Hamiltonian Mechanics & Phase Space", [r"hamilton", r"espa[çc]o de fase", r"can[ôo]nic", r"poisson"]),
-        ("Central Forces & Kepler Orbits", [r"for[çc]a central", r"potencial efetivo", r"kepler", r"[óo]rbita", r"momento angular", r"gravita[çc]", r"apogeu", r"perigeu", r"sat[ée]lite"]),
-        ("Rigid Body & Rotational Dynamics", [r"corpo r[íi]gido", r"momento de in[ée]rcia", r"tensor de in[ée]rcia", r"rolamento", r"torque", r"disco", r"cilindro", r"esfera", r"pi[ãa]o"]),
-        ("Small Oscillations & Normal Modes", [r"modos normais", r"pequenas oscila[çc]", r"frequ[êe]ncias pr[óo]prias", r"matriz.*acoplamento", r"p[êe]ndulo acoplado", r"resson[âa]ncia", r"oscilador"]),
-        ("Collisions & Momentum Conservation", [r"colis[ãa]o", r"conserva[çc][ãa]o do momento", r"centro de massa", r"impulso", r"proj[ée]til", r"choque", r"massa vari[áa]vel", r"corda.*puxada"]),
-        ("Newtonian Dynamics & Energy", [r"newton", r"energia mec[âa]nica", r"atrito", r"trabalho", r"plano inclinado", r"acelera[çc][ãa]o"]),
+    'Eletromagnetismo': [
+        ('Vector Calculus & Field Operators', [r'campo vetorial', r'rotacional', r'divergente', r'gradiente', r'teorema de stokes', r'teorema da diverg', r'nabla', r'laplaciano', r'g\(x,y\)']),
+        ('EM Wave Polarization & Malus\'s Law', [r'polariza[çc][ãa]o', r'malus', r'polarizador', r'n[ãa]o polarizada', r'birrefring', r'placa de onda', r'luz polarizada', r'polarizado']),
+        ('Poynting Vector & EM Wave Propagation', [r'poynting', r'onda plana', r'ondas eletromagn', r'radia[çc][ãa]o eletromagn', r'vetor de onda', r'press[ãa]o de radia[çc]', r'intensidade da onda', r'velocidade da luz', r'meio n[ãa]o dispersivo', r'imped[âa]ncia', r'onda monocrom', r'monocrom[áa]tica', r'onda']),
+        ('Maxwell Equations & Displacement Current', [r'maxwell', r'corrente de deslocamento', r'equa[çc][õo]es de maxwell', r'conserva[çc][ãa]o da carga', r'equa[çc][ãa]o da continuidade']),
+        ('Faraday\'s Law, Motional EMF & Inductance', [r'faraday', r'fem induzida', r'for[çc]a eletromotriz induzida', r'for[çc]a eletromotriz', r'indut[âa]ncia', r'indutor', r'auto-indut', r'indut[âa]ncia m[úu]tua', r'fluxo magn[ée]tico', r'lei de lenz', r'espira.*gira', r'trilho condutor', r'corrente induzida', r'duas espiras', r'espiras concentricas', r'espiras']),
+        ('Capacitors & Dielectric Media', [r'diel[ée]tric', r'polariza[çc][ãa]o', r'vetor d', r'permissividade', r'capacitor', r'capacit[âa]ncia', r'energia eletrost[áa]tica']),
+        ('Conductors, Cavities & Electrostatic Shielding', [r'cavidade', r'blindagem', r'condutor maci[çc]o', r'casca condutora', r'esfera condutora', r'terra', r'aterrad', r'condutor']),
+        ('Boundary Value Problems & Method of Images', [r'm[ée]todo das imagens', r'condi[çc][õo]es de contorno', r'laplace', r'poisson', r'potencial eletrost[áa]tico', r'harm[ôo]nicos esf[ée]ricos', r'potencial.*v\(r', r'solu[çc][ãa]o de laplace']),
+        ('Lorentz Force & Particle Trajectories in EM Fields', [r'lorentz', r'raio de larmor', r'ciclotron', r'campo magn[ée]tico.*part[íi]cula', r'part[íi]cula.*carga.*massa', r'trajet[óo]ria.*campo', r'for[çc]a magn[ée]tica', r'el[ée]tron.*lan[çc]ado', r'acelerad.*campo']),
+        ('Continuous Charge Distributions & Electric Potentials', [r'anel.*carregado', r'anel', r'disco.*carregado', r'fio.*carregado', r'linha de carga', r'distribui[çc][ãa]o de carga', r'densidade superficial de carga', r'densidade volum[ée]trica de carga', r'densidade linear de carga', r'potencial el[ée]trico', r'campo el[ée]trico', r'carga.*raio', r'carga']),
+        ('Gauss\'s Law & Electric Flux', [r'lei de gauss', r'gauss', r'fluxo el[ée]trico', r'superf[íi]cie gaussiana', r'esfera n[ãa]o-condutora', r'cilindro infinito', r'plano infinito']),
+        ('Biot-Savart Law & Magnetic Fields of Currents', [r'biot-savart', r'espira circular', r'espira', r'fio reto', r'segmento.*fio', r'solenoide', r'toroide', r'campo b', r'campo magn[ée]tico.*eixo', r'campo magn[ée]tico', r'fio']),
+        ('Ampère\'s Law & Current Distributions', [r'lei de amp[èe]re', r'amp[èe]re', r'densidade de corrente', r'cilindros coaxiais', r'cabo coaxial', r'corrente estacion[áa]ria', r'circula[çc][ãa]o']),
+        ('Magnetic Dipoles, Forces & Magnetic Media', [r'dipolo magn[ée]tico', r'torque magn[ée]tico', r'momento magn[ée]tico', r'magnetiza[çc][ãa]o', r'vetor h', r'susceptibilidade magn[ée]tica', r'permeabilidade']),
+        ('DC Circuits, Resistors & Joule Heating', [r'resistor', r'resist[êe]ncia', r'bateria', r'fem', r'circuito', r'joule', r'lei de ohm', r'resistividade', r'pot[êe]ncia dissipada', r'corrente']),
+        ('Electric Dipoles & Multipole Expansion', [r'dipolo el[ée]trico', r'expans[ãa]o multipolar', r'momento de dipolo', r'quadrupolo', r'dipolo']),
     ],
-    "Eletromagnetismo": [
-        ("Electrostatics & Boundary Value Problems", [r"laplace", r"poisson", r"m[ée]todo das imagens", r"condi[çc][õo]es de contorno", r"potencial eletrost[áa]tico", r"esfera condutora", r"lei de gauss", r"carga.*anel", r"casca esf[ée]rica", r"campo el[ée]trico", r"densidade de carga", r"potencial el[ée]trico", r"distribui[çc][ãa]o de carga"]),
-        ("Capacitors & Dielectric Media", [r"diel[ée]tric", r"polariza[çc][ãa]o", r"vetor d", r"permissividade", r"capacitor", r"capacit[âa]ncia", r"energia eletrost[áa]tica"]),
-        ("Magnetostatics & Magnetic Fields", [r"biot-savart", r"potencial vetor", r"magnetiza[çc][ãa]o", r"campo h", r"solenoide", r"torque magn[ée]tico", r"lei de amp[èe]re", r"campo magn[ée]tico", r"espira", r"corrente estacion[áa]ria"]),
-        ("Electromagnetic Induction & Faraday", [r"faraday", r"fem induzida", r"indut[âa]ncia", r"corrente induzida", r"fluxo magn[ée]tico", r"lei de lenz"]),
-        ("Maxwell Equations & EM Waves", [r"poynting", r"ondas eletromagn[ée]ticas", r"equa[çc][õo]es de maxwell", r"radia[çc][ãa]o", r"polariza[çc][ãa]o da luz", r"fresnel", r"vetor de onda", r"velocidade da luz", r"vácuo"]),
-        ("Electromagnetic Radiation & Dipoles", [r"radia[çc][ãa]o dipolar", r"potenciais retardados", r"larmor", r"antena", r"dipolo"]),
+    'Mecânica Clássica': [
+        ('Lagrangian Mechanics & Generalized Coordinates', [r'lagrang', r'graus de liberdade', r'coordenadas generalizadas', r'v[íi]nculo', r'multiplicador', r'cano', r'vínculo']),
+        ('Hamiltonian Mechanics & Phase Space Dynamics', [r'hamilton', r'espa[çc]o de fase', r'can[ôo]nic', r'poisson', r'momento conjugado']),
+        ('Central Forces, Kepler Orbits & Effective Potential', [r'for[çc]a central', r'potencial efetivo', r'kepler', r'[óo]rbita', r'momento angular', r'gravita[çc]', r'apogeu', r'perigeu', r'sat[ée]lite', r'corpo celeste', r'sol', r'elipse']),
+        ('Rigid Body Dynamics & Moments of Inertia', [r'corpo r[íi]gido', r'momento de in[ée]rcia', r'tensor de in[ée]rcia', r'rolamento', r'torque', r'disco', r'cilindro', r'esfera', r'pi[ãa]o', r'barra', r'equilibrista']),
+        ('Small Oscillations, Coupled Systems & Normal Modes', [r'modos normais', r'pequenas oscila[çc]', r'frequ[êe]ncias pr[óo]prias', r'matriz.*acoplamento', r'p[êe]ndulo acoplado', r'resson[âa]ncia', r'oscilador', r'mola', r'p[êe]ndulo', r'part[íi]culas acopladas']),
+        ('Collisions, Momentum Conservation & Variable Mass', [r'colis[ãa]o', r'conserva[çc][ãa]o do momento', r'centro de massa', r'impulso', r'proj[ée]til', r'choque', r'massa vari[áa]vel', r'corda.*puxada', r'foguete']),
+        ('Work-Energy Theorem & 1D Potential Dynamics', [r'potencial unidimensional', r'conserva[çc][ãa]o da energia', r'energia potencial', r'curva de potencial', r'energia mec[âa]nica', r'trabalho realizado', r'ponto de retorno', r'deforma[çc][ãa]o.*mola']),
+        ('Newtonian Dynamics & Non-Inertial Frames', [r'newton', r'acelera[çc][ãa]o', r'atrito', r'plano inclinado', r'for[çc]a de coriolis', r'centr[íi]fuga', r'referencial n[ãa]o-inercial', r'curva.*estrada', r'velocidade.*movimento']),
     ],
-    "Mecânica Quântica": [
-        ("Harmonic Oscillator & Ladder Operators", [r"operador de cria[çc][ãa]o", r"operador de aniquila[çc][ãa]o", r"a\^?\†|a\^\+", r"oscilador harm[ôo]nico", r"n[íi]veis de energia.*oscilador", r"potencial harm[ôo]nico"]),
-        ("Dirac Formalism & Hilbert Space", [r"comutador", r"incerteza", r"postulado", r"produto interno", r"autovetor", r"autovalor", r"hermitian", r"bra-ket", r"projetor", r"observ[áa]vel", r"base ortonormal", r"notação de dirac", r"matriz hamiltoniana"]),
-        ("Potential Wells & Tunneling", [r"po[çc]o", r"tunelamento", r"barreira de potencial", r"transmiss[ãa]o", r"reflex[ãa]o", r"fun[çc][ãa]o de onda", r"degrau de potencial", r"coeficiente"]),
-        ("Angular Momentum & Spin Algebra", [r"spin", r"pauli", r"clebsch-gordan", r"j_z|s_z|l_z|j\^2|s\^2", r"adi[çc][ãa]o de momento", r"harm[ôo]nicos esf[ée]ricos", r"matriz.*spin", r"momento angular"]),
-        ("Perturbation Theory & Approximations", [r"perturba[çc][ãa]o", r"primeira ordem", r"segunda ordem", r"hamiltoniano perturbado", r"stark", r"zeeman", r"wkb", r"variacional", r"corre[çc][ãa]o"]),
-        ("Hydrogen Atom & Central Potentials", [r"hidrog[êe]nio", r"raio de bohr", r"orbital", r"n[úu]meros qu[âa]nticos", r"potencial coulombiano", r"raio.*bohr"]),
-        ("Identical Particles & Multi-State Systems", [r"b[óo]son", r"f[ée]rmion", r"exclus[ãa]o", r"anti-sim[ée]trica", r"part[íi]culas id[êe]nticas", r"pauli.*princ[íi]pio"]),
+    'Mecânica Quântica': [
+        ('Harmonic Oscillator & Ladder Operators', [r'operador de cria[çc][ãa]o', r'operador de aniquila[çc][ãa]o', r'a\^?\†|a\^\+', r'oscilador harm[ôo]nico', r'n[íi]veis de energia.*oscilador', r'potencial harm[ôo]nico', r'polin[ôo]mios de hermite']),
+        ('Dirac Formalism, State Vectors & Hilbert Space', [r'comutador', r'incerteza', r'postulado', r'produto interno', r'autovetor', r'autovalor', r'hermitian', r'bra-ket', r'projetor', r'observ[áa]vel', r'base ortonormal', r'notação de dirac', r'matriz hamiltoniana', r'valor esperado', r'fun[çc][ãa]o de onda normalizada']),
+        ('1D Potential Wells, Barriers & Quantum Tunneling', [r'po[çc]o', r'tunelamento', r'barreira de potencial', r'transmiss[ãa]o', r'reflex[ãa]o', r'degrau de potencial', r'potencial delta', r'fun[çc][ãa]o de onda.*part[íi]cula', r'potencial unidimensional']),
+        ('Angular Momentum, Spin Algebra & Addition of Momenta', [r'spin', r'pauli', r'clebsch-gordan', r'j_z|s_z|l_z|j\^2|s\^2', r'adi[çc][ãa]o de momento', r'harm[ôo]nicos esf[ée]ricos', r'matriz.*spin', r'momento angular', r'stern-gerlach']),
+        ('Perturbation Theory & Approximation Methods', [r'perturba[çc][ãa]o', r'primeira ordem', r'segunda ordem', r'hamiltoniano perturbado', r'stark', r'zeeman', r'wkb', r'variacional', r'corre[çc][ãa]o de energia']),
+        ('Hydrogen Atom & Central Potentials', [r'hidrog[êe]nio', r'raio de bohr', r'orbital', r'n[úu]meros qu[âa]nticos', r'potencial coulombiano', r'átomo muônico']),
+        ('Identical Particles, Bosons/Fermions & Symmetry', [r'b[óo]son', r'f[ée]rmion', r'exclus[ãa]o', r'anti-sim[ée]trica', r'part[íi]culas id[êe]nticas', r'pauli.*princ[íi]pio', r'degeneresc[êe]ncia']),
     ],
-    "Termodinâmica": [
-        ("1st & 2nd Laws / Thermodynamic Cycles", [r"carnot", r"rendimento", r"ciclo", r"adiab[áa]tic", r"isot[ée]rmic", r"trabalho realizado", r"efici[êe]ncia", r"m[áa]quina t[ée]rmica"]),
-        ("Thermodynamic Potentials & Maxwell Relations", [r"maxwell.*rela[çc]", r"helmholtz", r"gibbs", r"entalpia", r"potencial qu[íi]mico", r"energia livre"]),
-        ("Ideal & Real Gases", [r"g[áa]s ideal", r"van der waals", r"calor espec[íi]fico", r"equa[çc][ãa]o de estado", r"press[ãa]o", r"volume", r"g[áa]s monoat[ôo]mico"]),
-        ("Phase Transitions & Entropy", [r"transi[çc][ãa]o de fase", r"clapeyron", r"calor latente", r"entropia", r"equil[íi]brio t[ée]rmico"]),
+    'Termodinâmica': [
+        ('1st & 2nd Laws / Thermodynamic Cycles', [r'carnot', r'rendimento', r'ciclo', r'adiab[áa]tic', r'isot[ée]rmic', r'trabalho realizado', r'efici[êe]ncia', r'm[áa]quina t[ée]rmica', r'otto', r'diesel']),
+        ('Thermodynamic Potentials & Maxwell Relations', [r'maxwell.*rela[çc]', r'helmholtz', r'gibbs', r'entalpia', r'potencial qu[íi]mico', r'energia livre', r'rela[çc][õo]es de maxwell']),
+        ('Ideal & Real Gases (Equation of State)', [r'g[áa]s ideal', r'van der waals', r'calor espec[íi]fico', r'equa[çc][ãa]o de estado', r'press[ãa]o', r'volume', r'g[áa]s monoat[ôo]mico', r'expans[ãa]o livre', r'joule-thomson']),
+        ('Phase Transitions & Clausius-Clapeyron', [r'transi[çc][ãa]o de fase', r'clapeyron', r'clausius', r'calor latente', r'ponto triplo', r'vaporiza[çc][ãa]o', r'fus[ãa]o']),
+        ('Calorimetry, Heat Capacities & Thermal Expansion', [r'calorimetria', r'capacidade t[ée]rmica', r'calor espec[íi]fico', r'dilata[çc][ãa]o t[ée]rmica', r'mistura', r'equil[íi]brio t[ée]rmico']),
+        ('Entropy Changes & Reversibility', [r'entropia', r'processo revers[íi]vel', r'irrevers[íi]vel', r'desordem', r'varia[çc][ãa]o de entropia']),
     ],
-    "Física Estatística": [
-        ("Canonical & Microcanonical Ensembles", [r"fun[çc][ãa]o de parti[çc][ãa]o", r"ensemble can[ôo]nico", r"boltzmann", r"microcan[ôo]nico", r"equi-parti[çc][ãa]o", r"energia m[ée]dia", r"distribui[çc][ãa]o"]),
-        ("Grand Canonical Ensemble", [r"grande can[ôo]nico", r"grande potencial", r"fugacidade", r"potencial qu[íi]mico"]),
-        ("Quantum Gases (Fermi-Dirac & Bose-Einstein)", [r"bose-einstein", r"fermi-dirac", r"energia de fermi", r"temperatura de fermi", r"condensa[çc][ãa]o", r"corpo negro", r"f[óo]tons.*g[áa]s", r"g[áa]s degenerado"]),
-        ("Spin Systems & Paramagnetism", [r"paramagnetismo", r"ising", r"magnetiza[çc][ãa]o m[ée]dia", r"susceptibilidade", r"curie", r"campo externo"]),
+    'Física Estatística': [
+        ('Canonical & Microcanonical Ensembles', [r'fun[çc][ãa]o de parti[çc][ãa]o', r'ensemble can[ôo]nico', r'boltzmann', r'microcan[ôo]nico', r'equi-parti[çc][ãa]o', r'energia m[ée]dia', r'distribui[çc][ãa]o de probabilidades', r'espa[çc]o de fase estat[íi]stico', r'densidade de estados']),
+        ('Grand Canonical Ensemble & Chemical Potential', [r'grande can[ôo]nico', r'grande potencial', r'fugacidade', r'potencial qu[íi]mico', r'flutua[çc][ãa]o do n[úu]mero de part[íi]culas']),
+        ('Quantum Gases (Fermi-Dirac & Degeneracy)', [r'fermi-dirac', r'energia de fermi', r'temperatura de fermi', r'g[áa]s degenerado', r'sommerfeld', r'gás de férmions']),
+        ('Quantum Gases (Bose-Einstein Condensation & Blackbody)', [r'bose-einstein', r'condensa[çc][ãa]o', r'corpo negro', r'f[óo]tons.*g[áa]s', r'f[óo]nons', r'debye', r'einstein.*calor', r'gás de bósons']),
+        ('Spin Systems, Paramagnetism & Ising Model', [r'paramagnetismo', r'ising', r'magnetiza[çc][ãa]o m[ée]dia', r'susceptibilidade', r'curie', r'campo externo', r'dipolos magn[ée]ticos.*rede']),
+        ('Two-Level Systems & Paramagnetic Entropy', [r'dois n[íi]veis', r'dois estados', r'temperatura negativa', r'entropia configuracional', r'n sistemas distingu', r'schottky']),
     ],
-    "Física Moderna": [
-        ("Special Relativity & Lorentz Transformations", [r"lorentz", r"contraction", r"dilata[çc][ãa]o", r"quadrivetor", r"energia relativ[íi]stica", r"doppler relativ[íi]stico", r"espa[çc]o-tempo", r"intervalo invariante", r"simultaneidade", r"massa de repouso"]),
-        ("Early Quantum & Thermal Radiation", [r"fotoel[ée]tric", r"compton", r"de broglie", r"f[óo]ton", r"radia[çc][ãa]o de corpo negro", r"lei de wien", r"planck"]),
-        ("Atomic Models & Quantum Phenomena", [r"bohr", r"franck-hertz", r"raios x", r"massa reduzida", r"espectro"]),
+    'Física Moderna': [
+        ('Special Relativity & Lorentz Transformations', [r'lorentz', r'contra[çc][ãa]o', r'dilata[çc][ãa]o', r'quadrivetor', r'energia relativ[íi]stica', r'doppler relativ[íi]stico', r'espa[çc]o-tempo', r'intervalo invariante', r'simultaneidade', r'massa de repouso', r'velocidade relativ']),
+        ('Relativistic Dynamics & Energy-Momentum', [r'bomba.*repouso', r'conservação do 4-momento', r'massa invariante', r'energia de repouso', r'quadrimomento', r'reação nuclear.*energia']),
+        ('Photoelectric Effect & Photon Interactions', [r'fotoel[ée]tric', r'fun[çc][ãa]o trabalho', r'frequ[êe]ncia de corte', r'potencial de corte', r'compton', r'f[óo]ton']),
+        ('Matter Waves & de Broglie Hypothesis', [r'de broglie', r'comprimento de onda.*broglie', r'difra[çc][ãa]o de el[ée]trons', r'onda de mat[ée]ria']),
+        ('Blackbody Radiation & Quantum Optics', [r'radia[çc][ãa]o de corpo negro', r'lei de wien', r'planck', r'stefan-boltzmann', r'cavidade radiante']),
+        ('Atomic Models (Bohr, Rydberg & Franck-Hertz)', [r'bohr', r'franck-hertz', r'raios x', r'massa reduzida', r'espectro', r's[ée]rie de lyman', r'balmer', r'n[íi]veis at[ôo]micos']),
+        ('Nuclear Physics & Radioactive Decay', [r'decaimento', r'meia-vida', r'radioativid', r'atividade', r'radia[çc][ãa]o alfa', r'beta', r'gama', r'fus[ãa]o', r'fiss[ãa]o']),
     ]
 }
+
+
+def classify_subtopic(area, text):
+    text_clean = text.lower()
+    rules = SUBTOPIC_RULES.get(area, [])
+    for sub_name, patterns in rules:
+        if any(re.search(p, text_clean) for p in patterns):
+            return sub_name
+    default_subtopics = {
+        'Eletromagnetismo': 'Continuous Charge Distributions & Electric Potentials',
+        'Mecânica Clássica': 'Newtonian Dynamics & Non-Inertial Frames',
+        'Mecânica Quântica': 'Dirac Formalism, State Vectors & Hilbert Space',
+        'Termodinâmica': '1st & 2nd Laws / Thermodynamic Cycles',
+        'Física Estatística': 'Canonical & Microcanonical Ensembles',
+        'Física Moderna': 'Photoelectric Effect & Photon Interactions',
+    }
+    return default_subtopics.get(area, 'Advanced Physics Topics')
 
 
 def is_garbled(text):
