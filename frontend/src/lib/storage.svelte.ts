@@ -1,10 +1,13 @@
 import type { QuestionStatus, QuestionUserState, UserProfile } from './types';
+import { type Language, DICTIONARY, type Translations } from './i18n';
 
 const ACTIVE_PROFILE_KEY = 'euf_active_profile';
 const PROFILE_PREFIX = 'euf_profile_';
 const PROFILES_LIST_KEY = 'euf_profiles_index';
+const THEME_KEY = 'euf_app_theme';
+const LANG_KEY = 'euf_app_lang';
 
-export class ProfileStore {
+export class AppStore {
   activeProfileName = $state<string>('candidato_padrao');
   profilesList = $state<string[]>(['candidato_padrao']);
   currentProfileData = $state<UserProfile>({
@@ -12,6 +15,10 @@ export class ProfileStore {
     created_at: new Date().toISOString(),
     questions: {}
   });
+
+  // Theme & Language State
+  theme = $state<'light' | 'dark'>('light');
+  lang = $state<Language>('pt');
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -21,6 +28,28 @@ export class ProfileStore {
 
   private init() {
     try {
+      // 1. Init Theme
+      const savedTheme = localStorage.getItem(THEME_KEY) as 'light' | 'dark' | null;
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        this.theme = savedTheme;
+      } else {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        this.theme = prefersDark ? 'dark' : 'light';
+      }
+      this.applyThemeClass();
+
+      // 2. Init Language
+      const savedLang = localStorage.getItem(LANG_KEY) as Language | null;
+      if (savedLang && ['pt', 'es', 'en'].includes(savedLang)) {
+        this.lang = savedLang;
+      } else {
+        const browserLang = navigator.language.slice(0, 2);
+        if (browserLang === 'es') this.lang = 'es';
+        else if (browserLang === 'en') this.lang = 'en';
+        else this.lang = 'pt';
+      }
+
+      // 3. Init Profiles
       const storedList = localStorage.getItem(PROFILES_LIST_KEY);
       if (storedList) {
         this.profilesList = JSON.parse(storedList);
@@ -38,8 +67,40 @@ export class ProfileStore {
 
       this.loadActiveProfile();
     } catch (e) {
-      console.error('Error initializing ProfileStore from localStorage', e);
+      console.error('Error initializing AppStore from localStorage', e);
     }
+  }
+
+  toggleTheme() {
+    this.theme = this.theme === 'light' ? 'dark' : 'light';
+    localStorage.setItem(THEME_KEY, this.theme);
+    this.applyThemeClass();
+  }
+
+  setTheme(t: 'light' | 'dark') {
+    this.theme = t;
+    localStorage.setItem(THEME_KEY, t);
+    this.applyThemeClass();
+  }
+
+  private applyThemeClass() {
+    if (typeof document !== 'undefined') {
+      if (this.theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }
+
+  setLanguage(l: Language) {
+    this.lang = l;
+    localStorage.setItem(LANG_KEY, l);
+  }
+
+  t(key: keyof Translations): string {
+    const dict = DICTIONARY[this.lang] || DICTIONARY.pt;
+    return dict[key] || DICTIONARY.pt[key] || key;
   }
 
   loadActiveProfile() {
@@ -82,7 +143,7 @@ export class ProfileStore {
 
   deleteProfile(name: string) {
     if (this.profilesList.length <= 1) {
-      alert('Não é possível excluir o único perfil existente.');
+      alert('Não é possível excluir o único perfil.');
       return;
     }
     this.profilesList = this.profilesList.filter(p => p !== name);
@@ -121,17 +182,6 @@ export class ProfileStore {
     this.persistCurrentProfile();
   }
 
-  addTimeSpent(qid: string, seconds: number) {
-    const current = this.getQuestionState(qid);
-    const prev = current.time_spent_seconds || 0;
-    this.currentProfileData.questions[qid] = {
-      ...current,
-      time_spent_seconds: prev + seconds,
-      last_updated: new Date().toISOString()
-    };
-    this.persistCurrentProfile();
-  }
-
   private persistCurrentProfile() {
     try {
       localStorage.setItem(
@@ -164,4 +214,4 @@ export class ProfileStore {
   }
 }
 
-export const profileStore = new ProfileStore();
+export const profileStore = new AppStore();

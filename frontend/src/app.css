@@ -15,31 +15,57 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #fbf9f5;
-  color: #1e293b;
   font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Subtle Warm Study Grid */
+/* Unified Brand Token System: Light (Warm Studio) */
+:root {
+  --bg-app: #fcfbf9;
+  --bg-sidebar: #f5f2eb;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f8f6f0;
+  --border-app: #e9e4dc;
+  --border-subtle: #ded7cb;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --brand-primary: #0f172a;
+  --brand-accent: #2563eb;
+  --brand-accent-subtle: #eff6ff;
+}
+
+/* Unified Brand Token System: Dark (Deep Obsidian Studio) */
+.dark {
+  --bg-app: #080c14;
+  --bg-sidebar: #05080e;
+  --bg-surface: #0e1422;
+  --bg-subtle: #131b2e;
+  --border-app: #1e293b;
+  --border-subtle: #2d3b55;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --brand-primary: #f8fafc;
+  --brand-accent: #38bdf8;
+  --brand-accent-subtle: #082f49;
+}
+
+/* Subtle Technical Ambient Canvas */
 .bg-study-grid {
-  background-color: #fbf9f5;
-  background-size: 24px 24px;
+  background-color: var(--bg-app);
+  background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.025) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
 }
 
-/* Soft Paper & Pastel Cards */
-.paper-card {
-  background-color: #ffffff;
-  border: 1px solid #e8e2d8;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(0, 0, 0, 0.015);
-}
-
-.paper-panel {
-  background-color: #f5f1e9;
-  border: 1px solid #e5ded2;
+.dark .bg-study-grid {
+  background-color: var(--bg-app);
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
 }
 
 /* Tactile Soft Keycaps */
@@ -52,54 +78,46 @@ html, body {
   font-weight: 600;
   padding: 1px 5px;
   border-radius: 4px;
-  background: #ffffff;
-  color: #475569;
-  border: 1px solid #cbd5e1;
-  border-bottom: 2px solid #94a3b8;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 1px 1px rgba(0,0,0,0.04);
 }
 
-/* Soft Pastel LED Status Indicators */
-.led-solved {
-  background-color: #22c55e;
-  box-shadow: 0 0 0 3px #dcfce7;
+/* Micro-transitions & Elevations */
+.transition-card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.led-review {
-  background-color: #f59e0b;
-  box-shadow: 0 0 0 3px #fef3c7;
+.transition-card:hover {
+  transform: translateY(-1px);
 }
 
-.led-failed {
-  background-color: #f43f5e;
-  box-shadow: 0 0 0 3px #ffe4e6;
-}
-
-.led-unsolved {
-  background-color: #cbd5e1;
-}
-
-/* Smooth Study Scrollbar */
+/* Smooth Study Scrollbars */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #d8d0c5;
+  background: rgba(148, 163, 184, 0.3);
   border-radius: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #b8ad9e;
+  background: rgba(148, 163, 184, 0.5);
 }
 
-/* KaTeX in Warm Light Mode */
+/* KaTeX Seamless Typographic Integration */
 .katex {
-  font-size: 1.05em;
-  color: #0f172a;
+  font-size: 1.08em;
+  line-height: 1.6;
 }
 .katex-display {
-  margin: 0.5em 0 !important;
+  margin: 1em 0 !important;
+  padding: 0.75em 1em;
+  background: var(--bg-subtle);
+  border-radius: 8px;
+  overflow-x: auto;
 }

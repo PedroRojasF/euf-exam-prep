@@ -2,7 +2,7 @@
   import type { Question, BankData } from '../types';
   import { profileStore } from '../storage.svelte';
   import { AREA_THEMES } from '../constants';
-  import { Search, Shuffle, ChevronUp, ChevronDown, SlidersHorizontal, X } from 'lucide-svelte';
+  import { Search, Shuffle, ChevronUp, ChevronDown, SlidersHorizontal, X, Sparkles } from 'lucide-svelte';
 
   let {
     bankData,
@@ -83,6 +83,14 @@
     };
   });
 
+  const motivationalCopy = $derived(() => {
+    const stats = poolStats();
+    if (stats.total === 0) return profileStore.t('progressEncourageZero');
+    if (stats.pct === 0) return profileStore.t('progressEncourageZero');
+    if (stats.pct === 100) return profileStore.t('progressEncourageHigh');
+    return profileStore.t('progressEncourageMid');
+  });
+
   export function selectNext() {
     if (poolList.length === 0) return;
     const idx = poolList.findIndex(q => q.id === selectedQuestion?.id);
@@ -110,17 +118,17 @@
   }
 </script>
 
-<div class="w-80 lg:w-88 shrink-0 h-full bg-[#FAF8F5] border-r border-[#E8E2D8] flex flex-col select-none">
+<div class="w-80 lg:w-88 shrink-0 h-full bg-[#FAF8F5] dark:bg-[#0b101c] border-r border-[#E8E2D8] dark:border-white/10 flex flex-col select-none transition-colors duration-200">
   <!-- Explorer Header -->
-  <div class="p-3.5 border-b border-[#E8E2D8] space-y-3 bg-[#FAF8F5]">
-    <!-- Header Title & Counter -->
+  <div class="p-3.5 border-b border-[#E8E2D8] dark:border-white/10 space-y-3 bg-[#FAF8F5] dark:bg-[#0b101c]">
+    <!-- Header Title & Controls -->
     <div class="flex items-center justify-between">
       <div class="flex items-center space-x-2">
-        <span class="text-xs font-sans font-bold text-slate-800 tracking-tight">
-          {selectedArea === 'All' ? 'Todas as Matérias' : selectedArea}
+        <span class="text-xs font-sans font-bold text-slate-800 dark:text-slate-200 tracking-tight">
+          {selectedArea === 'All' ? profileStore.t('allAreas') : selectedArea}
         </span>
-        <span class="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#EDE7DC] text-slate-700">
-          {poolStats().total} Qs
+        <span class="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-[#EDE7DC] dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+          {poolStats().total} {profileStore.t('questionsCount')}
         </span>
       </div>
 
@@ -128,43 +136,53 @@
       <div class="flex items-center space-x-1">
         <button
           onclick={selectRandom}
-          class="p-1 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-[#EDE7DC] transition"
-          title="Questão Aleatória"
+          class="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-[#EDE7DC] dark:hover:bg-slate-800 transition cursor-pointer"
+          title={profileStore.t('randomQuestion')}
         >
           <Shuffle size={14} />
         </button>
         <button
           onclick={selectPrev}
-          class="p-1 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-[#EDE7DC] transition"
-          title="Anterior (J)"
+          class="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-[#EDE7DC] dark:hover:bg-slate-800 transition cursor-pointer"
+          title={profileStore.t('prevQuestion')}
         >
           <ChevronUp size={15} />
         </button>
         <button
           onclick={selectNext}
-          class="p-1 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-[#EDE7DC] transition"
-          title="Próxima (K)"
+          class="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-[#EDE7DC] dark:hover:bg-slate-800 transition cursor-pointer"
+          title={profileStore.t('nextQuestion')}
         >
           <ChevronDown size={15} />
         </button>
         <button
           onclick={() => isFilterExpanded = !isFilterExpanded}
-          class="p-1 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-[#EDE7DC] transition {isFilterExpanded ? 'bg-[#E5DDCF] text-slate-900' : ''}"
-          title="Filtros Específicos"
+          class="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-[#EDE7DC] dark:hover:bg-slate-800 transition cursor-pointer {isFilterExpanded ? 'bg-[#E5DDCF] dark:bg-slate-700 text-slate-900 dark:text-white' : ''}"
+          title={profileStore.t('advancedFilters')}
         >
           <SlidersHorizontal size={14} />
         </button>
       </div>
     </div>
 
-    <!-- Mastery Progress Bar -->
-    <div>
-      <div class="flex items-center justify-between text-[10px] font-sans font-semibold text-slate-500 mb-1">
-        <span>Progresso:</span>
-        <span class="text-emerald-700 font-bold">{poolStats().solved}/{poolStats().total} ({poolStats().pct}%)</span>
+    <!-- Motivational Progress Dashboard Card -->
+    <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-[#E5DFD4] dark:border-slate-800 shadow-2xs space-y-1.5">
+      <div class="flex items-center justify-between text-[11px] font-sans">
+        <span class="text-slate-600 dark:text-slate-300 font-semibold flex items-center gap-1">
+          <Sparkles size={12} class="text-amber-500" />
+          <span>{motivationalCopy()}</span>
+        </span>
+        <span class="text-emerald-700 dark:text-emerald-400 font-bold font-mono">
+          {poolStats().solved}/{poolStats().total} ({poolStats().pct}%)
+        </span>
       </div>
-      <div class="w-full bg-[#E8E2D8] rounded-full h-1.5 overflow-hidden flex">
-        <div class="bg-emerald-500 h-full rounded-full transition-all" style="width: {poolStats().pct}%"></div>
+
+      <!-- Gradient Progress Bar -->
+      <div class="w-full bg-[#E8E2D8] dark:bg-slate-800 rounded-full h-2 overflow-hidden flex">
+        <div
+          class="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400 h-full rounded-full transition-all duration-300"
+          style="width: {poolStats().pct}%"
+        ></div>
       </div>
     </div>
 
@@ -173,14 +191,14 @@
       <input
         type="text"
         bind:value={searchQuery}
-        placeholder="Buscar termo ou código..."
-        class="w-full text-xs bg-white text-slate-800 border border-[#DDD6C8] rounded-lg pl-8 pr-7 py-2 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 font-sans shadow-2xs transition"
+        placeholder={profileStore.t('searchPlaceholder')}
+        class="w-full text-xs bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-[#DDD6C8] dark:border-slate-700 rounded-lg pl-8 pr-7 py-2 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 font-sans shadow-2xs transition"
       />
-      <Search size={13} class="absolute left-2.5 top-2.5 text-slate-400" />
+      <Search size={13} class="absolute left-2.5 top-2.5 text-slate-400 dark:text-slate-500" />
       {#if searchQuery}
         <button
           onclick={() => searchQuery = ''}
-          class="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700"
+          class="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
         >
           <X size={13} />
         </button>
@@ -189,17 +207,17 @@
 
     <!-- Expandable Filter Drawer -->
     {#if isFilterExpanded}
-      <div class="pt-2 border-t border-[#E8E2D8] space-y-2 text-xs font-sans">
+      <div class="pt-2 border-t border-[#E8E2D8] dark:border-white/10 space-y-2 text-xs font-sans">
         <!-- Subtopic -->
         <div>
-          <label for="subtopic-select" class="block text-[10px] font-bold text-slate-600 mb-1">Subtópico:</label>
+          <label for="subtopic-select" class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-1">{profileStore.t('subtopicLabel')}:</label>
           <select
             id="subtopic-select"
             value={selectedSubtopic}
             onchange={(e) => selectedSubtopic = (e.target as HTMLSelectElement).value}
-            class="w-full bg-white border border-[#DDD6C8] rounded-lg p-1.5 text-slate-800 text-[11px] focus:outline-none"
+            class="w-full bg-white dark:bg-slate-900 border border-[#DDD6C8] dark:border-slate-700 rounded-lg p-1.5 text-slate-800 dark:text-slate-200 text-[11px] focus:outline-none cursor-pointer"
           >
-            <option value="All">Todos os Subtópicos</option>
+            <option value="All">{profileStore.t('allSubtopics')}</option>
             {#each availableSubtopics() as sub}
               <option value={sub}>{sub}</option>
             {/each}
@@ -209,14 +227,14 @@
         <!-- Exam Edition & Status -->
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label for="exam-select" class="block text-[10px] font-bold text-slate-600 mb-1">Edição:</label>
+            <label for="exam-select" class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-1">{profileStore.t('allExams')}:</label>
             <select
               id="exam-select"
               value={selectedExam}
               onchange={(e) => selectedExam = (e.target as HTMLSelectElement).value}
-              class="w-full bg-white border border-[#DDD6C8] rounded-lg p-1.5 text-slate-800 text-[11px] focus:outline-none"
+              class="w-full bg-white dark:bg-slate-900 border border-[#DDD6C8] dark:border-slate-700 rounded-lg p-1.5 text-slate-800 dark:text-slate-200 text-[11px] focus:outline-none cursor-pointer"
             >
-              <option value="All">Todos ({allExams.length})</option>
+              <option value="All">{profileStore.t('allExams')} ({allExams.length})</option>
               {#each allExams as ex}
                 <option value={ex}>{ex}</option>
               {/each}
@@ -224,18 +242,18 @@
           </div>
 
           <div>
-            <label for="status-select" class="block text-[10px] font-bold text-slate-600 mb-1">Estado:</label>
+            <label for="status-select" class="block text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-1">{profileStore.t('allStatuses')}:</label>
             <select
               id="status-select"
               value={selectedStatus}
               onchange={(e) => selectedStatus = (e.target as HTMLSelectElement).value}
-              class="w-full bg-white border border-[#DDD6C8] rounded-lg p-1.5 text-slate-800 text-[11px] focus:outline-none"
+              class="w-full bg-white dark:bg-slate-900 border border-[#DDD6C8] dark:border-slate-700 rounded-lg p-1.5 text-slate-800 dark:text-slate-200 text-[11px] focus:outline-none cursor-pointer"
             >
-              <option value="All">Todos</option>
-              <option value="unsolved">⏳ Pendentes</option>
-              <option value="solved">✅ Dominadas</option>
-              <option value="review">📌 Revisão</option>
-              <option value="failed">❌ Erros</option>
+              <option value="All">{profileStore.t('allStatuses')}</option>
+              <option value="unsolved">⏳ {profileStore.t('unsolved')}</option>
+              <option value="solved">✅ {profileStore.t('mastered')}</option>
+              <option value="review">📌 {profileStore.t('forReview')}</option>
+              <option value="failed">❌ {profileStore.t('toRetry')}</option>
             </select>
           </div>
         </div>
@@ -244,10 +262,10 @@
   </div>
 
   <!-- Questions Feed List -->
-  <div class="flex-1 overflow-y-auto custom-scrollbar divide-y divide-[#EFE9DF]">
+  <div class="flex-1 overflow-y-auto custom-scrollbar divide-y divide-[#EFE9DF] dark:divide-white/5">
     {#if poolList.length === 0}
-      <div class="p-8 text-center text-slate-400 font-sans text-xs">
-        Nenhuma questão encontrada com estes filtros.
+      <div class="p-8 text-center text-slate-400 dark:text-slate-500 font-sans text-xs">
+        {profileStore.t('noQuestionsFound')}
       </div>
     {:else}
       {#each poolList as q (q.id)}
@@ -257,7 +275,7 @@
 
         <button
           onclick={() => onSelectQuestion(q)}
-          class="w-full text-left px-3.5 py-3 transition flex items-start space-x-3 group cursor-pointer {isSelected ? 'bg-white shadow-xs border-l-3 border-sky-600' : 'hover:bg-[#F4EFE6]'}"
+          class="w-full text-left px-3.5 py-3 transition flex items-start space-x-3 group cursor-pointer {isSelected ? 'bg-white dark:bg-slate-800 shadow-xs border-l-3 border-sky-600 text-slate-900 dark:text-white' : 'hover:bg-[#F4EFE6] dark:hover:bg-slate-900/50 text-slate-700 dark:text-slate-300'}"
         >
           <!-- Status Dot -->
           <div class="pt-1 shrink-0">
@@ -267,21 +285,21 @@
           <!-- Question Meta -->
           <div class="min-w-0 flex-1">
             <div class="flex items-center justify-between gap-1 mb-0.5">
-              <span class="font-sans font-bold text-xs tracking-tight {isSelected ? 'text-sky-900 font-extrabold' : 'text-slate-800'}">
+              <span class="font-sans font-bold text-xs tracking-tight {isSelected ? 'text-sky-900 dark:text-sky-300 font-extrabold' : 'text-slate-800 dark:text-slate-200'}">
                 {q.id}
               </span>
-              <span class="text-[9px] font-mono px-1.5 py-0.5 rounded border uppercase shrink-0 font-semibold {theme?.badge || 'bg-slate-100 text-slate-700'}">
+              <span class="text-[9px] font-mono px-1.5 py-0.5 rounded border uppercase shrink-0 font-semibold {theme?.badgeClass || 'bg-slate-100 text-slate-700'}">
                 {theme?.code.toUpperCase() || 'FIS'}
               </span>
             </div>
 
-            <div class="text-[11px] text-slate-500 truncate font-sans">
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate font-sans">
               {q.subtopic}
             </div>
 
             {#if q.flag}
-              <div class="mt-1 text-[9px] font-sans text-amber-700 flex items-center gap-1 font-semibold">
-                <span>⚠️ Errata/Aviso</span>
+              <div class="mt-1 text-[9px] font-sans text-amber-700 dark:text-amber-400 flex items-center gap-1 font-semibold">
+                <span>⚠️ {profileStore.t('errataNotice')}</span>
               </div>
             {/if}
           </div>

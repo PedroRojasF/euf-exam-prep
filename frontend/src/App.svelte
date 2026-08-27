@@ -123,8 +123,8 @@
   }
 </script>
 
-<div class="h-screen w-screen overflow-hidden flex flex-row bg-[#FBF9F5] text-slate-800 antialiased font-sans">
-  <!-- 1. Left Narrow Tool & Area Rail (64px) -->
+<div class="h-screen w-screen overflow-hidden flex flex-row bg-[#FBF9F5] dark:bg-[#080d16] text-slate-800 dark:text-slate-200 antialiased font-sans transition-colors duration-200">
+  <!-- 1. Left Tool & Area Rail (64px) -->
   <SidebarRail
     {bankData}
     bind:activeTab
@@ -136,20 +136,20 @@
   {#if isLoading}
     <div class="flex-1 h-full flex flex-col items-center justify-center space-y-3 font-sans text-xs text-slate-500 bg-study-grid">
       <div class="w-9 h-9 border-3 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-      <div class="font-medium tracking-wide">Carregando banco de questões de física...</div>
+      <div class="font-medium tracking-wide">{profileStore.t('loadingMap')}</div>
     </div>
   {:else if loadError}
-    <div class="flex-1 h-full flex flex-col items-center justify-center p-8 text-center font-sans text-xs text-rose-800 bg-study-grid">
-      <div class="p-6 rounded-2xl bg-white border border-[#E5DFD4] shadow-sm max-w-md space-y-2">
-        <div class="font-bold text-sm text-rose-700">⚠️ Erro ao carregar banco:</div>
+    <div class="flex-1 h-full flex flex-col items-center justify-center p-8 text-center font-sans text-xs text-rose-800 dark:text-rose-300 bg-study-grid">
+      <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-[#E5DFD4] dark:border-slate-800 shadow-sm max-w-md space-y-2">
+        <div class="font-bold text-sm text-rose-700 dark:text-rose-400">⚠️ Erro:</div>
         <div>{loadError}</div>
-        <div class="text-[11px] text-slate-500 mt-2">Execute <code class="text-slate-800 bg-slate-100 px-1.5 py-0.5 rounded font-mono">python bank/exporter.py</code> para exportar os dados.</div>
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">Execute <code class="text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono">python bank/exporter.py</code> para exportar os dados.</div>
       </div>
     </div>
   {:else}
     {#if activeTab === 'practice'}
       <!-- 2-Pane Integrated Academic Workstation (Explorer + Expansive Dual Problem Canvas) -->
-      <div class="flex-1 h-full flex flex-row overflow-hidden">
+      <div class="flex-1 h-full flex flex-col md:flex-row overflow-hidden">
         <!-- Column 1: Question Explorer (320px) -->
         <QuestionExplorer
           bind:this={explorerComponent}

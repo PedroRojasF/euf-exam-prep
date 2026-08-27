@@ -2,12 +2,8 @@ export interface AreaTheme {
   code: string;
   name: string;
   shortName: string;
-  pastelBg: string;
-  pastelText: string;
-  pastelBorder: string;
-  badge: string;
-  accentHex: string;
-  iconName: string;
+  badgeClass: string;
+  colorHex: string;
 }
 
 export const AREA_THEMES: Record<string, AreaTheme> = {
@@ -15,69 +11,80 @@ export const AREA_THEMES: Record<string, AreaTheme> = {
     code: 'mc',
     name: 'Mecânica Clássica',
     shortName: 'Clássica',
-    pastelBg: 'bg-[#eafaf1]',
-    pastelText: 'text-[#166534]',
-    pastelBorder: 'border-[#bbf7d0]',
-    badge: 'bg-[#eafaf1] text-[#166534] border-[#86efac]',
-    accentHex: '#16a34a',
-    iconName: 'Orbit'
+    badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60',
+    colorHex: '#10b981'
   },
   'Eletromagnetismo': {
     code: 'em',
     name: 'Eletromagnetismo',
     shortName: 'Eletromag',
-    pastelBg: 'bg-[#eff8ff]',
-    pastelText: 'text-[#075985]',
-    pastelBorder: 'border-[#bae6fd]',
-    badge: 'bg-[#eff8ff] text-[#075985] border-[#7dd3fc]',
-    accentHex: '#0284c7',
-    iconName: 'Zap'
+    badgeClass: 'bg-sky-50 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800/60',
+    colorHex: '#0ea5e9'
   },
   'Mecânica Quântica': {
     code: 'mq',
     name: 'Mecânica Quântica',
     shortName: 'Quântica',
-    pastelBg: 'bg-[#f5f3ff]',
-    pastelText: 'text-[#5b21b6]',
-    pastelBorder: 'border-[#ddd6fe]',
-    badge: 'bg-[#f5f3ff] text-[#5b21b6] border-[#c4b5fd]',
-    accentHex: '#7c3aed',
-    iconName: 'Atom'
+    badgeClass: 'bg-violet-50 text-violet-800 border-violet-200 dark:bg-violet-950/40 dark:text-violet-300 dark:border-violet-800/60',
+    colorHex: '#8b5cf6'
   },
   'Termodinâmica': {
     code: 'te',
     name: 'Termodinâmica',
     shortName: 'Termo',
-    pastelBg: 'bg-[#fffbeb]',
-    pastelText: 'text-[#92400e]',
-    pastelBorder: 'border-[#fde68a]',
-    badge: 'bg-[#fffbeb] text-[#92400e] border-[#fcd34d]',
-    accentHex: '#d97706',
-    iconName: 'Flame'
+    badgeClass: 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60',
+    colorHex: '#f59e0b'
   },
   'Física Estatística': {
     code: 'fe',
     name: 'Física Estatística',
     shortName: 'Estatística',
-    pastelBg: 'bg-[#f0fdfa]',
-    pastelText: 'text-[#115e59]',
-    pastelBorder: 'border-[#99f6e4]',
-    badge: 'bg-[#f0fdfa] text-[#115e59] border-[#5eead4]',
-    accentHex: '#0d9488',
-    iconName: 'BarChart2'
+    badgeClass: 'bg-teal-50 text-teal-800 border-teal-200 dark:bg-teal-950/40 dark:text-teal-300 dark:border-teal-800/60',
+    colorHex: '#14b8a6'
   },
   'Física Moderna': {
     code: 'fm',
     name: 'Física Moderna',
     shortName: 'Moderna',
-    pastelBg: 'bg-[#fff1f2]',
-    pastelText: 'text-[#9f1239]',
-    pastelBorder: 'border-[#fecdd3]',
-    badge: 'bg-[#fff1f2] text-[#9f1239] border-[#fda4af]',
-    accentHex: '#e11d48',
-    iconName: 'Radio'
+    badgeClass: 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/60',
+    colorHex: '#f43f5e'
   }
 };
+
+export const HINT_LEVELS = [
+  {
+    level: 1,
+    titleKey: 'level1Title',
+    iconName: 'Lightbulb',
+    color: 'emerald',
+    badgeBg: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+    dotBg: 'bg-emerald-500'
+  },
+  {
+    level: 2,
+    titleKey: 'level2Title',
+    iconName: 'Compass',
+    color: 'sky',
+    badgeBg: 'bg-sky-50 text-sky-700 dark:bg-sky-950/50 dark:text-sky-300 border-sky-200 dark:border-sky-800',
+    dotBg: 'bg-sky-500'
+  },
+  {
+    level: 3,
+    titleKey: 'level3Title',
+    iconName: 'Scale',
+    color: 'amber',
+    badgeBg: 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+    dotBg: 'bg-amber-500'
+  },
+  {
+    level: 4,
+    titleKey: 'level4Title',
+    iconName: 'Zap',
+    color: 'rose',
+    badgeBg: 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border-rose-200 dark:border-rose-800',
+    dotBg: 'bg-rose-500'
+  }
+];
 
 export const OFFICIAL_FORMULAS = [
   {
