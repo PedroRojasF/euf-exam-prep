@@ -9,7 +9,7 @@
     ZoomIn, ZoomOut, Maximize2, Split, 
     Play, Pause, RotateCcw, AlertTriangle, FileText,
     Lightbulb, FileEdit, BookOpen, ChevronDown, ChevronUp,
-    Check, Sparkles, HelpCircle, Hash
+    Check, Hash, ArrowUpRight
   } from 'lucide-svelte';
 
   let {
@@ -22,7 +22,6 @@
 
   let isZoomModalOpen = $state(false);
   let isImageExpanded = $state(false);
-  let selectedOption = $state<string | null>(null);
   let openClues = $state<Record<number, boolean>>({ 1: true, 2: false, 3: false, 4: false });
   let userNotes = $state<string>('');
   let isSavedNotice = $state<boolean>(false);
@@ -39,7 +38,6 @@
       const uState = profileStore.getQuestionState(question.id);
       userNotes = uState.notes || '';
       openClues = { 1: true, 2: false, 3: false, 4: false };
-      selectedOption = null;
     }
   });
 
@@ -226,7 +224,7 @@
 
     <!-- Main Dual-Column Academic Workstation -->
     <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
-      <!-- LEFT WORKBENCH (Cols 1-7): Problem Statement, Zoom, Interactive Option Picker -->
+      <!-- LEFT WORKBENCH (Cols 1-7): Full Problem Statement & Figure Presentation -->
       <div class="lg:col-span-7 h-full flex flex-col border-r border-[#E8E2D8] overflow-hidden bg-study-grid">
         <!-- Subheader strip -->
         <div class="px-4 py-2 bg-[#FAF8F5] border-b border-[#E8E2D8] flex items-center justify-between text-xs font-sans shrink-0">
@@ -250,15 +248,15 @@
 
             <button
               onclick={() => isImageExpanded = !isImageExpanded}
-              class="p-1 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-[#EAE4D8] transition"
-              title="Ajustar Tamanho"
+              class="p-1 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-[#EAE4D8] transition cursor-pointer"
+              title="Ajustar Tamanho da Imagem"
             >
               {#if isImageExpanded}<ZoomOut size={15} />{:else}<ZoomIn size={15} />{/if}
             </button>
 
             <button
               onclick={() => isZoomModalOpen = true}
-              class="p-1 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-[#EAE4D8] transition"
+              class="p-1 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-[#EAE4D8] transition cursor-pointer"
               title="Tela Cheia (Z)"
             >
               <Maximize2 size={15} />
@@ -267,9 +265,9 @@
         </div>
 
         <!-- Problem Statement Image Canvas (Full Height Scrollable) -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-4">
           <!-- Vector Crop Card -->
-          <div class="bg-white rounded-xl p-4 shadow-sm border border-[#E5DFD4] select-none">
+          <div class="bg-white rounded-2xl p-5 shadow-xs border border-[#E5DFD4] select-none">
             <img
               src={question.image}
               alt={`Problema ${question.id}`}
@@ -281,35 +279,12 @@
             />
           </div>
 
-          <!-- Interactive Multiple Choice Option Selector (A, B, C, D, E) -->
-          {#if question.question_type.toLowerCase().includes('múltipla') || question.question_type.toLowerCase().includes('multipla')}
-            <div class="bg-white rounded-xl p-3.5 border border-[#E5DFD4] shadow-2xs space-y-2">
-              <div class="flex items-center justify-between text-xs font-sans text-slate-600 font-semibold">
-                <span>Gabarito Pessoal (Selecione sua resposta):</span>
-                {#if selectedOption}
-                  <span class="text-sky-700 font-bold text-[11px]">Opção {selectedOption} selecionada</span>
-                {/if}
-              </div>
-
-              <div class="grid grid-cols-5 gap-2">
-                {#each ['A', 'B', 'C', 'D', 'E'] as opt}
-                  <button
-                    onclick={() => selectedOption = opt}
-                    class="py-2 rounded-lg font-sans font-bold text-sm border transition flex flex-col items-center justify-center cursor-pointer {selectedOption === opt ? 'bg-sky-600 text-white border-sky-700 shadow-sm' : 'bg-[#FAF8F5] hover:bg-[#F2ECE0] text-slate-700 border-[#DDD6C8]'}"
-                  >
-                    <span>({opt})</span>
-                  </button>
-                {/each}
-              </div>
-            </div>
-          {/if}
-
-          <!-- OCR Mathematical Text Backup -->
+          <!-- OCR Mathematical Text Transcription -->
           {#if question.text}
             <div class="p-4 rounded-xl bg-white border border-[#E5DFD4] text-slate-800 text-xs font-serif leading-relaxed shadow-2xs">
               <div class="text-[10px] font-sans uppercase font-bold text-slate-400 mb-1 flex items-center gap-1">
                 <FileText size={12} />
-                <span>Transcrição Matemática:</span>
+                <span>Transcrição Matemática (LaTeX):</span>
               </div>
               <div use:mathAction={question.text}></div>
             </div>
@@ -356,7 +331,7 @@
           <!-- TAB 1: SOCRATIC HINTS LADDER -->
           {#if activeRightTab === 'hints'}
             <div class="space-y-3">
-              <div class="p-3 rounded-xl bg-white border border-[#E5DFD4] text-xs font-sans text-slate-700 shadow-2xs">
+              <div class="p-3.5 rounded-xl bg-white border border-[#E5DFD4] text-xs font-sans text-slate-700 shadow-2xs">
                 <strong class="font-bold text-slate-900 block">{question.clues.title}</strong>
                 <div class="text-[11px] text-slate-500 mt-0.5">Use as teclas <span class="key-cap text-[8px]">1</span> a <span class="key-cap text-[8px]">4</span> para abrir gradualmente.</div>
               </div>
