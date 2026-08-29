@@ -1,5 +1,5 @@
 import type { QuestionStatus, QuestionUserState, UserProfile } from './types';
-import { type Language, DICTIONARY, type Translations } from './i18n';
+import { type Language, DICTIONARY, type Translations, AREA_TRANSLATIONS, SUBTOPIC_TRANSLATIONS } from './i18n';
 
 const ACTIVE_PROFILE_KEY = 'euf_active_profile';
 const PROFILE_PREFIX = 'euf_profile_';
@@ -101,6 +101,18 @@ export class AppStore {
   t(key: keyof Translations): string {
     const dict = DICTIONARY[this.lang] || DICTIONARY.pt;
     return dict[key] || DICTIONARY.pt[key] || key;
+  }
+
+  tSubtopic(name: string): string {
+    if (!name) return '';
+    const dict = SUBTOPIC_TRANSLATIONS[this.lang] || SUBTOPIC_TRANSLATIONS.pt;
+    return dict[name] || name;
+  }
+
+  tArea(name: string): string {
+    if (!name) return '';
+    const dict = AREA_TRANSLATIONS[this.lang] || AREA_TRANSLATIONS.pt;
+    return dict[name] || name;
   }
 
   loadActiveProfile() {

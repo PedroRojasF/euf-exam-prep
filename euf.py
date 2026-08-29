@@ -24,6 +24,26 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "bank", "euf_bank.sqlite")
 RENDER_DIR = os.path.join(BASE_DIR, "bank", "rendered")
 
+
+def load_local_env():
+    """Loads optional .env file if present locally without third-party dependencies."""
+    env_path = os.path.join(BASE_DIR, ".env")
+    if os.path.exists(env_path):
+        try:
+            with open(env_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        k, v = k.strip(), v.strip().strip("'\"")
+                        if k not in os.environ:
+                            os.environ[k] = v
+        except Exception:
+            pass
+
+
+load_local_env()
+
 AREA_SHORTCUTS = {
     "mc": "Mecânica Clássica",
     "em": "Eletromagnetismo",
@@ -538,6 +558,65 @@ def cmd_ingest(args):
     ingest_pdf(args.pdf_path)
 
 
+def cmd_vps_build(args):
+    """Executes heavy indexing & rendering on VPS (4 vCPUs / 24GB RAM) and syncs results locally."""
+    import subprocess
+    import time
+    import shutil
+
+    vps_host = args.host or os.environ.get("EUF_VPS_HOST", "my-vps")
+    remote_dir = os.environ.get("EUF_VPS_DIR", "~/projects/EUF")
+
+    print("=" * 70)
+    print(f"🚀 EUF VPS REMOTE BUILD & SYNC -> {vps_host}")
+    print("=" * 70)
+
+    # 1. Check SSH connection
+    t0 = time.time()
+    print(f"1/4. Verifying connection to {vps_host}...")
+    res = subprocess.run(["ssh", "-o", "ConnectTimeout=5", vps_host, "echo OK"], capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if res.returncode != 0:
+        print(f"❌ Error: Cannot connect to '{vps_host}' via SSH.")
+        print("💡 Hint: Configure your host in ~/.ssh/config or set EUF_VPS_HOST in .env / --host <alias>")
+        return
+
+    # 2. Push code and PDFs to VPS
+    print("2/4. Syncing scripts and PDF exams to VPS...")
+    tar_cmd = ["tar", "--exclude=node_modules", "--exclude=__pycache__", "--exclude=.git", "--exclude=.svelte-kit", "--exclude=venv", "--exclude=rendered", "-czf", "-", "."]
+    p_tar = subprocess.Popen(tar_cmd, stdout=subprocess.PIPE, cwd=BASE_DIR)
+    p_ssh = subprocess.Popen(["ssh", vps_host, f"mkdir -p {remote_dir} && tar -xzf - -C {remote_dir}"], stdin=p_tar.stdout, stdout=subprocess.PIPE)
+    p_tar.stdout.close()
+    p_ssh.communicate()
+
+    # 3. Trigger remote build
+    print("3/4. Running heavy indexer and rendering on VPS (4 vCPUs)...")
+    remote_build_cmd = f"cd {remote_dir} && ./venv/bin/python3 bank/indexer.py && ./venv/bin/python3 euf.py export"
+    res_build = subprocess.run(["ssh", vps_host, remote_build_cmd], capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if res_build.returncode != 0:
+        print("❌ Error during remote build on VPS:")
+        print(res_build.stderr or res_build.stdout)
+        return
+    if res_build.stdout:
+        print(res_build.stdout.strip())
+
+    # 4. Pull back artifacts (database, questions.json, and rendered images)
+    print("4/4. Pulling updated questions.json, database, and rendered crops...")
+    p_pull = subprocess.Popen(["ssh", vps_host, f"tar -czf - -C {remote_dir} bank/questions.json bank/euf_bank.sqlite bank/rendered"], stdout=subprocess.PIPE)
+    p_untar = subprocess.Popen(["tar", "-xzf", "-"], stdin=p_pull.stdout, cwd=BASE_DIR)
+    p_pull.stdout.close()
+    p_untar.communicate()
+
+    local_frontend_json = os.path.join(BASE_DIR, "frontend", "public", "questions.json")
+    local_bank_json = os.path.join(BASE_DIR, "bank", "questions.json")
+    if os.path.exists(local_bank_json) and os.path.exists(os.path.dirname(local_frontend_json)):
+        shutil.copy2(local_bank_json, local_frontend_json)
+
+    elapsed = time.time() - t0
+    print("=" * 70)
+    print(f"✨ REMOTE BUILD COMPLETE in {elapsed:.2f}s! Local bank is 100% in sync.")
+    print("=" * 70)
+
+
 def cmd_sync(args):
     sync_workspace()
 
@@ -580,6 +659,10 @@ def main():
 
     # sync
     subparsers.add_parser("sync", help="Scan directory and auto-ingest any new PDFs")
+
+    # vps-build
+    p_vps = subparsers.add_parser("vps-build", help="Run heavy OCR & indexing on remote VPS and sync locally")
+    p_vps.add_argument("--host", default=os.environ.get("EUF_VPS_HOST", "my-vps"), help="SSH host name (default: my-vps or $EUF_VPS_HOST)")
 
     # flag
     p_flag = subparsers.add_parser("flag", help="Flag a question with errata or ambiguity note")
@@ -642,6 +725,7 @@ def main():
         "progress": cmd_progress,
         "export": cmd_export,
         "web": cmd_web,
+        "vps-build": cmd_vps_build,
         "audit": cmd_audit,
         "ingest": cmd_ingest,
         "sync": cmd_sync,

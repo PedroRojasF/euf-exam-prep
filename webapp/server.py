@@ -3,11 +3,17 @@ High-performance standalone HTTP REST API & SPA server for desktop, tablet, and 
 """
 
 import os
+import sys
 import json
 import sqlite3
 import mimetypes
 import urllib.parse
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
 from bank.profile import (
     get_active_profile_name,
     set_active_profile_name,
@@ -18,12 +24,10 @@ from bank.profile import (
     list_profiles
 )
 from bank.hints import get_physics_clues
-from bank.ingest import ingest_pdf
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, "bank", "euf_bank.sqlite")
 RENDER_DIR = os.path.join(BASE_DIR, "bank", "rendered")
-STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+FRONTEND_DIST = os.path.join(BASE_DIR, "frontend", "dist")
+STATIC_DIR = FRONTEND_DIST if os.path.exists(os.path.join(FRONTEND_DIST, "index.html")) else os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 
 
 def get_db():
@@ -67,6 +71,28 @@ class EUFWebHandler(SimpleHTTPRequestHandler):
         elif path.startswith("/images/"):
             img_name = path[len("/images/"):]
             img_path = os.path.join(RENDER_DIR, img_name)
+            if not os.path.exists(img_path) or os.path.getsize(img_path) < 1000:
+                qid = os.path.splitext(img_name)[0]
+                conn = get_db()
+                cur = conn.cursor()
+                cur.execute("""
+                SELECT q.page, q.tag, e.filename
+                FROM questions q
+                JOIN exams e ON q.exam_id = e.id
+                WHERE q.id = ?
+                """, (qid,))
+                row = cur.fetchone()
+                conn.close()
+                if row:
+                    p_num, tag, filename = row
+                    full_pdf = os.path.join(BASE_DIR, filename)
+                    if os.path.exists(full_pdf):
+                        try:
+                            from bank.cropper import render_question_image
+                            render_question_image(full_pdf, p_num, qid, tag)
+                        except Exception as e:
+                            print(f"Dynamic render error for {qid}: {e}")
+
             if os.path.exists(img_path):
                 self.send_response(200)
                 self.send_header("Content-Type", "image/png")
@@ -315,11 +341,37 @@ class EUFWebHandler(SimpleHTTPRequestHandler):
         qid_a = f"{exam_id}-{stem}a"
         qid_b = f"{exam_id}-{stem}b"
 
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute("SELECT text, area, subtopic FROM questions WHERE id = ?", (qid_a,))
+        row_a = cur.fetchone()
+        cur.execute("SELECT text, area, subtopic FROM questions WHERE id = ?", (qid_b,))
+        row_b = cur.fetchone()
+        conn.close()
+
+        text_a = row_a[0] if row_a else ""
+        text_b = row_b[0] if row_b else ""
+        area = (row_a[1] if row_a else None) or (row_b[1] if row_b else "Física")
+        subtopic = (row_a[2] if row_a else None) or (row_b[2] if row_b else "Core Problems")
+
+        diff_text = ""
+        if text_a and text_b:
+            try:
+                from bank.differ import format_inline_diff
+                diff_text = format_inline_diff(text_a, text_b)
+            except Exception:
+                diff_text = ""
+
         self.send_json({
             "exam_id": exam_id,
             "stem": stem,
+            "area": area,
+            "subtopic": subtopic,
             "qid_a": qid_a,
             "qid_b": qid_b,
+            "text_a": text_a,
+            "text_b": text_b,
+            "diff": diff_text,
             "image_a": f"/images/{qid_a.replace('/', '_')}.png",
             "image_b": f"/images/{qid_b.replace('/', '_')}.png"
         })
@@ -338,6 +390,7 @@ class EUFWebHandler(SimpleHTTPRequestHandler):
         if not pdf_path or not os.path.exists(pdf_path):
             self.send_json({"error": "Invalid PDF file path"}, status=400)
             return
+        from bank.ingest import ingest_pdf
         total = ingest_pdf(pdf_path)
         self.send_json({"success": True, "questions_ingested": total})
 
@@ -365,7 +418,7 @@ class EUFWebHandler(SimpleHTTPRequestHandler):
 
 
 def start_server(port=8000):
-    server = ThreadingHTTPServer(("127.0.0.1", port), EUFWebHandler)
+    server = ThreadingHTTPServer(("0.0.0.0", port), EUFWebHandler)
     print("=" * 65)
     print(f"🚀 EUF Dedicated Web Workspace is running live at:")
     print(f"   👉 http://localhost:{port}")

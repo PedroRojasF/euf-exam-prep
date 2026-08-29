@@ -68,6 +68,15 @@
     const cat = OFFICIAL_FORMULAS.find(c => c.category === question.area || c.category.includes(question.area.split(' ')[0]));
     return cat ? cat.formulas : OFFICIAL_FORMULAS[0].formulas;
   });
+
+  const activeClues = $derived.by(() => {
+    if (!question || !question.clues) return null;
+    const c = question.clues as any;
+    if (c[profileStore.lang]) {
+      return c[profileStore.lang];
+    }
+    return c;
+  });
 </script>
 
 <div class="h-full bg-[#FAF8F5] border-l border-[#E8E2D8] flex flex-col select-none transition-all duration-200 {isTrayCollapsed ? 'w-12' : 'w-88 lg:w-96'} shrink-0 shadow-2xs">
@@ -153,8 +162,8 @@
         {#if activeInspectorTab === 'hints'}
           <div class="space-y-3">
             <div class="p-3 rounded-xl bg-[#F4EFE6] border border-[#E5DDCF] text-xs font-sans text-slate-700 leading-relaxed">
-              <strong class="font-bold text-slate-900">{question.clues.title}</strong>
-              <div class="text-[11px] text-slate-500 mt-0.5">Use as teclas <span class="key-cap text-[8px]">1</span> a <span class="key-cap text-[8px]">4</span> para abrir gradualmente.</div>
+              <strong class="font-bold text-slate-900">{activeClues?.title || question.subtopic}</strong>
+              <div class="text-[11px] text-slate-500 mt-0.5">{profileStore.t('hintsInstruction')}</div>
             </div>
 
             <!-- Level 1: Principle (Mint) -->
@@ -165,12 +174,12 @@
               >
                 <span class="flex items-center gap-2">
                   <span class="px-1.5 py-0.5 rounded bg-[#bbf7d0] text-[#166534] font-mono text-[9px] font-bold">1</span>
-                  Princípio Físico Fundamental
+                  {profileStore.t('level1Title')}
                 </span>
                 {#if openClues[1]}<ChevronUp size={14} />{:else}<ChevronDown size={14} />{/if}
               </button>
               {#if openClues[1]}
-                <div class="px-3.5 pb-3.5 text-xs font-serif text-slate-800 leading-relaxed border-t border-[#bbf7d0] pt-2.5 bg-white" use:mathAction={question.clues.level1}></div>
+                <div class="px-3.5 pb-3.5 text-xs font-serif text-slate-800 leading-relaxed border-t border-[#bbf7d0] pt-2.5 bg-white" use:mathAction={activeClues?.level1 || ''}></div>
               {/if}
             </div>
 
@@ -182,12 +191,12 @@
               >
                 <span class="flex items-center gap-2">
                   <span class="px-1.5 py-0.5 rounded bg-[#bae6fd] text-[#0369a1] font-mono text-[9px] font-bold">2</span>
-                  Montagem Geométrica & Coordenadas
+                  {profileStore.t('level2Title')}
                 </span>
                 {#if openClues[2]}<ChevronUp size={14} />{:else}<ChevronDown size={14} />{/if}
               </button>
               {#if openClues[2]}
-                <div class="px-3.5 pb-3.5 text-xs font-serif text-slate-800 leading-relaxed border-t border-[#bae6fd] pt-2.5 bg-white" use:mathAction={question.clues.level2}></div>
+                <div class="px-3.5 pb-3.5 text-xs font-serif text-slate-800 leading-relaxed border-t border-[#bae6fd] pt-2.5 bg-white" use:mathAction={activeClues?.level2 || ''}></div>
               {/if}
             </div>
 
@@ -199,12 +208,12 @@
               >
                 <span class="flex items-center gap-2">
                   <span class="px-1.5 py-0.5 rounded bg-[#fde68a] text-[#92400e] font-mono text-[9px] font-bold">3</span>
-                  Ponto de Checagem Intermediário
+                  {profileStore.t('level3Title')}
                 </span>
                 {#if openClues[3]}<ChevronUp size={14} />{:else}<ChevronDown size={14} />{/if}
               </button>
               {#if openClues[3]}
-                <div class="px-3.5 pb-3.5 text-xs font-serif text-slate-800 leading-relaxed border-t border-[#fde68a] pt-2.5 bg-white" use:mathAction={question.clues.level3}></div>
+                <div class="px-3.5 pb-3.5 text-xs font-serif text-slate-800 leading-relaxed border-t border-[#fde68a] pt-2.5 bg-white" use:mathAction={activeClues?.level3 || ''}></div>
               {/if}
             </div>
 
@@ -216,12 +225,12 @@
               >
                 <span class="flex items-center gap-2">
                   <span class="px-1.5 py-0.5 rounded bg-[#fecdd3] text-[#9f1239] font-mono text-[9px] font-bold">4</span>
-                  Derivação Completa & Armadilhas
+                  {profileStore.t('level4Title')}
                 </span>
                 {#if openClues[4]}<ChevronUp size={14} />{:else}<ChevronDown size={14} />{/if}
               </button>
               {#if openClues[4]}
-                <div class="px-3.5 pb-3.5 text-xs font-serif text-slate-800 leading-relaxed border-t border-[#fecdd3] pt-2.5 bg-white" use:mathAction={question.clues.level4}></div>
+                <div class="px-3.5 pb-3.5 text-xs font-serif text-slate-800 leading-relaxed border-t border-[#fecdd3] pt-2.5 bg-white" use:mathAction={activeClues?.level4 || ''}></div>
               {/if}
             </div>
           </div>

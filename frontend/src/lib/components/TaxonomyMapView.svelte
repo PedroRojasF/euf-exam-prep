@@ -72,7 +72,7 @@
               <!-- Area Header -->
               <div class="flex items-center justify-between pb-3 border-b border-[#E8E2D8] dark:border-slate-800">
                 <span class="px-2.5 py-1 rounded-lg text-xs font-sans font-bold border {theme?.badge || 'bg-slate-100 text-slate-800'}">
-                  {area}
+                  {profileStore.tArea(area)}
                 </span>
                 <span class="font-sans text-xs font-bold text-slate-700 dark:text-slate-200">
                   {aStats.solved} / {aStats.total} <span class="text-slate-500 dark:text-slate-400 font-normal">({aStats.pct}%)</span>
@@ -97,7 +97,7 @@
                   >
                     <div class="min-w-0 pr-2">
                       <div class="text-xs text-slate-700 dark:text-slate-300 font-medium truncate group-hover:text-sky-800 dark:group-hover:text-sky-300 font-sans">
-                        {sub.name}
+                        {profileStore.tSubtopic(sub.name)}
                       </div>
                     </div>
                     <div class="shrink-0 flex items-center space-x-1.5 font-mono text-[10px]">

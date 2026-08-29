@@ -179,6 +179,33 @@ def classify_subtopic(area, text):
     return default_subtopics.get(area, 'Advanced Physics Topics')
 
 
+def trim_to_single_question(text, current_tag, is_amc=True):
+    if not text:
+        return ""
+    # 1. Truncate at subsequent physics tag headers
+    tag_patt = re.compile(r'(?:Q\.\s*\d+\s*)?\[((?:mc|em|te|fe|fm|mq|mm)[a-zA-Z0-9_-]*)\]', re.IGNORECASE)
+    matches = list(tag_patt.finditer(text))
+    if len(matches) > 1:
+        first_tag = matches[0].group(1).replace('mmPT', 'mcPT').replace('mm', 'mc')
+        if current_tag and (current_tag.lower() in first_tag.lower() or first_tag.lower() in current_tag.lower()):
+            text = text[:matches[1].start()].strip()
+        else:
+            for idx, m in enumerate(matches):
+                c_tag = m.group(1).replace('mmPT', 'mcPT').replace('mm', 'mc')
+                if current_tag and (current_tag.lower() in c_tag.lower() or c_tag.lower() in current_tag.lower()):
+                    nxt = matches[idx+1].start() if idx+1 < len(matches) else len(text)
+                    text = text[m.start():nxt].strip()
+                    break
+
+    # 2. Truncate at subsequent 'Questao X' or 'Q. X'
+    q_patt = re.compile(r'(?:^|\n)(?:Q\s*\.?\s*(\d+)|Quest[ãa]o\s*(\d+))[\.:\s]', re.IGNORECASE)
+    q_matches = list(q_patt.finditer(text))
+    if len(q_matches) > 1:
+        text = text[:q_matches[1].start()].strip()
+
+    return text
+
+
 def rebuild_database_and_crops():
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
@@ -217,11 +244,17 @@ def rebuild_database_and_crops():
 
             # Skip auxiliary pages
             p_lower = raw_text.lower()
-            if "instruções para a prova" in p_lower and len(raw_text) < 600:
+            if ("instruções para a prova" in p_lower or "intruções para a prova" in p_lower or "instructions for the exam" in p_lower) and len(raw_text) < 1200:
                 continue
-            if "folha de respostas" in p_lower or ("gabarito" in p_lower and "questão 1 :" in p_lower):
+            if "folha de respostas" in p_lower or "answer sheet" in p_lower:
                 continue
             if "formulário" in p_lower and ("constantes físicas" in p_lower or "regras de propagação" in p_lower):
+                continue
+            if re.search(r'Q\.\s*\d+\s*:\s*\n\s*A\s*\n\s*B', raw_text) or re.search(r'Quest[ãa]o\s*\d+\s*:\s*\n\s*A\s*\n\s*B', raw_text):
+                continue
+            if '\x00\x01\x02' in raw_text and p_idx >= num_pages - 3:
+                continue
+            if 'esta prova contém questões de' in p_lower and len(raw_text) < 400:
                 continue
 
             headers = []
@@ -288,9 +321,10 @@ def rebuild_database_and_crops():
                     canonical_tag = STANDARD_80_TAGS[q_num - 1]
 
                 y_start = max(5, y_top - 12)
-                y_end = headers[i + 1][0] - 4 if (i + 1 < len(headers)) else (h - 10)
-                if y_end - y_start < 80:
-                    y_end = min(h - 5, y_start + 250)
+                if i + 1 < len(headers):
+                    y_end = max(y_start + 40, headers[i + 1][0] - 4)
+                else:
+                    y_end = max(min(h - 5, y_start + 250), h - 15)
 
                 # Extract all text lines within bounding box for full question statement and options
                 q_lines = []
@@ -303,6 +337,8 @@ def rebuild_database_and_crops():
                 else:
                     native_clip = page.get_text("text", clip=pymupdf.Rect(5, y_start, w - 5, y_end)).strip()
                     full_q_text = native_clip if len(native_clip) > 30 else raw_txt
+
+                full_q_text = trim_to_single_question(full_q_text, canonical_tag, is_amc)
 
                 prefix = canonical_tag[:2].lower()
                 if is_amc and prefix in AREA_MAPPING:
@@ -341,7 +377,7 @@ def rebuild_database_and_crops():
         seen_ids = set()
         for q in exam_questions:
             if q['id'] in seen_ids:
-                q['id'] = f"{q['id']}-p{q['page']}"
+                continue
             seen_ids.add(q['id'])
 
             cur.execute("""

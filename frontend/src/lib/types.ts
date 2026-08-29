@@ -8,6 +8,12 @@ export interface SocraticClues {
   level4: string;
 }
 
+export type LocalizedClues = {
+  pt: SocraticClues;
+  es: SocraticClues;
+  en: SocraticClues;
+} | SocraticClues;
+
 export interface Question {
   id: string;
   exam_id: string;
@@ -21,7 +27,7 @@ export interface Question {
   flag?: string | null;
   errata?: string | null;
   image: string;
-  clues: SocraticClues;
+  clues: LocalizedClues;
   twin_id?: string | null;
   twin_stem?: string | null;
 }

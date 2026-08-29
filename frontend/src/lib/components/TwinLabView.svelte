@@ -2,6 +2,7 @@
   import type { TwinPair } from '../types';
   import { profileStore } from '../storage.svelte';
   import { AREA_THEMES } from '../constants';
+  import { renderMathInString } from '../math';
   import { Split, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-svelte';
 
   let {
@@ -140,13 +141,13 @@
       <div class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-[#E5DFD4] dark:border-slate-800 shadow-xs flex items-center justify-between">
         <div class="flex items-center space-x-3">
           <span class="px-2.5 py-0.5 rounded-lg text-xs font-sans font-bold border {theme?.badge || 'bg-slate-100 text-slate-800'}">
-            {activePair.area}
+            {profileStore.tArea(activePair.area)}
           </span>
           <span class="text-slate-900 dark:text-white font-sans font-bold text-sm">
             {profileStore.t('stemLabel')}: {activePair.exam_id}-{activePair.stem}
           </span>
           <span class="text-slate-500 dark:text-slate-400 font-sans text-xs">
-            {profileStore.t('subtopicLabel')}: <strong class="text-slate-800 dark:text-slate-200">{activePair.subtopic}</strong>
+            {profileStore.t('subtopicLabel')}: <strong class="text-slate-800 dark:text-slate-200">{profileStore.tSubtopic(activePair.subtopic)}</strong>
           </span>
         </div>
       </div>
@@ -212,14 +213,32 @@
         </div>
       </div>
 
-      <!-- Difference Analysis Banner -->
+      <!-- Difference Analysis Banner with Full LaTeX KaTeX Rendering -->
       {#if activePair.diff}
-        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-[#E5DFD4] dark:border-slate-800 space-y-2 shadow-2xs">
+        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-[#E5DFD4] dark:border-slate-800 space-y-3 shadow-2xs">
           <div class="text-xs font-sans font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+            <Split size={14} class="text-sky-500" />
             <span>{profileStore.t('variationAnalysis')}</span>
           </div>
-          <div class="p-3.5 bg-[#FAF8F5] dark:bg-slate-950 rounded-lg border border-[#E5DDCF] dark:border-slate-800 font-sans text-xs text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
-            {activePair.diff}
+
+          <div class="p-3.5 bg-[#FAF8F5] dark:bg-slate-950 rounded-lg border border-[#E5DDCF] dark:border-slate-800 space-y-2 font-serif text-xs text-slate-700 dark:text-slate-300 leading-relaxed overflow-x-auto">
+            {#each activePair.diff.split('\n') as line}
+              {#if line.startsWith('  [-]')}
+                <div class="p-2.5 rounded-lg bg-rose-50/80 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/60 text-rose-900 dark:text-rose-200 flex items-start gap-2">
+                  <span class="px-1.5 py-0.5 rounded bg-rose-200 dark:bg-rose-900 font-sans font-bold text-[10px] text-rose-800 dark:text-rose-200 shrink-0">A</span>
+                  <div class="flex-1 font-serif select-text">{@html renderMathInString(line.replace(/^\s*\[-\]\s*(?:VARIANTE A(?:\s*\(.*?\))?:\s*)?/, ''))}</div>
+                </div>
+              {:else if line.startsWith('  [+]')}
+                <div class="p-2.5 rounded-lg bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-200 flex items-start gap-2">
+                  <span class="px-1.5 py-0.5 rounded bg-emerald-200 dark:bg-emerald-900 font-sans font-bold text-[10px] text-emerald-800 dark:text-emerald-200 shrink-0">B</span>
+                  <div class="flex-1 font-serif select-text">{@html renderMathInString(line.replace(/^\s*\[\+\]\s*(?:VARIANTE B(?:\s*\(.*?\))?:\s*)?/, ''))}</div>
+                </div>
+              {:else if line.trim().length > 0}
+                <div class="py-0.5 px-2 text-slate-600 dark:text-slate-400 font-serif select-text">
+                  {@html renderMathInString(line.replace(/^\s*\[=\]\s*/, ''))}
+                </div>
+              {/if}
+            {/each}
           </div>
         </div>
       {/if}

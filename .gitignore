@@ -8,6 +8,19 @@ env/
 venv/
 .venv/
 
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/.svelte-kit/
+frontend/dist/
+
+# Secrets and credentials
+*.key
+*.pem
+.env
+.env.*
+!.env.example
+
 # Marimo temporary
 .marimo/
 
@@ -19,6 +32,8 @@ profiles/*.json
 !profiles/default.json
 profiles/.active_profile
 
-# OS files
+# OS / Editor files
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/

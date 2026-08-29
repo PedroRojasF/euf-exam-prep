@@ -6,29 +6,32 @@
   import { 
     Layers, Split, LayoutGrid, FileText, 
     HelpCircle, User, Download, Upload, UserPlus,
-    Sun, Moon, Globe
+    Sun, Moon, Globe, Clock, Menu, X
   } from 'lucide-svelte';
+  import FlagIcon from './FlagIcon.svelte';
 
   let {
     bankData,
-    activeTab = $bindable<'practice' | 'twins' | 'concept' | 'formula'>('practice'),
+    activeTab = $bindable<'practice' | 'twins' | 'mock' | 'concept' | 'formula'>('practice'),
     selectedAreaFilter = $bindable<string>('All'),
     onOpenHelp
   }: {
     bankData: BankData | null;
-    activeTab: 'practice' | 'twins' | 'concept' | 'formula';
+    activeTab: 'practice' | 'twins' | 'mock' | 'concept' | 'formula';
     selectedAreaFilter: string;
     onOpenHelp: () => void;
   } = $props();
 
   let isProfileMenuOpen = $state(false);
   let isLangMenuOpen = $state(false);
+  let isMobileMenuOpen = $state(false);
 
   function handleCreateProfile() {
     const name = prompt(profileStore.t('enterProfileName'));
     if (name && name.trim()) {
       profileStore.createProfile(name.trim());
       isProfileMenuOpen = false;
+      isMobileMenuOpen = false;
     }
   }
 
@@ -42,6 +45,7 @@
     a.click();
     URL.revokeObjectURL(url);
     isProfileMenuOpen = false;
+    isMobileMenuOpen = false;
   }
 
   function handleImportProfile(e: Event) {
@@ -54,6 +58,7 @@
           profileStore.importProfileFromJSON(content);
           alert(profileStore.t('profileImported'));
           isProfileMenuOpen = false;
+          isMobileMenuOpen = false;
         } catch {
           alert(profileStore.t('profileImportError'));
         }
@@ -68,13 +73,16 @@
   );
 
   const langFlags: Record<Language, { label: string; flag: string }> = {
-    pt: { label: 'Português', flag: '🇧🇷' },
-    es: { label: 'Español', flag: '🇪🇸' },
-    en: { label: 'English', flag: '🇺🇸' }
+    pt: { label: 'Português', flag: 'BR' },
+    es: { label: 'Español', flag: 'ES' },
+    en: { label: 'English', flag: 'GB' }
   };
 </script>
 
-<aside class="w-16 shrink-0 bg-[#F4EFE6] dark:bg-[#070b13] border-r border-[#E6DFD3] dark:border-white/10 flex flex-col items-center justify-between py-4 z-30 select-none shadow-xs transition-colors duration-200">
+<!-- ========================================================================= -->
+<!-- 1. DESKTOP VERTICAL SIDEBAR RAIL (md:flex) -->
+<!-- ========================================================================= -->
+<aside class="hidden md:flex w-16 shrink-0 bg-[#F4EFE6] dark:bg-[#070b13] border-r border-[#E6DFD3] dark:border-white/10 flex-col items-center justify-between py-4 z-30 select-none shadow-xs transition-colors duration-200">
   <!-- Top Logo & View Modes -->
   <div class="flex flex-col items-center space-y-4 w-full">
     <!-- Brand Logo Button -->
@@ -108,6 +116,16 @@
       >
         <Split size={18} />
         <span class="text-[8px] font-sans font-bold mt-0.5">{profileStore.t('modeTwins')}</span>
+      </button>
+
+      <!-- Mock Exam Simulator -->
+      <button
+        onclick={() => activeTab = 'mock'}
+        class="w-11 h-11 rounded-xl flex flex-col items-center justify-center transition cursor-pointer {activeTab === 'mock' ? 'bg-white dark:bg-slate-800 text-rose-800 dark:text-rose-300 shadow-sm border border-[#E0D8CA] dark:border-slate-700 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-[#EAE4D8] dark:hover:bg-slate-800/50'}"
+        title={`${profileStore.t('modeMock')}`}
+      >
+        <Clock size={18} />
+        <span class="text-[8px] font-sans font-bold mt-0.5">{profileStore.t('modeMock')}</span>
       </button>
 
       <!-- Taxonomy Map -->
@@ -147,7 +165,7 @@
         <button
           onclick={() => { activeTab = 'practice'; selectedAreaFilter = areaName; }}
           class="w-10 h-7 rounded-lg text-[10px] font-mono font-bold flex items-center justify-center transition border cursor-pointer {selectedAreaFilter === areaName && activeTab === 'practice' ? `${theme.badge} shadow-xs font-extrabold ring-1 ring-slate-400 dark:ring-white/40` : 'border-transparent text-slate-600 dark:text-slate-400 hover:bg-[#EAE4D8] dark:hover:bg-slate-800'}"
-          title={theme.name}
+          title={profileStore.tArea(areaName)}
         >
           {theme.code.toUpperCase()}
         </button>
@@ -174,10 +192,10 @@
     <div class="relative">
       <button
         onclick={() => { isLangMenuOpen = !isLangMenuOpen; isProfileMenuOpen = false; }}
-        class="w-9 h-9 rounded-xl bg-white dark:bg-slate-800 border border-[#DDD6C8] dark:border-slate-700 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-200 shadow-2xs hover:scale-105 transition cursor-pointer"
+        class="w-9 h-9 rounded-xl bg-white dark:bg-[#2c313a] border border-[#DDD6C8] dark:border-[#3e4451] flex items-center justify-center shadow-2xs hover:scale-105 transition cursor-pointer"
         title="Idioma / Language"
       >
-        <span>{langFlags[profileStore.lang].flag}</span>
+        <FlagIcon lang={profileStore.lang} size={20} />
       </button>
 
       {#if isLangMenuOpen}
@@ -190,14 +208,17 @@
           onkeydown={(e) => { if (e.key === 'Escape') isLangMenuOpen = false; }}
         ></button>
 
-        <div class="absolute bottom-0 left-12 z-50 w-40 bg-white dark:bg-slate-900 border border-[#DDD6C8] dark:border-slate-700 rounded-xl shadow-xl p-2 space-y-1 text-xs font-sans">
+        <div class="absolute bottom-0 left-12 z-50 w-44 bg-white dark:bg-[#21252b] border border-[#DDD6C8] dark:border-[#3e4451] rounded-2xl shadow-xl p-2 space-y-1 text-xs font-sans">
           {#each Object.entries(langFlags) as [code, item]}
             <button
               onclick={() => { profileStore.setLanguage(code as Language); isLangMenuOpen = false; }}
-              class="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between transition cursor-pointer {profileStore.lang === code ? 'bg-sky-50 dark:bg-sky-950 text-sky-800 dark:text-sky-300 font-bold' : 'text-slate-700 dark:text-slate-300 hover:bg-[#FAF8F5] dark:hover:bg-slate-800'}"
+              class="w-full text-left px-3 py-2 rounded-xl flex items-center justify-between transition cursor-pointer {profileStore.lang === code ? 'bg-sky-50 dark:bg-sky-950/80 text-sky-800 dark:text-sky-300 font-bold border border-sky-200 dark:border-sky-800' : 'text-slate-700 dark:text-[#abb2bf] hover:bg-[#FAF8F5] dark:hover:bg-[#2c313a]'}"
             >
-              <span>{item.label}</span>
-              <span>{item.flag}</span>
+              <div class="flex items-center gap-2.5">
+                <FlagIcon lang={code} size={18} />
+                <span>{item.label}</span>
+              </div>
+              <span class="text-[10px] font-mono font-bold text-slate-400 dark:text-slate-500 uppercase">{code}</span>
             </button>
           {/each}
         </div>
@@ -278,3 +299,133 @@
     </button>
   </div>
 </aside>
+
+<!-- ========================================================================= -->
+<!-- 2. MOBILE FIXED BOTTOM NAVIGATION BAR (md:hidden) -->
+<!-- ========================================================================= -->
+<nav class="flex md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0b101c]/95 backdrop-blur-md border-t border-[#E6DFD3] dark:border-white/10 px-2 py-1.5 items-center justify-around shadow-lg select-none">
+  <!-- Study / Explorer Tab -->
+  <button
+    onclick={() => activeTab = 'practice'}
+    class="flex flex-col items-center justify-center py-1 px-3 rounded-xl transition cursor-pointer {activeTab === 'practice' ? 'text-sky-600 dark:text-sky-400 font-bold' : 'text-slate-500 dark:text-slate-400'}"
+  >
+    <Layers size={19} />
+    <span class="text-[9px] font-sans font-bold mt-0.5">{profileStore.t('modeStudy')}</span>
+  </button>
+
+  <!-- Twin Lab Tab -->
+  <button
+    onclick={() => activeTab = 'twins'}
+    class="flex flex-col items-center justify-center py-1 px-3 rounded-xl transition cursor-pointer {activeTab === 'twins' ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400'}"
+  >
+    <Split size={19} />
+    <span class="text-[9px] font-sans font-bold mt-0.5">{profileStore.t('modeTwins')}</span>
+  </button>
+
+  <!-- Mock Exam Tab -->
+  <button
+    onclick={() => activeTab = 'mock'}
+    class="flex flex-col items-center justify-center py-1 px-3 rounded-xl transition cursor-pointer {activeTab === 'mock' ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-500 dark:text-slate-400'}"
+  >
+    <Clock size={19} />
+    <span class="text-[9px] font-sans font-bold mt-0.5">{profileStore.t('modeMock')}</span>
+  </button>
+
+  <!-- Formulas Tab -->
+  <button
+    onclick={() => activeTab = 'formula'}
+    class="flex flex-col items-center justify-center py-1 px-3 rounded-xl transition cursor-pointer {activeTab === 'formula' ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-slate-500 dark:text-slate-400'}"
+  >
+    <FileText size={19} />
+    <span class="text-[9px] font-sans font-bold mt-0.5">{profileStore.t('modeFormulas')}</span>
+  </button>
+
+  <!-- Mobile Settings Toggle Button -->
+  <button
+    onclick={() => isMobileMenuOpen = !isMobileMenuOpen}
+    class="flex flex-col items-center justify-center py-1 px-3 rounded-xl transition cursor-pointer {isMobileMenuOpen ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-500 dark:text-slate-400'}"
+  >
+    <Menu size={19} />
+    <span class="text-[9px] font-sans font-bold mt-0.5">Menu</span>
+  </button>
+</nav>
+
+<!-- Mobile Settings Modal / Drawer -->
+{#if isMobileMenuOpen}
+  <button
+    type="button"
+    tabindex="-1"
+    aria-label="Fechar menu móvil"
+    class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs border-0 cursor-default p-0 m-0 w-full h-full md:hidden"
+    onclick={() => isMobileMenuOpen = false}
+    onkeydown={(e) => { if (e.key === 'Escape') isMobileMenuOpen = false; }}
+  ></button>
+
+  <div class="fixed bottom-16 left-3 right-3 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-4 space-y-4 md:hidden font-sans text-xs">
+    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+      <div class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+        <span class="font-serif text-sky-500 font-black">Ψ</span>
+        <span>Configurações & Perfil</span>
+      </div>
+      <button onclick={() => isMobileMenuOpen = false} class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+        <X size={16} />
+      </button>
+    </div>
+
+    <!-- Theme & Language row -->
+    <div class="grid grid-cols-2 gap-2">
+      <!-- Dark mode -->
+      <button
+        onclick={() => profileStore.toggleTheme()}
+        class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between font-bold text-slate-700 dark:text-slate-200 cursor-pointer"
+      >
+        <span>{profileStore.theme === 'light' ? 'Modo Escuro' : 'Modo Claro'}</span>
+        {#if profileStore.theme === 'light'}
+          <Moon size={15} class="text-indigo-600" />
+        {:else}
+          <Sun size={15} class="text-amber-400" />
+        {/if}
+      </button>
+
+      <!-- Language -->
+      <div class="relative">
+        <select
+          value={profileStore.lang}
+          onchange={(e) => profileStore.setLanguage((e.target as HTMLSelectElement).value as Language)}
+          class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-slate-700 dark:text-slate-200 text-xs cursor-pointer focus:outline-none"
+        >
+          <option value="pt">🇧🇷 Português</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="en">🇬🇧 English</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Area Filter on Mobile -->
+    <div class="space-y-1.5">
+      <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Filtrar por Matéria</div>
+      <div class="grid grid-cols-3 gap-1.5">
+        <button
+          onclick={() => { selectedAreaFilter = 'All'; isMobileMenuOpen = false; activeTab = 'practice'; }}
+          class="p-2 rounded-lg text-[11px] font-bold text-center border cursor-pointer {selectedAreaFilter === 'All' ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900 border-slate-800' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'}"
+        >
+          TODAS
+        </button>
+        {#each Object.entries(AREA_THEMES) as [areaName, theme]}
+          <button
+            onclick={() => { selectedAreaFilter = areaName; isMobileMenuOpen = false; activeTab = 'practice'; }}
+            class="p-2 rounded-lg text-[11px] font-bold text-center border cursor-pointer {selectedAreaFilter === areaName ? `${theme.badge} ring-1 ring-slate-400` : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'}"
+          >
+            {theme.shortName}
+          </button>
+        {/each}
+      </div>
+    </div>
+
+    <!-- Profile and Stats -->
+    <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px]">
+      <span class="text-slate-500">Perfil: <strong>{profileStore.activeProfileName}</strong></span>
+      <span class="text-emerald-600 dark:text-emerald-400 font-bold">{totalSolved} resolvidas</span>
+    </div>
+  </div>
+{/if}

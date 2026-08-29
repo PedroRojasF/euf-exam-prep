@@ -57,7 +57,7 @@
       {#each filteredCategories() as cat}
         <div class="rounded-2xl bg-white dark:bg-slate-900 border border-[#E5DFD4] dark:border-slate-800 p-5 space-y-3 shadow-xs">
           <h3 class="text-xs font-sans font-bold text-slate-900 dark:text-white uppercase pb-2 border-b border-[#E8E2D8] dark:border-slate-800 flex items-center justify-between">
-            <span>{cat.category}</span>
+            <span>{profileStore.tArea(cat.category)}</span>
             <span class="text-[11px] text-slate-400 font-normal">{cat.formulas.length} {profileStore.t('equationsCount')}</span>
           </h3>
 

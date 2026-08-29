@@ -18,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
-from bank.hints import get_physics_clues
+from bank.hints import get_physics_clues, get_all_physics_clues
 from bank.differ import format_inline_diff, list_all_pairs
 DB_PATH = os.path.join(BASE_DIR, "bank", "euf_bank.sqlite")
 
@@ -68,8 +68,8 @@ def export_bank_to_json(output_path=None):
             twin_stem = tag[:-1]
             twin_id = f"{exam_id}-{twin_stem}a"
 
-        # Contextual Socratic Hints (1-4)
-        clues = get_physics_clues(area, subtopic, qid, text)
+        # Contextual Socratic Hints in PT, ES, EN
+        clues = get_all_physics_clues(area, subtopic, qid, text)
 
         q_data = {
             "id": qid,
@@ -183,6 +183,11 @@ def export_bank_to_json(output_path=None):
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
+
+    frontend_pub = os.path.join(BASE_DIR, "frontend", "public", "questions.json")
+    if os.path.exists(os.path.dirname(frontend_pub)) and output_path != frontend_pub:
+        with open(frontend_pub, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=2)
 
     print(f"✅ Successfully exported {len(questions)} questions & {len(pairs)} twin pairs to:")
     print(f"   📁 {output_path} ({os.path.getsize(output_path) / 1024:.1f} KB)")

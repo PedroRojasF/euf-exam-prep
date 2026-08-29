@@ -1,250 +1,499 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR" class="h-full">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EUF Exam Master: Unified Physics Workspace (2010-2026)</title>
+  <title>EUF Physics Master — Exame Unificado de Pós-Graduação em Física</title>
+  
+  <!-- Authentic Scientific Typography: IBM Plex Sans + IBM Plex Mono + Newsreader Editorial -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- KaTeX for exact math rendering -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+  
+  <!-- Particle reinforcement -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"IBM Plex Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            serif: ['"Newsreader"', 'Georgia', 'serif'],
+            mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+          },
+          colors: {
+            paper: {
+              50: '#fbfcfd',
+              100: '#f4f6f8',
+              200: '#e5e9f0',
+              300: '#d8dee9',
+              400: '#94a3b8',
+              500: '#64748b',
+              600: '#475569',
+              700: '#334155',
+              800: '#1e293b',
+              900: '#0f172a',
+            },
+            graphite: {
+              950: '#0d0f12',
+              900: '#13171f',
+              850: '#1a1f2c',
+              800: '#222838',
+              700: '#323b50',
+            },
+            signal: {
+              orange: '#c2410c',
+              blue: '#0369a1',
+              green: '#166534',
+              amber: '#b45309',
+              red: '#991b1b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08); }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    /* Technical Grid Canvas */
+    .bg-scientific-grid {
+      background-color: #f4f6f8;
+      background-size: 24px 24px;
+      background-image: 
+        linear-gradient(to right, rgba(203, 213, 225, 0.45) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(203, 213, 225, 0.45) 1px, transparent 1px);
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Technical Card & Borders */
+    .lab-card {
+      background: #ffffff;
+      border: 1px solid #d8dee9;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.02);
+      border-radius: 6px;
+    }
+    
+    .lab-card-active {
+      border: 1.5px solid #0f4c81;
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(15, 76, 129, 0.12);
+    }
+
+    /* Tactile Physical Keycaps */
+    .key-cap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      border-bottom-width: 2px;
+    }
+
+    .key-cap-dark {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      border-bottom-width: 2px;
+    }
+
+    .katex-display { margin: 0.4em 0 !important; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+<body class="h-full flex flex-col bg-scientific-grid text-paper-900 font-sans antialiased selection:bg-slate-700 selection:text-white">
 
-  <!-- Header Navigation -->
-  <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+  <!-- ========================================== -->
+  <!-- 1. TOP SCIENTIFIC LABORATORY APP BAR -->
+  <!-- ========================================== -->
+  <header class="bg-graphite-950 text-white border-b border-graphite-800 sticky top-0 z-40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand & Journal Title -->
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-xl shadow-inner">
+        <div class="w-8 h-8 rounded bg-gradient-to-b from-slate-700 to-graphite-900 flex items-center justify-center font-serif italic font-bold text-white text-lg border border-slate-600 shadow-inner">
           Ψ
         </div>
         <div>
-          <h1 class="font-bold text-lg leading-tight tracking-tight">EUF Physics Master</h1>
-          <p class="text-xs text-slate-400">USP • UNICAMP • UNESP • UFRJ • UFMG (2010–2026)</p>
+          <div class="flex items-center space-x-2">
+            <h1 class="font-serif font-bold text-base tracking-tight text-slate-100 flex items-center gap-2">
+              EUF Physics Master
+              <span class="font-mono text-[10px] font-semibold bg-graphite-850 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded">
+                2010–2026
+              </span>
+            </h1>
+          </div>
+          <p class="text-[11px] text-slate-400 font-mono leading-none mt-0.5" id="i18n-subtitle">Exame Unificado de Pós-Graduação em Física (Brasil)</p>
         </div>
       </div>
 
-      <!-- Navigation Tabs -->
-      <nav class="flex items-center space-x-1 bg-slate-800 p-1 rounded-lg text-sm font-medium">
-        <button onclick="switchTab('practice')" id="tab-btn-practice" class="px-3 py-1.5 rounded-md bg-indigo-600 text-white transition">🎯 Practice</button>
-        <button onclick="switchTab('twins')" id="tab-btn-twins" class="px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition">👥 Twin A/B Lab</button>
-        <button onclick="switchTab('mindmap')" id="tab-btn-mindmap" class="px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition">🧠 Concept Map</button>
-        <button onclick="switchTab('progress')" id="tab-btn-progress" class="px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition">📊 Mastery & Errors</button>
+      <!-- Main Scientific Views Segmented Tabs -->
+      <nav class="flex items-center bg-graphite-900 p-1 rounded border border-graphite-800 text-xs font-mono" aria-label="Main Navigation">
+        <button onclick="switchTab('practice')" id="tab-btn-practice" class="px-3 py-1.5 rounded bg-slate-800 text-white font-semibold border border-slate-700 shadow-sm transition flex items-center gap-1.5">
+          <span>🎯</span> <span id="i18n-tab-practice">Treino & Resolução</span>
+        </button>
+        <button onclick="switchTab('twins')" id="tab-btn-twins" class="px-3 py-1.5 rounded text-slate-400 hover:text-slate-200 hover:bg-graphite-850 transition flex items-center gap-1.5">
+          <span>🧬</span> <span id="i18n-tab-twins">Variantes (A/B)</span>
+        </button>
+        <button onclick="switchTab('mindmap')" id="tab-btn-mindmap" class="px-3 py-1.5 rounded text-slate-400 hover:text-slate-200 hover:bg-graphite-850 transition flex items-center gap-1.5">
+          <span>🗺️</span> <span id="i18n-tab-mindmap">Matriz de Conteúdo</span>
+        </button>
+        <button onclick="switchTab('progress')" id="tab-btn-progress" class="px-3 py-1.5 rounded text-slate-400 hover:text-slate-200 hover:bg-graphite-850 transition flex items-center gap-1.5">
+          <span>📊</span> <span id="i18n-tab-progress">Fila de Erros</span>
+        </button>
       </nav>
 
-      <!-- Profile Bar -->
+      <!-- Precision Tools: Language Switcher, Formula Sheet, Shortcuts, Profile -->
       <div class="flex items-center space-x-2">
-        <span class="text-xs text-slate-400">Profile:</span>
-        <select id="profile-select" onchange="switchProfile(this.value)" class="bg-slate-800 text-white text-xs px-2.5 py-1.5 rounded border border-slate-700 focus:outline-none focus:border-indigo-500">
-          <option value="default">default</option>
-        </select>
-        <button onclick="promptNewProfile()" title="Create New Profile" class="text-xs bg-indigo-600/80 hover:bg-indigo-600 px-2 py-1.5 rounded text-white transition flex items-center gap-1">
-          + New
+        
+        <!-- Language Switcher (PT / ES / EN) -->
+        <div class="flex items-center bg-graphite-900 border border-graphite-700 rounded p-0.5 font-mono text-[11px]">
+          <button onclick="setLanguage('pt')" id="lang-btn-pt" class="px-1.5 py-0.5 rounded font-bold transition bg-slate-700 text-white" title="Português">
+            🇧🇷 PT
+          </button>
+          <button onclick="setLanguage('es')" id="lang-btn-es" class="px-1.5 py-0.5 rounded font-bold transition text-slate-400 hover:text-white" title="Español">
+            🇪🇸 ES
+          </button>
+          <button onclick="setLanguage('en')" id="lang-btn-en" class="px-1.5 py-0.5 rounded font-bold transition text-slate-400 hover:text-white" title="English">
+            🇺🇸 EN
+          </button>
+        </div>
+
+        <!-- Formula Drawer Trigger -->
+        <button onclick="toggleFormulaDrawer()" title="Formulário Oficial EUF (Atalho: F)" class="text-xs bg-graphite-900 hover:bg-graphite-850 text-amber-300 border border-amber-500/40 px-2 py-1.5 rounded font-mono flex items-center gap-1.5 transition">
+          <span>📐</span> <span id="i18n-btn-formulas" class="hidden sm:inline">Formulário</span> <span class="key-cap-dark text-[9px]">F</span>
         </button>
+
+        <!-- Shortcuts Trigger -->
+        <button onclick="toggleShortcutsModal()" title="Atalhos de Teclado (Atalho: ?)" class="text-xs bg-graphite-900 hover:bg-graphite-850 text-slate-300 border border-graphite-700 px-2 py-1.5 rounded font-mono transition">
+          ⌨️ <span class="key-cap-dark text-[9px]">?</span>
+        </button>
+
+        <!-- Profile Bar -->
+        <div class="flex items-center pl-1.5 border-l border-graphite-800 space-x-1">
+          <span class="text-[11px] text-slate-400 font-mono hidden md:inline" id="i18n-label-profile">Perfil:</span>
+          <select id="profile-select" onchange="switchProfile(this.value)" class="bg-graphite-900 text-slate-200 text-xs px-1.5 py-1.5 rounded border border-graphite-700 font-mono focus:outline-none focus:border-slate-500 max-w-[90px]">
+            <option value="default">default</option>
+          </select>
+          <button onclick="promptNewProfile()" title="Criar Novo Perfil" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-2 py-1.5 rounded font-mono font-bold transition">
+            +
+          </button>
+        </div>
       </div>
+
     </div>
   </header>
 
-  <!-- Overall Stat Cards Bar -->
-  <section class="bg-white border-b border-slate-200">
-    <div class="max-w-7xl mx-auto px-4 py-3 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-      <div class="p-2">
-        <div class="text-xs text-slate-500 font-medium">Bank Total</div>
-        <div class="text-xl font-bold text-slate-800" id="stat-total">829 Qs</div>
+  <!-- ========================================== -->
+  <!-- 2. INSTRUMENT STATUS & EXAM TELEMETRY HUD -->
+  <!-- ========================================== -->
+  <section class="bg-white border-b border-paper-300/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Metrics Strip -->
+      <div class="flex items-center space-x-6 text-xs font-mono">
+        <div class="flex items-center space-x-1.5">
+          <span class="text-paper-500 uppercase text-[10px]" id="i18n-stat-total">Banco Total:</span>
+          <span class="font-bold text-paper-900" id="stat-total">827 Qs</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="text-paper-500 uppercase text-[10px]" id="i18n-stat-solved">Dominadas:</span>
+          <span class="font-bold text-signal-green" id="stat-solved">0 (0.0%)</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="text-paper-500 uppercase text-[10px]" id="i18n-stat-review">Para Revisão:</span>
+          <span class="font-bold text-signal-amber" id="stat-review">0</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="text-paper-500 uppercase text-[10px]" id="i18n-stat-failed">A Repetir:</span>
+          <span class="font-bold text-signal-red" id="stat-failed">0</span>
+        </div>
       </div>
-      <div class="p-2">
-        <div class="text-xs text-slate-500 font-medium">Mastered / Solved</div>
-        <div class="text-xl font-bold text-emerald-600" id="stat-solved">0 (0.0%)</div>
+
+      <!-- Scientific Stopwatch Timer -->
+      <div class="flex items-center space-x-2 bg-paper-100 border border-paper-300 px-3 py-1 rounded">
+        <span class="text-[10px] font-mono uppercase text-paper-600 font-semibold flex items-center gap-1">
+          ⏱️ <span id="timer-mode-label">Temporizador</span>:
+        </span>
+        <span class="font-mono font-bold text-paper-900 text-sm w-14 text-center" id="timer-display">15:00</span>
+        <button onclick="toggleTimer()" id="timer-toggle-btn" class="text-[11px] font-mono font-bold bg-white hover:bg-paper-200 border border-paper-300 text-paper-800 px-2 py-0.5 rounded transition">
+          Iniciar
+        </button>
+        <button onclick="resetTimer()" class="text-[11px] text-paper-500 hover:text-paper-800 font-mono px-1 py-0.5 transition" title="Reiniciar">
+          ↺
+        </button>
       </div>
-      <div class="p-2">
-        <div class="text-xs text-slate-500 font-medium">Flagged for Review</div>
-        <div class="text-xl font-bold text-amber-600" id="stat-review">0</div>
-      </div>
-      <div class="p-2">
-        <div class="text-xs text-slate-500 font-medium">To Retry (Failed)</div>
-        <div class="text-xl font-bold text-rose-600" id="stat-failed">0</div>
-      </div>
+
     </div>
   </section>
 
-  <!-- Main Workspace Content -->
-  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+  <!-- ========================================== -->
+  <!-- 3. MAIN WORKSPACE CONTAINER -->
+  <!-- ========================================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex-1 w-full">
 
-    <!-- TAB 1: PRACTICE & SOLVER -->
-    <div id="view-practice" class="space-y-6">
+    <!-- ========================================== -->
+    <!-- VIEW 1: PRACTICE COCKPIT -->
+    <!-- ========================================== -->
+    <div id="view-practice" class="space-y-4">
       
-      <!-- Hierarchical Filter Bar -->
-      <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow space-y-3">
+      <!-- Filter & Classification Console -->
+      <div class="lab-card p-3.5 space-y-3">
+        
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           
-          <!-- Area Selector -->
+          <!-- 1. Area Selector -->
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">1. Subject Area</label>
-            <select id="filter-area" onchange="onAreaChange()" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium">
-              <option value="All Subject Areas">All Subject Areas</option>
+            <label class="block text-[11px] font-mono font-bold text-paper-700 uppercase mb-1 flex items-center justify-between">
+              <span id="i18n-filter-area">1. Matéria / Área</span>
+              <span class="text-paper-400 text-[10px]">[Área]</span>
+            </label>
+            <select id="filter-area" onchange="onAreaChange()" class="w-full text-xs font-medium bg-paper-50 border border-paper-300 rounded p-2 focus:ring-1 focus:ring-slate-700 focus:outline-none transition">
+              <option value="All Subject Areas">Todas as 6 Áreas</option>
             </select>
           </div>
 
-          <!-- Subtopic Selector -->
+          <!-- 2. Subtopic Selector -->
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">2. Specific Subtopic</label>
-            <select id="filter-subtopic" onchange="fetchQuestions()" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium text-indigo-700">
-              <option value="All Subtopics">All Subtopics</option>
+            <label class="block text-[11px] font-mono font-bold text-paper-700 uppercase mb-1 flex items-center justify-between">
+              <span id="i18n-filter-subtopic">2. Subtópico Específico</span>
+              <span class="text-slate-600 text-[10px]">[Tópico]</span>
+            </label>
+            <select id="filter-subtopic" onchange="fetchQuestions()" class="w-full text-xs font-bold text-slate-800 bg-paper-50 border border-paper-300 rounded p-2 focus:ring-1 focus:ring-slate-700 focus:outline-none transition">
+              <option value="All Subtopics">Todos os Subtópicos</option>
             </select>
           </div>
 
-          <!-- Exam Year -->
+          <!-- 3. Exam Edition Selector -->
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">3. Exam Year</label>
-            <select id="filter-exam" onchange="fetchQuestions()" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-              <option value="All Exams">All Exams (2010–2026)</option>
+            <label class="block text-[11px] font-mono font-bold text-paper-700 uppercase mb-1 flex items-center justify-between">
+              <span id="i18n-filter-exam">3. Edição do Exame</span>
+              <span class="text-paper-400 text-[10px]">2010–2026</span>
+            </label>
+            <select id="filter-exam" onchange="fetchQuestions()" class="w-full text-xs font-mono bg-paper-50 border border-paper-300 rounded p-2 focus:ring-1 focus:ring-slate-700 focus:outline-none transition">
+              <option value="All Exams">Todos os Exames (29 Edições)</option>
             </select>
           </div>
 
-          <!-- Status -->
+          <!-- 4. Learning Status Selector -->
           <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">4. Status</label>
-            <select id="filter-status" onchange="fetchQuestions()" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-              <option value="All Statuses">All Statuses</option>
-              <option value="unsolved">⏳ Unsolved Only</option>
-              <option value="solved">✅ Solved Only</option>
-              <option value="review">🔁 Needs Review</option>
-              <option value="failed">❌ Failed / To Retry</option>
+            <label class="block text-[11px] font-mono font-bold text-paper-700 uppercase mb-1 flex items-center justify-between">
+              <span id="i18n-filter-status">4. Estado de Estudo</span>
+              <span class="text-paper-400 text-[10px]">[Status]</span>
+            </label>
+            <select id="filter-status" onchange="fetchQuestions()" class="w-full text-xs font-medium bg-paper-50 border border-paper-300 rounded p-2 focus:ring-1 focus:ring-slate-700 focus:outline-none transition">
+              <option value="All Statuses">Todos os Estados</option>
+              <option value="unsolved">⏳ Não Resolvidas</option>
+              <option value="solved">✅ Dominadas (Solved)</option>
+              <option value="review">🚩 Para Revisão (Review)</option>
+              <option value="failed">❌ Erros a Repetir (Failed)</option>
             </select>
           </div>
 
         </div>
 
-        <!-- Keyword Search & Random Action Row -->
-        <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
-          <div class="flex-1 min-w-[240px]">
-            <input type="text" id="search-input" oninput="debounceSearch()" placeholder="Instant search concept (e.g. Poynting, Dirac, Carnot, Kepler, Hamilton)..." class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <!-- Search Bar & Instant Actions -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-paper-200">
+          <div class="flex-1 min-w-[260px] relative">
+            <input type="text" id="search-input" oninput="debounceSearch()" placeholder="Buscar por termo físico..." class="w-full text-xs bg-paper-50 border border-paper-300 rounded pl-7 pr-3 py-1.5 focus:ring-1 focus:ring-slate-700 focus:outline-none transition">
+            <span class="absolute left-2 top-2 text-paper-400 text-xs">🔍</span>
           </div>
-          <div class="flex items-center space-x-2">
-            <button onclick="pickRandomProblem()" class="text-xs font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 px-3 py-2 rounded-lg transition flex items-center gap-1.5">
-              🎲 Random Drill
+
+          <div class="flex items-center space-x-2 font-mono text-xs">
+            <button onclick="pickRandomProblem()" class="font-bold bg-paper-100 hover:bg-paper-200 text-paper-800 border border-paper-300 px-3 py-1.5 rounded transition flex items-center gap-1.5 shadow-sm">
+              <span id="i18n-btn-random">🎲 Questão Aleatória</span>
             </button>
-            <button onclick="nextProblem()" class="text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-2 rounded-lg transition flex items-center gap-1">
-              Next ➔
+            <button onclick="prevProblem()" title="Questão Anterior (Atalho: J ou ↑)" class="font-bold bg-paper-100 hover:bg-paper-200 text-paper-800 border border-paper-300 px-2.5 py-1.5 rounded transition flex items-center gap-1">
+              ◀ <span class="key-cap text-[8px]">J</span>
+            </button>
+            <button onclick="nextProblem()" title="Próxima Questão (Atalho: K ou ↓)" class="font-bold bg-paper-100 hover:bg-paper-200 text-paper-800 border border-paper-300 px-2.5 py-1.5 rounded transition flex items-center gap-1">
+              <span class="key-cap text-[8px]">K</span> ▶
             </button>
           </div>
         </div>
+
       </div>
 
-      <!-- Main Layout: Question List Drawer + Active Question Card -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Problem Workspace: Left Question Navigator + Right Problem View -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
         
-        <!-- Left Column: Question Selector List (4 Cols) -->
-        <div class="lg:col-span-4 bg-white rounded-xl border border-slate-200 card-shadow p-4 flex flex-col h-[750px]">
-          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-2">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider" id="pool-count">Question Pool (0)</span>
-            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600" id="subtopic-mastery-badge">0% Mastered</span>
+        <!-- Left Panel: Questions Index (4 Columns) -->
+        <div class="lg:col-span-4 lab-card p-3.5 flex flex-col h-[780px]">
+          
+          <div class="flex items-center justify-between pb-2.5 border-b border-paper-200 mb-2">
+            <div>
+              <span class="text-[11px] font-mono font-bold text-paper-600 uppercase" id="pool-count">Questões (0)</span>
+              <div class="text-[10px] text-paper-400 font-mono" id="i18n-nav-hint">Use <span class="key-cap text-[8px]">J</span> / <span class="key-cap text-[8px]">K</span> para navegar</div>
+            </div>
+            <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-paper-100 text-paper-700 border border-paper-300" id="subtopic-mastery-badge">0%</span>
           </div>
           
-          <div class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1" id="question-list-container">
-            <!-- Dynamically populated question item cards -->
+          <div class="flex-1 overflow-y-auto custom-scrollbar space-y-1 pr-1" id="question-list-container">
+            <!-- Dynamically rendered question items -->
           </div>
+
         </div>
 
-        <!-- Right Column: Active Question Workspace (8 Cols) -->
+        <!-- Right Panel: Problem Cockpit (8 Columns) -->
         <div class="lg:col-span-8 space-y-4">
           
-          <!-- Card Header & Metadata -->
-          <div class="bg-white rounded-xl border border-slate-200 card-shadow p-6 space-y-5" id="active-question-card">
+          <div class="lab-card p-5 space-y-4" id="active-question-card">
             
-            <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
+            <!-- Question Header -->
+            <div class="flex flex-wrap items-start justify-between gap-3 border-b border-paper-200 pb-3">
               <div>
                 <div class="flex items-center space-x-2">
-                  <span class="text-lg font-extrabold text-slate-900" id="card-qid">Loading...</span>
-                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700" id="card-status-badge">⏳ Unsolved</span>
+                  <span class="font-mono text-xl font-bold text-paper-900 tracking-tight" id="card-qid">Carregando...</span>
+                  <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-paper-100 text-paper-700 border border-paper-300" id="card-status-badge">⏳ Unsolved</span>
+                  <span id="card-area-badge" class="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-slate-100 text-slate-800 border border-slate-300">Mecânica Clássica</span>
                 </div>
-                <div class="text-xs text-slate-500 mt-1" id="card-meta">Exam: — | Area: —</div>
-              </div>
-              <div class="flex items-center space-x-2">
-                <button onclick="toggleCardZoom()" title="Zoom Image" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded transition">🔍 Zoom</button>
-              </div>
-            </div>
-
-            <!-- Notice / Errata Callout (if any) -->
-            <div id="card-errata-banner" class="hidden bg-amber-50 border-l-4 border-amber-500 p-3 rounded text-xs text-amber-900"></div>
-
-            <!-- Official Vector-Sharp Question Crop Image -->
-            <div class="bg-white border border-slate-200 rounded-lg p-2 flex items-center justify-center min-h-[220px] overflow-x-auto">
-              <img id="card-img" src="" alt="Official Question Graphic" class="max-w-full rounded shadow-sm transition-all duration-200">
-            </div>
-
-            <!-- Contextual Physics Clues Progression -->
-            <div class="border border-slate-200 rounded-lg overflow-hidden text-sm" id="clues-container">
-              <div class="bg-slate-50 px-4 py-2.5 font-bold text-xs text-slate-700 uppercase tracking-wider border-b border-slate-200 flex items-center justify-between">
-                <span>📐 Physics Solution Strategy & Clues (Self-Evaluation)</span>
-                <span class="text-[11px] font-semibold text-indigo-600" id="clue-topic-title">General Topic</span>
-              </div>
-              <div class="divide-y divide-slate-100 text-xs">
-                <details class="group p-3 hover:bg-slate-50 transition cursor-pointer">
-                  <summary class="font-semibold text-indigo-700 flex items-center justify-between">
-                    Level 1: Core Physical Principle & Conservation Law
-                    <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
-                  </summary>
-                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-1"></p>
-                </details>
-
-                <details class="group p-3 hover:bg-slate-50 transition cursor-pointer">
-                  <summary class="font-semibold text-indigo-700 flex items-center justify-between">
-                    Level 2: Coordinates, Setup & Equations of Motion
-                    <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
-                  </summary>
-                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-2"></p>
-                </details>
-
-                <details class="group p-3 hover:bg-slate-50 transition cursor-pointer">
-                  <summary class="font-semibold text-indigo-700 flex items-center justify-between">
-                    Level 3: Intermediate Mathematical Checkpoint & Dimensional Check
-                    <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
-                  </summary>
-                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-3"></p>
-                </details>
-
-                <details class="group p-3 hover:bg-slate-50 transition cursor-pointer">
-                  <summary class="font-semibold text-indigo-700 flex items-center justify-between">
-                    Level 4: Physical Boundary Limits & Option Traps
-                    <span class="text-slate-400 group-open:rotate-180 transition">▼</span>
-                  </summary>
-                  <p class="mt-2 text-slate-600 pl-2 leading-relaxed" id="hint-4"></p>
-                </details>
-              </div>
-            </div>
-
-            <!-- Student Study Notes & Progress Updater -->
-            <div class="space-y-3 pt-2">
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-                <div>
-                  <label class="block text-xs font-bold text-slate-600 mb-1">Learning Status</label>
-                  <select id="user-status-select" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                    <option value="unsolved">⏳ Unsolved</option>
-                    <option value="solved">✅ Mastered / Solved</option>
-                    <option value="review">🔁 Flagged for Review</option>
-                    <option value="failed">❌ Failed / To Retry</option>
-                  </select>
-                </div>
-                <div class="sm:col-span-2">
-                  <label class="block text-xs font-bold text-slate-600 mb-1">Personal Notes / Error Diary</label>
-                  <input type="text" id="user-notes-input" placeholder="Notes, key equations, pitfall reminders..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                </div>
+                <div class="text-xs text-paper-500 font-mono mt-1" id="card-meta">Exame: — | Página: —</div>
               </div>
 
-              <div class="flex items-center justify-between pt-1">
-                <button onclick="saveQuestionStatus()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5">
-                  💾 Save Progress to Profile
+              <div class="flex items-center space-x-2 font-mono">
+                <!-- Twin Lab Cross-Link -->
+                <button id="card-twin-btn" onclick="jumpToTwinLab()" class="hidden text-xs bg-paper-100 hover:bg-paper-200 text-paper-900 border border-paper-300 px-2.5 py-1.5 rounded font-bold transition flex items-center gap-1.5 shadow-sm">
+                  <span>🧬</span> <span id="i18n-twin-btn">Variante Irmã</span> <span class="key-cap text-[8px]">T</span>
                 </button>
-                <span id="save-feedback" class="text-xs text-emerald-600 font-semibold opacity-0 transition-opacity">Saved!</span>
+                <!-- Zoom Toggle -->
+                <button onclick="toggleCardZoom()" title="Alternar Zoom (Atalho: Z)" class="text-xs bg-paper-100 hover:bg-paper-200 text-paper-800 border border-paper-300 px-2.5 py-1.5 rounded font-mono transition flex items-center gap-1">
+                  🔍 Zoom <span class="key-cap text-[8px]">Z</span>
+                </button>
               </div>
+            </div>
+
+            <!-- Committee Notice / Errata (if any) -->
+            <div id="card-errata-banner" class="hidden bg-amber-50 border-l-4 border-amber-600 p-3 rounded-r text-xs text-amber-950 font-medium"></div>
+
+            <!-- Official Exam High-Res LaTeX Graphic -->
+            <div class="bg-white border border-paper-200 rounded p-2 flex flex-col items-center justify-center min-h-[260px] overflow-hidden relative">
+              <div id="img-loading-spinner" class="hidden absolute inset-0 bg-white/90 flex items-center justify-center text-xs text-paper-500 font-mono">
+                Carregando recorte em alta resolução...
+              </div>
+              <img id="card-img" src="" alt="Enunciado Oficial EUF" class="max-w-full rounded transition-transform duration-150 select-none cursor-zoom-in" onclick="toggleCardZoom()">
+            </div>
+
+            <!-- 4-Level Solution Strategy & Physical Clues -->
+            <div class="border border-paper-300 rounded overflow-hidden text-xs" id="clues-container">
+              <div class="bg-graphite-900 text-white px-3.5 py-2.5 font-mono font-bold text-xs uppercase flex items-center justify-between border-b border-graphite-800">
+                <span class="flex items-center gap-2">
+                  <span class="text-amber-400">💡</span> <span id="i18n-strategy-title">Estratégia de Resolução & Pistas Físicas</span>
+                </span>
+                <span class="text-[11px] font-mono text-amber-300 bg-graphite-850 px-2 py-0.5 rounded border border-graphite-700" id="clue-topic-title">Tópico</span>
+              </div>
+              <div class="divide-y divide-paper-200 bg-white">
+                
+                <!-- Level 1 -->
+                <details class="group p-3 hover:bg-paper-50 transition cursor-pointer" id="hint-det-1">
+                  <summary class="font-bold text-paper-900 flex items-center justify-between">
+                    <span class="flex items-center gap-2 font-mono text-xs">
+                      <span class="w-4 h-4 rounded bg-paper-200 text-paper-800 flex items-center justify-center text-[10px]">1</span>
+                      <span id="i18n-level1-title">Nível 1: Princípio Físico Fundamental & Leis de Conservação</span>
+                    </span>
+                    <div class="flex items-center gap-2">
+                      <span class="key-cap text-[8px]">1</span>
+                      <span class="text-paper-400 group-open:rotate-180 transition text-[10px]">▼</span>
+                    </div>
+                  </summary>
+                  <div class="mt-2 text-paper-700 pl-6 leading-relaxed font-sans" id="hint-1"></div>
+                </details>
+
+                <!-- Level 2 -->
+                <details class="group p-3 hover:bg-paper-50 transition cursor-pointer" id="hint-det-2">
+                  <summary class="font-bold text-paper-900 flex items-center justify-between">
+                    <span class="flex items-center gap-2 font-mono text-xs">
+                      <span class="w-4 h-4 rounded bg-paper-200 text-paper-800 flex items-center justify-center text-[10px]">2</span>
+                      <span id="i18n-level2-title">Nível 2: Escolha de Coordenadas, Graus de Liberdade & Equações</span>
+                    </span>
+                    <div class="flex items-center gap-2">
+                      <span class="key-cap text-[8px]">2</span>
+                      <span class="text-paper-400 group-open:rotate-180 transition text-[10px]">▼</span>
+                    </div>
+                  </summary>
+                  <div class="mt-2 text-paper-700 pl-6 leading-relaxed font-sans" id="hint-2"></div>
+                </details>
+
+                <!-- Level 3 -->
+                <details class="group p-3 hover:bg-paper-50 transition cursor-pointer" id="hint-det-3">
+                  <summary class="font-bold text-paper-900 flex items-center justify-between">
+                    <span class="flex items-center gap-2 font-mono text-xs">
+                      <span class="w-4 h-4 rounded bg-paper-200 text-paper-800 flex items-center justify-center text-[10px]">3</span>
+                      <span id="i18n-level3-title">Nível 3: Ponto de Controle Matemático & Análise Dimensional</span>
+                    </span>
+                    <div class="flex items-center gap-2">
+                      <span class="key-cap text-[8px]">3</span>
+                      <span class="text-paper-400 group-open:rotate-180 transition text-[10px]">▼</span>
+                    </div>
+                  </summary>
+                  <div class="mt-2 text-paper-700 pl-6 leading-relaxed font-sans" id="hint-3"></div>
+                </details>
+
+                <!-- Level 4 -->
+                <details class="group p-3 hover:bg-paper-50 transition cursor-pointer" id="hint-det-4">
+                  <summary class="font-bold text-paper-900 flex items-center justify-between">
+                    <span class="flex items-center gap-2 font-mono text-xs">
+                      <span class="w-4 h-4 rounded bg-paper-200 text-paper-800 flex items-center justify-center text-[10px]">4</span>
+                      <span id="i18n-level4-title">Nível 4: Limites Físicos Assintóticos & Armadilhas das Alternativas</span>
+                    </span>
+                    <div class="flex items-center gap-2">
+                      <span class="key-cap text-[8px]">4</span>
+                      <span class="text-paper-400 group-open:rotate-180 transition text-[10px]">▼</span>
+                    </div>
+                  </summary>
+                  <div class="mt-2 text-paper-700 pl-6 leading-relaxed font-sans" id="hint-4"></div>
+                </details>
+
+              </div>
+            </div>
+
+            <!-- Learning Status & Error Diary Console -->
+            <div class="bg-paper-50 border border-paper-300 rounded p-3.5 space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-[11px] font-mono font-bold text-paper-700 uppercase" id="i18n-classify-title">Classificar Desempenho:</span>
+                
+                <!-- Fast Status Action Buttons -->
+                <div class="flex items-center space-x-1.5 font-mono">
+                  <button onclick="setFastStatus('solved')" class="text-xs font-bold bg-signal-green hover:opacity-90 text-white px-3 py-1 rounded shadow-sm transition flex items-center gap-1">
+                    <span id="i18n-btn-solved">✅ Dominada</span> <span class="key-cap-dark text-[8px]">S</span>
+                  </button>
+                  <button onclick="setFastStatus('review')" class="text-xs font-bold bg-signal-amber hover:opacity-90 text-white px-3 py-1 rounded shadow-sm transition flex items-center gap-1">
+                    <span id="i18n-btn-review">🚩 Revisar</span> <span class="key-cap-dark text-[8px]">R</span>
+                  </button>
+                  <button onclick="setFastStatus('failed')" class="text-xs font-bold bg-signal-red hover:opacity-90 text-white px-3 py-1 rounded shadow-sm transition flex items-center gap-1">
+                    <span id="i18n-btn-failed">❌ Repetir</span> <span class="key-cap-dark text-[8px]">X</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Notes Input -->
+              <div>
+                <label class="block text-[10px] font-mono font-bold text-paper-600 uppercase mb-1" id="i18n-notes-label">Diário de Erros / Anotações do Exercício:</label>
+                <div class="flex gap-2">
+                  <input type="text" id="user-notes-input" placeholder="Anote onde você errou a aproximação, limites de integração, sinal, etc..." class="flex-1 text-xs bg-white border border-paper-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-slate-700 focus:outline-none transition">
+                  <button onclick="saveQuestionStatus()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-mono font-bold px-3 py-1.5 rounded transition shadow-sm flex items-center gap-1">
+                    💾 <span id="i18n-btn-save">Salvar</span>
+                  </button>
+                </div>
+                <span id="save-feedback" class="text-[11px] font-mono text-signal-green font-semibold opacity-0 transition-opacity mt-1 block">Salvo no perfil ativo!</span>
+              </div>
+
             </div>
 
           </div>
@@ -255,73 +504,129 @@
 
     </div>
 
-    <!-- TAB 2: TWIN A/B LAB -->
-    <div id="view-twins" class="hidden space-y-6">
-      <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h2 class="text-base font-bold text-slate-800">👥 Twin Question Lab (Variant A vs Variant B)</h2>
-          <p class="text-xs text-slate-500">Compare official twin problem variants side by side with zero OCR distortion.</p>
+    <!-- ========================================== -->
+    <!-- VIEW 2: TWIN A/B LAB (RE-DESIGNED & CLEAR) -->
+    <!-- ========================================== -->
+    <div id="view-twins" class="hidden space-y-4">
+      
+      <!-- Explanatory Header Box -->
+      <div class="lab-card p-4 space-y-3">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-paper-200 pb-3">
+          <div>
+            <h2 class="font-serif font-bold text-base text-paper-900 flex items-center gap-2">
+              <span>🧬</span> <span id="i18n-twins-title">Laboratório de Variantes Gemelas (Variante A vs Variante B)</span>
+            </h2>
+            <p class="text-xs text-paper-600 font-sans mt-0.5" id="i18n-twins-desc">
+              O exame EUF cria pares de questões com o mesmo sistema físico, alterando apenas os parâmetros ou a variável pedida. Compare aqui as duas versões lado a lado e descubra o que mudou.
+            </p>
+          </div>
         </div>
-        <div class="min-w-[300px]">
-          <select id="pair-select" onchange="onPairChange()" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-indigo-700">
-            <!-- Dynamically populated pairs -->
-          </select>
+
+        <!-- Pair Filter Controls -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[10px] font-mono font-bold text-paper-500 uppercase mb-1" id="i18n-twins-filter-area">Filtrar por Área:</label>
+            <select id="pair-filter-area" onchange="onPairAreaFilterChange()" class="w-full text-xs font-mono bg-paper-50 border border-paper-300 rounded p-2 focus:ring-1 focus:ring-slate-700 focus:outline-none">
+              <option value="All">Todas as Áreas</option>
+            </select>
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-[10px] font-mono font-bold text-paper-500 uppercase mb-1" id="i18n-twins-select-label">Selecionar Par Gemelo (Exame & Tópico):</label>
+            <select id="pair-select" onchange="onPairChange()" class="w-full text-xs font-mono font-bold text-slate-900 bg-paper-50 border border-paper-300 rounded p-2 focus:ring-1 focus:ring-slate-700 focus:outline-none">
+              <!-- Dynamically populated pairs -->
+            </select>
+          </div>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Parameter Variation Summary (What Changed?) -->
+      <div class="bg-graphite-950 text-slate-100 rounded p-4 font-mono text-xs border border-graphite-800 space-y-2">
+        <div class="flex items-center justify-between text-slate-400 border-b border-graphite-800 pb-1.5 text-[11px]">
+          <span class="flex items-center gap-1.5 text-amber-300 font-bold">
+            <span>🔬</span> <span id="i18n-diff-title">O Que Mudou Entre a Variante A e a Variante B:</span>
+          </span>
+          <span id="pair-stem-badge" class="bg-graphite-850 text-slate-200 px-2 py-0.5 rounded border border-graphite-700">mcPT1</span>
+        </div>
+        <pre id="pair-diff-text" class="text-[11px] leading-relaxed text-slate-200 whitespace-pre-wrap font-mono"></pre>
+      </div>
+
+      <!-- Side-by-Side Graphic Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
         <!-- Variant A -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200 card-shadow space-y-3">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-            <span class="text-sm font-extrabold text-indigo-700" id="pair-label-a">🅰️ Variant A</span>
+        <div class="lab-card p-4 space-y-2 border-t-4 border-t-slate-700">
+          <div class="flex items-center justify-between border-b border-paper-200 pb-2">
+            <div>
+              <span class="text-xs font-mono font-bold text-slate-900" id="pair-label-a">🏷️ Variante A</span>
+              <div class="text-[10px] text-paper-500 font-mono">Caderno Form A (Ímpar)</div>
+            </div>
+            <span class="text-[10px] bg-paper-100 text-paper-700 font-mono px-2 py-0.5 rounded border border-paper-300 font-bold">Versão A</span>
           </div>
-          <div class="flex items-center justify-center p-2 bg-slate-50 border rounded-lg overflow-x-auto min-h-[300px]">
-            <img id="pair-img-a" src="" class="max-w-full rounded shadow-sm">
+          <div class="flex items-center justify-center p-2 bg-white border border-paper-200 rounded overflow-x-auto min-h-[320px]">
+            <img id="pair-img-a" src="" class="max-w-full rounded">
           </div>
         </div>
 
         <!-- Variant B -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200 card-shadow space-y-3">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-            <span class="text-sm font-extrabold text-indigo-700" id="pair-label-b">🅱️ Variant B</span>
+        <div class="lab-card p-4 space-y-2 border-t-4 border-t-amber-600">
+          <div class="flex items-center justify-between border-b border-paper-200 pb-2">
+            <div>
+              <span class="text-xs font-mono font-bold text-amber-900" id="pair-label-b">🏷️ Variante B</span>
+              <div class="text-[10px] text-paper-500 font-mono">Caderno Form B (Par)</div>
+            </div>
+            <span class="text-[10px] bg-amber-50 text-amber-800 font-mono px-2 py-0.5 rounded border border-amber-300 font-bold">Versão B</span>
           </div>
-          <div class="flex items-center justify-center p-2 bg-slate-50 border rounded-lg overflow-x-auto min-h-[300px]">
-            <img id="pair-img-b" src="" class="max-w-full rounded shadow-sm">
+          <div class="flex items-center justify-center p-2 bg-white border border-paper-200 rounded overflow-x-auto min-h-[320px]">
+            <img id="pair-img-b" src="" class="max-w-full rounded">
           </div>
         </div>
+
       </div>
+
     </div>
 
-    <!-- TAB 3: CONCEPT MIND MAP -->
-    <div id="view-mindmap" class="hidden space-y-6">
-      <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
-        <h2 class="text-base font-bold text-slate-800">🧠 Interactive EUF Syllabus Knowledge Tree</h2>
-        <p class="text-xs text-slate-500">Explore the 6 core domains, question frequency, and subtopic clusters. Click any subtopic to start a drill.</p>
+    <!-- ========================================== -->
+    <!-- VIEW 3: SYLLABUS MAP -->
+    <!-- ========================================== -->
+    <div id="view-mindmap" class="hidden space-y-4">
+      <div class="lab-card p-5 space-y-4">
+        <div>
+          <h2 class="font-serif font-bold text-base text-paper-900 flex items-center gap-2">
+            <span>🗺️</span> <span id="i18n-mindmap-title">Matriz de Conhecimento do EUF (6 Áreas Temáticas)</span>
+          </h2>
+          <p class="text-xs text-paper-500 font-mono mt-0.5" id="i18n-mindmap-desc">Clique em qualquer subtópico para iniciar uma sessão de prática deliberada focada.</p>
+        </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="concept-map-container">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="concept-map-container">
           <!-- Dynamically populated concept tiles -->
         </div>
       </div>
     </div>
 
-    <!-- TAB 4: MASTERY & ERROR DIARY -->
-    <div id="view-progress" class="hidden space-y-6">
-      <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
-        <h2 class="text-base font-bold text-slate-800">📊 Profile Mastery & Error Queue (Spaced Repetition)</h2>
-        <p class="text-xs text-slate-500">Every problem flagged for review or marked as failed is queued here for deliberate re-testing.</p>
+    <!-- ========================================== -->
+    <!-- VIEW 4: ERROR QUEUE -->
+    <!-- ========================================== -->
+    <div id="view-progress" class="hidden space-y-4">
+      <div class="lab-card p-5 space-y-4">
+        <div>
+          <h2 class="font-serif font-bold text-base text-paper-900 flex items-center gap-2">
+            <span>📊</span> <span id="i18n-queue-title">Fila de Repetição Espaçada & Diário de Erros</span>
+          </h2>
+          <p class="text-xs text-paper-500 font-mono mt-0.5" id="i18n-queue-desc">Todas as questões marcadas para revisão ou que você errou ficam listadas aqui com suas anotações.</p>
+        </div>
         
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse">
             <thead>
-              <tr class="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider">
-                <th class="p-3">ID</th>
-                <th class="p-3">Area & Subtopic</th>
-                <th class="p-3">Status</th>
-                <th class="p-3">Your Error Notes</th>
-                <th class="p-3">Action</th>
+              <tr class="bg-paper-100 text-paper-700 font-mono font-bold uppercase tracking-wider border-b border-paper-300">
+                <th class="p-2.5" id="i18n-th-code">Código</th>
+                <th class="p-2.5" id="i18n-th-area">Área & Subtópico</th>
+                <th class="p-2.5" id="i18n-th-status">Estado</th>
+                <th class="p-2.5" id="i18n-th-notes">Anotações do Erro</th>
+                <th class="p-2.5 text-right" id="i18n-th-action">Ação</th>
               </tr>
             </thead>
-            <tbody id="error-table-body" class="divide-y divide-slate-100">
+            <tbody id="error-table-body" class="divide-y divide-paper-200 font-sans">
               <!-- Dynamically populated error rows -->
             </tbody>
           </table>
@@ -331,24 +636,502 @@
 
   </main>
 
+  <!-- ========================================== -->
+  <!-- 4. OFFICIAL FORMULA SHEET DRAWER -->
+  <!-- ========================================== -->
+  <div id="formula-drawer" class="fixed inset-y-0 right-0 w-full sm:w-[540px] bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-200 ease-in-out border-l border-paper-300 flex flex-col">
+    
+    <div class="bg-graphite-950 text-white p-3.5 flex items-center justify-between border-b border-graphite-800">
+      <div class="flex items-center space-x-2 font-serif font-bold text-sm">
+        <span class="text-amber-400">📐</span>
+        <span id="i18n-drawer-title">Formulário Oficial & Constantes Físicas</span>
+      </div>
+      <button onclick="toggleFormulaDrawer()" class="text-slate-400 hover:text-white font-mono text-xs px-2 py-1 rounded bg-graphite-850 border border-graphite-700">
+        ✕ ESC
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4 space-y-4 text-xs custom-scrollbar">
+      
+      <!-- Fundamental Constants -->
+      <div class="border border-paper-300 rounded p-3.5 bg-paper-50 space-y-2">
+        <h4 class="font-mono font-bold text-xs uppercase text-paper-800 flex items-center gap-1.5">
+          <span>⚙️</span> <span id="i18n-constants-title">Constantes Físicas Fundamentais</span>
+        </h4>
+        <div class="grid grid-cols-2 gap-2 text-[11px] font-mono text-paper-800">
+          <div>$c = 3.00 \times 10^8 \text{ m/s}$</div>
+          <div>$\hbar = 1.05 \times 10^{-34} \text{ J}\cdot\text{s}$</div>
+          <div>$e = 1.60 \times 10^{-19} \text{ C}$</div>
+          <div>$k_B = 1.38 \times 10^{-23} \text{ J/K}$</div>
+          <div>$\varepsilon_0 = 8.85 \times 10^{-12} \text{ F/m}$</div>
+          <div>$\mu_0 = 4\pi \times 10^{-7} \text{ T}\cdot\text{m/A}$</div>
+          <div>$m_e = 9.11 \times 10^{-31} \text{ kg}$</div>
+          <div>$G = 6.67 \times 10^{-11} \text{ N}\cdot\text{m}^2/\text{kg}^2$</div>
+        </div>
+      </div>
+
+      <!-- Mecânica Clássica -->
+      <div class="border border-paper-300 rounded p-3.5 bg-white space-y-1.5">
+        <h4 class="font-mono font-bold text-xs uppercase text-paper-900 border-b pb-1">Mecânica Clássica</h4>
+        <div class="space-y-1 text-[11px] text-paper-800">
+          <div>$$\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_i}\right) - \frac{\partial L}{\partial q_i} = 0, \quad L = T - V$$</div>
+          <div>$$H = \sum p_i \dot{q}_i - L, \quad \dot{q}_i = \frac{\partial H}{\partial p_i}, \quad \dot{p}_i = -\frac{\partial H}{\partial q_i}$$</div>
+          <div>$$V_{\text{ef}}(r) = V(r) + \frac{L^2}{2\mu r^2}, \quad I = \int r_\perp^2 dm$$</div>
+        </div>
+      </div>
+
+      <!-- Eletromagnetismo -->
+      <div class="border border-paper-300 rounded p-3.5 bg-white space-y-1.5">
+        <h4 class="font-mono font-bold text-xs uppercase text-paper-900 border-b pb-1">Eletromagnetismo</h4>
+        <div class="space-y-1 text-[11px] text-paper-800">
+          <div>$$\nabla \cdot \vec{E} = \frac{\rho}{\varepsilon_0}, \quad \nabla \cdot \vec{B} = 0$$</div>
+          <div>$$\nabla \times \vec{E} = -\frac{\partial \vec{B}}{\partial t}, \quad \nabla \times \vec{B} = \mu_0 \vec{J} + \mu_0 \varepsilon_0 \frac{\partial \vec{E}}{\partial t}$$</div>
+          <div>$$\vec{S} = \frac{1}{\mu_0} (\vec{E} \times \vec{B}), \quad u = \frac{1}{2}\left(\varepsilon_0 E^2 + \frac{B^2}{\mu_0}\right)$$</div>
+        </div>
+      </div>
+
+      <!-- Mecânica Quântica -->
+      <div class="border border-paper-300 rounded p-3.5 bg-white space-y-1.5">
+        <h4 class="font-mono font-bold text-xs uppercase text-paper-900 border-b pb-1">Mecânica Quântica</h4>
+        <div class="space-y-1 text-[11px] text-paper-800">
+          <div>$$i\hbar \frac{\partial \psi}{\partial t} = \hat{H}\psi, \quad [\hat{x}, \hat{p}] = i\hbar$$</div>
+          <div>$$\hat{a} = \sqrt{\frac{m\omega}{2\hbar}}\left(\hat{x} + \frac{i\hat{p}}{m\omega}\right), \quad [\hat{a}, \hat{a}^\dagger] = 1, \quad E_n = \hbar\omega\left(n + \frac{1}{2}\right)$$</div>
+          <div>$$E_n^{(1)} = \langle \psi_n^{(0)} | \hat{H}' | \psi_n^{(0)} \rangle, \quad [J_i, J_j] = i\hbar \varepsilon_{ijk} J_k$$</div>
+        </div>
+      </div>
+
+      <!-- Termodinâmica & Física Estatística -->
+      <div class="border border-paper-300 rounded p-3.5 bg-white space-y-1.5">
+        <h4 class="font-mono font-bold text-xs uppercase text-paper-900 border-b pb-1">Termodinâmica & Física Estatística</h4>
+        <div class="space-y-1 text-[11px] text-paper-800">
+          <div>$$dU = TdS - PdV + \mu dN, \quad F = U - TS, \quad G = H - TS$$</div>
+          <div>$$Z = \sum_i e^{-\beta E_i}, \quad F = -k_B T \ln Z, \quad \langle E \rangle = -\frac{\partial \ln Z}{\partial \beta}$$</div>
+          <div>$$\bar{n}_{\text{FD}} = \frac{1}{e^{\beta(\varepsilon - \mu)} + 1}, \quad \bar{n}_{\text{BE}} = \frac{1}{e^{\beta(\varepsilon - \mu)} - 1}$$</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="formula-backdrop" onclick="toggleFormulaDrawer()" class="fixed inset-0 bg-black/40 z-40 hidden transition-opacity"></div>
+
+  <!-- ========================================== -->
+  <!-- 5. KEYBOARD SHORTCUTS MODAL -->
+  <!-- ========================================== -->
+  <div id="shortcuts-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div class="fixed inset-0 bg-black/50" onclick="toggleShortcutsModal()"></div>
+    <div class="bg-white rounded max-w-md w-full p-5 shadow-2xl border border-paper-300 z-10 space-y-3">
+      <div class="flex items-center justify-between border-b pb-2">
+        <h3 class="font-mono font-bold text-sm text-paper-900 flex items-center gap-2">
+          <span>⌨️</span> <span id="i18n-shortcuts-title">Atalhos de Teclado</span>
+        </h3>
+        <button onclick="toggleShortcutsModal()" class="text-paper-400 hover:text-paper-700 font-mono text-sm">✕</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+        <div class="flex items-center justify-between p-2 bg-paper-50 rounded border border-paper-200">
+          <span class="text-paper-700" id="i18n-sc-next">Próxima Questão</span>
+          <span class="key-cap">K</span>
+        </div>
+        <div class="flex items-center justify-between p-2 bg-paper-50 rounded border border-paper-200">
+          <span class="text-paper-700" id="i18n-sc-prev">Questão Anterior</span>
+          <span class="key-cap">J</span>
+        </div>
+        <div class="flex items-center justify-between p-2 bg-paper-50 rounded border border-paper-200">
+          <span class="text-paper-700" id="i18n-sc-solved">Marcar Dominada</span>
+          <span class="key-cap">S</span>
+        </div>
+        <div class="flex items-center justify-between p-2 bg-paper-50 rounded border border-paper-200">
+          <span class="text-paper-700" id="i18n-sc-review">Marcar Revisão</span>
+          <span class="key-cap">R</span>
+        </div>
+        <div class="flex items-center justify-between p-2 bg-paper-50 rounded border border-paper-200">
+          <span class="text-paper-700" id="i18n-sc-failed">Marcar Erro</span>
+          <span class="key-cap">X</span>
+        </div>
+        <div class="flex items-center justify-between p-2 bg-paper-50 rounded border border-paper-200">
+          <span class="text-paper-700" id="i18n-sc-zoom">Alternar Zoom</span>
+          <span class="key-cap">Z</span>
+        </div>
+        <div class="flex items-center justify-between p-2 bg-paper-50 rounded border border-paper-200">
+          <span class="text-paper-700" id="i18n-sc-twin">Variante Irmã</span>
+          <span class="key-cap">T</span>
+        </div>
+        <div class="flex items-center justify-between p-2 bg-paper-50 rounded border border-paper-200">
+          <span class="text-paper-700" id="i18n-sc-form">Formulário</span>
+          <span class="key-cap">F</span>
+        </div>
+        <div class="flex items-center justify-between p-2 bg-paper-50 rounded border border-paper-200">
+          <span class="text-paper-700" id="i18n-sc-clues">Pistas 1 a 4</span>
+          <span class="key-cap">1-4</span>
+        </div>
+        <div class="flex items-center justify-between p-2 bg-paper-50 rounded border border-paper-200">
+          <span class="text-paper-700" id="i18n-sc-help">Ajuda</span>
+          <span class="key-cap">?</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
-  <footer class="bg-white border-t border-slate-200 text-center py-4 text-xs text-slate-500">
-    EUF Master Workspace • Complete Unified Physics Exam Bank (2010–2026) • Multi-User Portable Profile
+  <footer class="bg-graphite-950 text-slate-400 border-t border-graphite-800 text-center py-2.5 text-xs font-mono" id="i18n-footer">
+    EUF Exam Master (2010–2026) • 1201 Questões Oficiais • Interface Científica de Alta Fidelidade
   </footer>
 
-  <!-- Frontend Controller Script -->
+  <!-- ========================================== -->
+  <!-- 6. CONTROLLER LOGIC & I18N DICTIONARY -->
+  <!-- ========================================== -->
   <script>
+    let currentLang = localStorage.getItem('euf_lang') || 'pt';
     let globalQuestions = [];
     let currentQIndex = 0;
     let isZoomed = false;
     let subtopicsByArea = {};
+    let allPairsList = [];
+    let isFormulaDrawerOpen = false;
+
+    // Timer Variables
+    let timerInterval = null;
+    let timerSeconds = 15 * 60;
+    let isTimerRunning = false;
+
+    const DICT = {
+      pt: {
+        subtitle: 'Exame Unificado de Pós-Graduação em Física (Brasil)',
+        tab_practice: 'Treino & Resolução',
+        tab_twins: 'Variantes (A/B)',
+        tab_mindmap: 'Matriz de Conteúdo',
+        tab_progress: 'Fila de Erros',
+        btn_formulas: 'Formulário',
+        label_profile: 'Perfil:',
+        stat_total: 'Banco Total:',
+        stat_solved: 'Dominadas:',
+        stat_review: 'Para Revisão:',
+        stat_failed: 'A Repetir:',
+        timer_label: 'Temporizador',
+        timer_start: 'Iniciar',
+        timer_pause: 'Pausar',
+        filter_area: '1. Matéria / Área',
+        filter_subtopic: '2. Subtópico Específico',
+        filter_exam: '3. Edição do Exame',
+        filter_status: '4. Estado de Estudo',
+        all_areas: 'Todas as 6 Áreas',
+        all_subtopics: 'Todos os Subtópicos',
+        all_exams: 'Todos os Exames (2010–2026)',
+        all_statuses: 'Todos os Estados',
+        status_unsolved: '⏳ Não Resolvidas',
+        status_solved: '✅ Dominadas (Solved)',
+        status_review: '🚩 Para Revisão (Review)',
+        status_failed: '❌ Erros a Repetir (Failed)',
+        search_placeholder: 'Buscar por termo físico (ex: Hamiltoniano, Poynting, Dirac, Rydberg, Carnot, Gauss)...',
+        btn_random: '🎲 Questão Aleatória',
+        nav_hint: 'Use J / K para navegar',
+        twin_btn: 'Variante Irmã',
+        strategy_title: 'Estratégia de Resolução & Pistas Físicas',
+        level1_title: 'Nível 1: Princípio Físico Fundamental & Leis de Conservação',
+        level2_title: 'Nível 2: Escolha de Coordenadas, Graus de Liberdade & Equações',
+        level3_title: 'Nível 3: Ponto de Controle Matemático & Análise Dimensional',
+        level4_title: 'Nível 4: Limites Físicos Assintóticos & Armadilhas das Alternativas',
+        classify_title: 'Classificar Desempenho:',
+        btn_solved: '✅ Dominada',
+        btn_review: '🚩 Revisar',
+        btn_failed: '❌ Repetir',
+        notes_label: 'Diário de Erros / Anotações do Exercício:',
+        notes_placeholder: 'Anote onde você errou a aproximação, limites de integração, sinal, etc...',
+        btn_save: 'Salvar',
+        saved_feedback: 'Salvo no perfil ativo!',
+        twins_title: 'Laboratório de Variantes Gemelas (Variante A vs Variante B)',
+        twins_desc: 'O exame EUF cria pares de questões com o mesmo sistema físico, alterando apenas os parâmetros ou a variável pedida. Compare aqui as duas versões lado a lado e descubra o que mudou.',
+        twins_filter_area: 'Filtrar por Área:',
+        twins_select_label: 'Selecionar Par Gemelo (Exame & Tópico):',
+        diff_title: 'O Que Mudou Entre a Variante A e a Variante B:',
+        mindmap_title: 'Matriz de Conhecimento do EUF (6 Áreas Temáticas)',
+        mindmap_desc: 'Clique em qualquer subtópico para iniciar uma sessão de prática deliberada focada.',
+        queue_title: 'Fila de Repetição Espaçada & Diário de Erros',
+        queue_desc: 'Todas as questões marcadas para revisão ou que você errou ficam listadas aqui com suas anotações.',
+        th_code: 'Código',
+        th_area: 'Área & Subtópico',
+        th_status: 'Estado',
+        th_notes: 'Anotações do Erro',
+        th_action: 'Ação',
+        drawer_title: 'Formulário Oficial & Constantes Físicas',
+        constants_title: 'Constantes Físicas Fundamentais',
+        shortcuts_title: 'Atalhos de Teclado',
+        sc_next: 'Próxima Questão',
+        sc_prev: 'Questão Anterior',
+        sc_solved: 'Marcar Dominada',
+        sc_review: 'Marcar Revisão',
+        sc_failed: 'Marcar Erro',
+        sc_zoom: 'Alternar Zoom',
+        sc_twin: 'Variante Irmã',
+        sc_form: 'Formulário',
+        sc_clues: 'Pistas 1 a 4',
+        sc_help: 'Ajuda',
+        footer: 'EUF Exam Master (2010–2026) • 1201 Questões Oficiais • Interface Científica de Alta Fidelidade',
+      },
+      es: {
+        subtitle: 'Examen Unificado de Posgrado en Física (Brasil)',
+        tab_practice: 'Práctica & Resolución',
+        tab_twins: 'Variantes (A/B)',
+        tab_mindmap: 'Matriz de Contenido',
+        tab_progress: 'Cola de Errores',
+        btn_formulas: 'Formulario',
+        label_profile: 'Perfil:',
+        stat_total: 'Banco Total:',
+        stat_solved: 'Dominadas:',
+        stat_review: 'Para Revisión:',
+        stat_failed: 'A Repetir:',
+        timer_label: 'Temporizador',
+        timer_start: 'Iniciar',
+        timer_pause: 'Pausar',
+        filter_area: '1. Materia / Área',
+        filter_subtopic: '2. Subtema Específico',
+        filter_exam: '3. Edición del Examen',
+        filter_status: '4. Estado de Estudio',
+        all_areas: 'Todas las 6 Áreas',
+        all_subtopics: 'Todos los Subtemas',
+        all_exams: 'Todos los Exámenes (2010–2026)',
+        all_statuses: 'Todos los Estados',
+        status_unsolved: '⏳ No Resueltas',
+        status_solved: '✅ Dominadas (Solved)',
+        status_review: '🚩 Para Revisión (Review)',
+        status_failed: '❌ Errores a Repetir (Failed)',
+        search_placeholder: 'Buscar término físico (ej: Hamiltoniano, Poynting, Dirac, Rydberg, Carnot, Gauss)...',
+        btn_random: '🎲 Ejercicio Aleatorio',
+        nav_hint: 'Usa J / K para navegar',
+        twin_btn: 'Variante Gemela',
+        strategy_title: 'Estrategia de Resolución & Pistas Físicas',
+        level1_title: 'Nivel 1: Principio Físico Fundamental & Leyes de Conservación',
+        level2_title: 'Nivel 2: Elección de Coordenadas, Grados de Libertad & Ecuaciones',
+        level3_title: 'Nivel 3: Punto de Control Matemático & Análisis Dimensional',
+        level4_title: 'Nivel 4: Límites Físicos Asintóticos & Trampas de Opciones',
+        classify_title: 'Clasificar Desempeño:',
+        btn_solved: '✅ Dominada',
+        btn_review: '🚩 Revisar',
+        btn_failed: '❌ Repetir',
+        notes_label: 'Diario de Errores / Notas del Ejercicio:',
+        notes_placeholder: 'Anota dónde fallaste la aproximación, límites de integración, signo, etc...',
+        btn_save: 'Guardar',
+        saved_feedback: '¡Guardado en el perfil activo!',
+        twins_title: 'Laboratorio de Variantes Gemelas (Variante A vs Variante B)',
+        twins_desc: 'El examen EUF genera pares de preguntas con el mismo sistema físico, cambiando solo los parámetros o la variable pedida. Compara aquí las dos versiones lado a lado y descubre qué cambió.',
+        twins_filter_area: 'Filtrar por Área:',
+        twins_select_label: 'Seleccionar Par Gemelo (Examen & Tema):',
+        diff_title: 'Qué Cambió Entre la Variante A y la Variante B:',
+        mindmap_title: 'Matriz de Conocimiento del EUF (6 Áreas Temáticas)',
+        mindmap_desc: 'Haz clic en cualquier subtema para iniciar una sesión de práctica deliberada enfocada.',
+        queue_title: 'Cola de Repetición Espaciada & Diario de Errores',
+        queue_desc: 'Todas las preguntas marcadas para revisión o que fallaste se registran aquí con tus anotaciones.',
+        th_code: 'Código',
+        th_area: 'Área & Subtema',
+        th_status: 'Estado',
+        th_notes: 'Notas del Error',
+        th_action: 'Acción',
+        drawer_title: 'Formulario Oficial & Constantes Físicas',
+        constants_title: 'Constantes Físicas Fundamentales',
+        shortcuts_title: 'Atajos de Teclado',
+        sc_next: 'Siguiente Pregunta',
+        sc_prev: 'Pregunta Anterior',
+        sc_solved: 'Marcar Dominada',
+        sc_review: 'Marcar Revisión',
+        sc_failed: 'Marcar Error',
+        sc_zoom: 'Alternar Zoom',
+        sc_twin: 'Variante Gemela',
+        sc_form: 'Formulario',
+        sc_clues: 'Pistas 1 a 4',
+        sc_help: 'Ayuda',
+        footer: 'EUF Exam Master (2010–2026) • 1201 Preguntas Oficiales • Interfaz Científica de Alta Fidelidad',
+      },
+      en: {
+        subtitle: 'Unified Graduate Physics Exam Master (Brazil)',
+        tab_practice: 'Practice Cockpit',
+        tab_twins: 'Twin A/B Lab',
+        tab_mindmap: 'Syllabus Map',
+        tab_progress: 'Error Queue',
+        btn_formulas: 'Formulary',
+        label_profile: 'Profile:',
+        stat_total: 'Total Bank:',
+        stat_solved: 'Mastered:',
+        stat_review: 'For Review:',
+        stat_failed: 'To Retry:',
+        timer_label: 'Timer',
+        timer_start: 'Start',
+        timer_pause: 'Pause',
+        filter_area: '1. Subject Domain',
+        filter_subtopic: '2. Specific Subtopic',
+        filter_exam: '3. Exam Edition',
+        filter_status: '4. Study Status',
+        all_areas: 'All 6 Subject Areas',
+        all_subtopics: 'All Subtopics',
+        all_exams: 'All Exams (2010–2026)',
+        all_statuses: 'All Statuses',
+        status_unsolved: '⏳ Unsolved',
+        status_solved: '✅ Mastered',
+        status_review: '🚩 For Review',
+        status_failed: '❌ To Retry (Failed)',
+        search_placeholder: 'Search physics concept (e.g. Hamiltonian, Poynting, Dirac, Rydberg, Carnot, Gauss)...',
+        btn_random: '🎲 Random Problem',
+        nav_hint: 'Use J / K to navigate',
+        twin_btn: 'Twin Variant',
+        strategy_title: 'Physics Solution Strategy & Clues',
+        level1_title: 'Level 1: Core Physical Principle & Conservation Laws',
+        level2_title: 'Level 2: Coordinate Setup, Degrees of Freedom & Equations',
+        level3_title: 'Level 3: Mathematical Checkpoint & Dimensional Analysis',
+        level4_title: 'Level 4: Physical Boundary Limits & Option Traps',
+        classify_title: 'Classify Performance:',
+        btn_solved: '✅ Mastered',
+        btn_review: '🚩 For Review',
+        btn_failed: '❌ To Retry',
+        notes_label: 'Personal Error Log / Problem Notes:',
+        notes_placeholder: 'Note where you missed approximations, integration limits, sign errors, etc...',
+        btn_save: 'Save',
+        saved_feedback: 'Saved to active profile!',
+        twins_title: 'Twin Question Laboratory (Variant A vs Variant B)',
+        twins_desc: 'The EUF exam creates twin problem pairs with the same physical system, altering only parameters or the target variable. Compare both variants side by side and see the exact changes.',
+        twins_filter_area: 'Filter by Area:',
+        twins_select_label: 'Select Twin Pair (Exam & Topic):',
+        diff_title: 'What Changed Between Variant A and Variant B:',
+        mindmap_title: 'EUF Knowledge Taxonomy (6 Physical Domains)',
+        mindmap_desc: 'Click any subtopic card to launch a focused deliberate practice drill.',
+        queue_title: 'Spaced Repetition & Error Diary Queue',
+        queue_desc: 'Every problem flagged for review or marked as failed is tracked here with your personal notes.',
+        th_code: 'Code',
+        th_area: 'Area & Subtopic',
+        th_status: 'Status',
+        th_notes: 'Error Notes',
+        th_action: 'Action',
+        drawer_title: 'Official EUF Formulary & Constants',
+        constants_title: 'Fundamental Physical Constants',
+        shortcuts_title: 'Keyboard Shortcuts',
+        sc_next: 'Next Question',
+        sc_prev: 'Previous Question',
+        sc_solved: 'Mark Mastered',
+        sc_review: 'Flag for Review',
+        sc_failed: 'Mark Failed',
+        sc_zoom: 'Toggle Zoom',
+        sc_twin: 'Twin Variant',
+        sc_form: 'Formulary',
+        sc_clues: 'Clues 1 to 4',
+        sc_help: 'Help',
+        footer: 'EUF Exam Master (2010–2026) • 1201 Official Questions • Scientific High-Fidelity Interface',
+      }
+    };
+
+    const AREA_COLORS = {
+      'Mecânica Clássica': { bg: 'bg-emerald-50', text: 'text-emerald-900', border: 'border-emerald-300' },
+      'Eletromagnetismo': { bg: 'bg-sky-50', text: 'text-sky-900', border: 'border-sky-300' },
+      'Mecânica Quântica': { bg: 'bg-blue-50', text: 'text-blue-900', border: 'border-blue-300' },
+      'Termodinâmica': { bg: 'bg-amber-50', text: 'text-amber-900', border: 'border-amber-300' },
+      'Física Estatística': { bg: 'bg-teal-50', text: 'text-teal-900', border: 'border-teal-300' },
+      'Física Moderna': { bg: 'bg-rose-50', text: 'text-rose-900', border: 'border-rose-300' },
+    };
+
+    function setLanguage(lang) {
+      if (!DICT[lang]) return;
+      currentLang = lang;
+      localStorage.setItem('euf_lang', lang);
+
+      // Update button styles
+      ['pt', 'es', 'en'].forEach(l => {
+        const btn = document.getElementById(`lang-btn-${l}`);
+        if (l === lang) {
+          btn.className = 'px-1.5 py-0.5 rounded font-bold transition bg-slate-700 text-white';
+        } else {
+          btn.className = 'px-1.5 py-0.5 rounded font-bold transition text-slate-400 hover:text-white';
+        }
+      });
+
+      applyTranslations();
+      fetchConceptTree();
+      fetchPairs();
+      renderQuestionList();
+      if (globalQuestions.length) selectQuestion(currentQIndex);
+      updateErrorTable();
+    }
+
+    function applyTranslations() {
+      const t = DICT[currentLang];
+      const setText = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text;
+      };
+
+      setText('i18n-subtitle', t.subtitle);
+      setText('i18n-tab-practice', t.tab_practice);
+      setText('i18n-tab-twins', t.tab_twins);
+      setText('i18n-tab-mindmap', t.tab_mindmap);
+      setText('i18n-tab-progress', t.tab_progress);
+      setText('i18n-btn-formulas', t.btn_formulas);
+      setText('i18n-label-profile', t.label_profile);
+      setText('i18n-stat-total', t.stat_total);
+      setText('i18n-stat-solved', t.stat_solved);
+      setText('i18n-stat-review', t.stat_review);
+      setText('i18n-stat-failed', t.stat_failed);
+      setText('timer-mode-label', t.timer_label);
+      setText('i18n-filter-area', t.filter_area);
+      setText('i18n-filter-subtopic', t.filter_subtopic);
+      setText('i18n-filter-exam', t.filter_exam);
+      setText('i18n-filter-status', t.filter_status);
+      setText('i18n-btn-random', t.btn_random);
+      setText('i18n-nav-hint', t.nav_hint);
+      setText('i18n-twin-btn', t.twin_btn);
+      setText('i18n-strategy-title', t.strategy_title);
+      setText('i18n-level1-title', t.level1_title);
+      setText('i18n-level2-title', t.level2_title);
+      setText('i18n-level3-title', t.level3_title);
+      setText('i18n-level4-title', t.level4_title);
+      setText('i18n-classify-title', t.classify_title);
+      setText('i18n-btn-solved', t.btn_solved);
+      setText('i18n-btn-review', t.btn_review);
+      setText('i18n-btn-failed', t.btn_failed);
+      setText('i18n-notes-label', t.notes_label);
+      setText('i18n-btn-save', t.btn_save);
+      setText('i18n-twins-title', t.twins_title);
+      setText('i18n-twins-desc', t.twins_desc);
+      setText('i18n-twins-filter-area', t.twins_filter_area);
+      setText('i18n-twins-select-label', t.twins_select_label);
+      setText('i18n-diff-title', t.diff_title);
+      setText('i18n-mindmap-title', t.mindmap_title);
+      setText('i18n-mindmap-desc', t.mindmap_desc);
+      setText('i18n-queue-title', t.queue_title);
+      setText('i18n-queue-desc', t.queue_desc);
+      setText('i18n-th-code', t.th_code);
+      setText('i18n-th-area', t.th_area);
+      setText('i18n-th-status', t.th_status);
+      setText('i18n-th-notes', t.th_notes);
+      setText('i18n-th-action', t.th_action);
+      setText('i18n-drawer-title', t.drawer_title);
+      setText('i18n-constants-title', t.constants_title);
+      setText('i18n-shortcuts-title', t.shortcuts_title);
+      setText('i18n-sc-next', t.sc_next);
+      setText('i18n-sc-prev', t.sc_prev);
+      setText('i18n-sc-solved', t.sc_solved);
+      setText('i18n-sc-review', t.sc_review);
+      setText('i18n-sc-failed', t.sc_failed);
+      setText('i18n-sc-zoom', t.sc_zoom);
+      setText('i18n-sc-twin', t.sc_twin);
+      setText('i18n-sc-form', t.sc_form);
+      setText('i18n-sc-clues', t.sc_clues);
+      setText('i18n-sc-help', t.sc_help);
+      setText('i18n-footer', t.footer);
+
+      const searchInp = document.getElementById('search-input');
+      if (searchInp) searchInp.placeholder = t.search_placeholder;
+
+      const notesInp = document.getElementById('user-notes-input');
+      if (notesInp) notesInp.placeholder = t.notes_placeholder;
+    }
 
     async function initApp() {
+      applyTranslations();
       await fetchStats();
       await fetchProfiles();
       await fetchConceptTree();
       await fetchPairs();
       await fetchQuestions();
+      setupKeyboardNavigation();
+      renderAllMath();
     }
 
     async function fetchStats() {
@@ -378,7 +1161,8 @@
     }
 
     async function promptNewProfile() {
-      const name = prompt("Enter new profile name (e.g. carlos, guest):");
+      const promptText = currentLang === 'en' ? "Enter new study profile username:" : (currentLang === 'es' ? "Ingrese el nombre del nuevo perfil de estudio:" : "Digite o nome do novo perfil de estudo:");
+      const name = prompt(promptText);
       if (name && name.trim()) {
         await switchProfile(name.trim());
         await fetchProfiles();
@@ -392,29 +1176,40 @@
       subtopicsByArea = {};
 
       const areaSel = document.getElementById('filter-area');
-      areaSel.innerHTML = '<option value="All Subject Areas">All Subject Areas</option>';
+      const t = DICT[currentLang];
+      areaSel.innerHTML = `<option value="All Subject Areas">${t.all_areas}</option>`;
 
       const container = document.getElementById('concept-map-container');
       container.innerHTML = '';
 
+      const pairAreaFilter = document.getElementById('pair-filter-area');
+      if (pairAreaFilter) {
+        pairAreaFilter.innerHTML = `<option value="All">${t.all_areas}</option>`;
+      }
+
       for (const [area, info] of Object.entries(tree)) {
         subtopicsByArea[area] = info.subtopics.map(s => s.name);
         areaSel.innerHTML += `<option value="${area}">${area} (${info.total})</option>`;
+        if (pairAreaFilter) {
+          pairAreaFilter.innerHTML += `<option value="${area}">${area}</option>`;
+        }
+
+        const style = AREA_COLORS[area] || { bg: 'bg-paper-100', text: 'text-paper-900', border: 'border-paper-300' };
 
         let subList = info.subtopics.map(s => `
-          <div onclick="drillSubtopic('${area}', '${s.name}')" class="flex justify-between items-center p-1.5 hover:bg-indigo-50 rounded cursor-pointer transition text-xs">
-            <span class="text-slate-700">${s.name}</span>
-            <span class="font-bold text-indigo-600">${s.count}</span>
+          <div onclick="drillSubtopic('${area}', '${s.name}')" class="flex justify-between items-center p-1.5 hover:bg-white rounded cursor-pointer transition text-xs border border-transparent hover:border-paper-300">
+            <span class="text-paper-800">${s.name}</span>
+            <span class="font-mono font-bold text-slate-700 bg-paper-200 px-1.5 py-0.5 rounded text-[10px]">${s.count}</span>
           </div>
         `).join('');
 
         container.innerHTML += `
-          <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2">
-            <div class="flex justify-between items-center border-b pb-2">
-              <h3 class="font-bold text-sm text-slate-900">${area}</h3>
-              <span class="text-xs bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded-full">${info.total} Qs</span>
+          <div class="lab-card p-4 space-y-2.5">
+            <div class="flex justify-between items-center border-b border-paper-200 pb-2">
+              <h3 class="font-serif font-bold text-sm text-paper-900">${area}</h3>
+              <span class="text-xs ${style.bg} ${style.text} border ${style.border} font-mono font-bold px-2 py-0.5 rounded">${info.total} Qs</span>
             </div>
-            <div class="space-y-1">${subList}</div>
+            <div class="space-y-0.5">${subList}</div>
           </div>
         `;
       }
@@ -423,7 +1218,8 @@
     function onAreaChange() {
       const area = document.getElementById('filter-area').value;
       const subSel = document.getElementById('filter-subtopic');
-      subSel.innerHTML = '<option value="All Subtopics">All Subtopics</option>';
+      const t = DICT[currentLang];
+      subSel.innerHTML = `<option value="All Subtopics">${t.all_subtopics}</option>`;
 
       if (area === "All Subject Areas") {
         const allSubs = new Set();
@@ -447,11 +1243,13 @@
       const data = await res.json();
       globalQuestions = data.questions;
 
-      document.getElementById('pool-count').innerText = `Question Pool (${globalQuestions.length})`;
+      const t = DICT[currentLang];
+      const countLabel = currentLang === 'en' ? 'Questions' : (currentLang === 'es' ? 'Preguntas' : 'Questões');
+      document.getElementById('pool-count').innerText = `${countLabel} (${globalQuestions.length})`;
       
       const solvedCnt = globalQuestions.filter(q => q.status === 'solved').length;
       const pct = globalQuestions.length ? (solvedCnt / globalQuestions.length * 100).toFixed(1) : 0;
-      document.getElementById('subtopic-mastery-badge').innerText = `${pct}% Mastered`;
+      document.getElementById('subtopic-mastery-badge').innerText = `${pct}%`;
 
       renderQuestionList();
       if (globalQuestions.length > 0) {
@@ -465,20 +1263,24 @@
     function renderQuestionList() {
       const container = document.getElementById('question-list-container');
       if (!globalQuestions.length) {
-        container.innerHTML = '<div class="p-4 text-xs text-slate-400 text-center">No questions match current filters.</div>';
+        const emptyMsg = currentLang === 'en' ? 'No questions match the current filters.' : (currentLang === 'es' ? 'No se encontraron preguntas con los filtros actuales.' : 'Nenhuma questão encontrada com os filtros atuais.');
+        container.innerHTML = `<div class="p-6 text-xs font-mono text-paper-400 text-center">${emptyMsg}</div>`;
         return;
       }
 
       container.innerHTML = globalQuestions.map((q, idx) => {
-        const icon = q.status === 'solved' ? '✅' : (q.status === 'review' ? '🔁' : (q.status === 'failed' ? '❌' : '⏳'));
+        const icon = q.status === 'solved' ? '✅' : (q.status === 'review' ? '🚩' : (q.status === 'failed' ? '❌' : '⏳'));
         const isSelected = idx === currentQIndex;
         return `
-          <div onclick="selectQuestion(${idx})" class="p-2.5 rounded-lg border ${isSelected ? 'bg-indigo-50 border-indigo-300' : 'bg-slate-50 border-slate-200'} hover:border-indigo-300 cursor-pointer transition flex items-center justify-between text-xs">
+          <div onclick="selectQuestion(${idx})" class="p-2 rounded border ${isSelected ? 'lab-card-active' : 'bg-paper-50 border-paper-200 hover:border-paper-400'} cursor-pointer transition flex items-center justify-between text-xs">
             <div class="truncate mr-2">
-              <span class="font-bold text-slate-800">${q.id}</span>
-              <div class="text-[11px] text-slate-500 truncate">${q.subtopic}</div>
+              <div class="flex items-center space-x-1.5">
+                <span class="font-mono font-bold text-paper-900">${q.id}</span>
+                ${q.flag ? '<span class="text-[9px] bg-amber-100 text-amber-900 border border-amber-300 font-bold px-1 rounded">Nota</span>' : ''}
+              </div>
+              <div class="text-[11px] text-paper-500 truncate mt-0.5">${q.subtopic}</div>
             </div>
-            <span class="text-sm">${icon}</span>
+            <span class="text-xs shrink-0 font-mono">${icon}</span>
           </div>
         `;
       }).join('');
@@ -491,28 +1293,50 @@
 
       renderQuestionList();
 
+      const spinner = document.getElementById('img-loading-spinner');
+      spinner.classList.remove('hidden');
+
       const res = await fetch(`/api/question/${qSummary.id}`);
       const q = await res.json();
 
       document.getElementById('card-qid').innerText = q.id;
-      document.getElementById('card-meta').innerText = `Exam: ${q.exam_id} (Page ${q.page}) | Area: ${q.area} ➔ ${q.subtopic}`;
+      const pageLabel = currentLang === 'en' ? 'Page' : (currentLang === 'es' ? 'Pág.' : 'Pág.');
+      const examLabel = currentLang === 'en' ? 'Exam' : (currentLang === 'es' ? 'Examen' : 'Exame');
+      document.getElementById('card-meta').innerText = `${examLabel}: ${q.exam_id} (${pageLabel} ${q.page}) | Subtopic: ${q.subtopic}`;
       
+      const areaBadge = document.getElementById('card-area-badge');
+      areaBadge.innerText = q.area;
+      const style = AREA_COLORS[q.area] || { bg: 'bg-paper-100', text: 'text-paper-900', border: 'border-paper-300' };
+      areaBadge.className = `text-xs font-mono font-bold px-2.5 py-0.5 rounded ${style.bg} ${style.text} border ${style.border}`;
+
+      const t = DICT[currentLang];
       const statusBadges = {
-        'solved': '✅ Mastered',
-        'review': '🔁 Needs Review',
-        'failed': '❌ Failed / To Retry',
-        'unsolved': '⏳ Unsolved'
+        'solved': t.status_solved,
+        'review': t.status_review,
+        'failed': t.status_failed,
+        'unsolved': t.status_unsolved
       };
-      document.getElementById('card-status-badge').innerText = statusBadges[q.status] || '⏳ Unsolved';
+      document.getElementById('card-status-badge').innerText = statusBadges[q.status] || t.status_unsolved;
       
-      document.getElementById('card-img').src = q.image_url;
-      document.getElementById('user-status-select').value = q.status;
+      const img = document.getElementById('card-img');
+      img.onload = () => spinner.classList.add('hidden');
+      img.src = q.image_url;
+      
       document.getElementById('user-notes-input').value = q.user_notes || '';
 
+      // Twin button detection
+      const twinBtn = document.getElementById('card-twin-btn');
+      if (q.tag && (q.tag.endsWith('a') || q.tag.endsWith('b'))) {
+        twinBtn.classList.remove('hidden');
+      } else {
+        twinBtn.classList.add('hidden');
+      }
+
+      // Errata Banner
       const errataBanner = document.getElementById('card-errata-banner');
       if (q.flag || q.errata) {
         errataBanner.classList.remove('hidden');
-        errataBanner.innerText = `⚠️ Notice: ${q.errata || 'Flagged question'}`;
+        errataBanner.innerHTML = `⚠️ <b>Notice:</b> ${q.errata || 'Notice / errata noted for this question.'}`;
       } else {
         errataBanner.classList.add('hidden');
       }
@@ -524,39 +1348,30 @@
         document.getElementById('hint-2').innerHTML = q.clues.level2;
         document.getElementById('hint-3').innerHTML = q.clues.level3;
         document.getElementById('hint-4').innerHTML = q.clues.level4;
-
-        if (window.renderMathInElement) {
-          renderMathInElement(document.getElementById('clues-container'), {
-            delimiters: [
-              {left: '$$', right: '$$', display: true},
-              {left: '$', right: '$', display: false}
-            ],
-            throwOnError: false
-          });
-        }
+        renderAllMath();
       }
     }
 
-    async function saveQuestionStatus() {
+    async function setFastStatus(status) {
       if (!globalQuestions.length) return;
       const q = globalQuestions[currentQIndex];
-      const newStatus = document.getElementById('user-status-select').value;
-      const newNotes = document.getElementById('user-notes-input').value;
+      const notes = document.getElementById('user-notes-input').value;
 
       await fetch(`/api/question/${q.id}/status`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ status: newStatus, notes: newNotes })
+        body: JSON.stringify({ status: status, notes: notes })
       });
 
-      q.status = newStatus;
-      q.user_notes = newNotes;
+      q.status = status;
+      q.user_notes = notes;
 
-      if (newStatus === 'solved') {
-        confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
+      if (status === 'solved') {
+        confetti({ particleCount: 35, spread: 60, origin: { y: 0.8 } });
       }
 
       const fb = document.getElementById('save-feedback');
+      fb.innerText = DICT[currentLang].saved_feedback;
       fb.classList.remove('opacity-0');
       setTimeout(() => fb.classList.add('opacity-0'), 1500);
 
@@ -565,10 +1380,28 @@
       selectQuestion(currentQIndex);
     }
 
+    async function saveQuestionStatus() {
+      if (!globalQuestions.length) return;
+      const q = globalQuestions[currentQIndex];
+      const newNotes = document.getElementById('user-notes-input').value;
+
+      await fetch(`/api/question/${q.id}/status`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ status: q.status, notes: newNotes })
+      });
+
+      q.user_notes = newNotes;
+      const fb = document.getElementById('save-feedback');
+      fb.innerText = DICT[currentLang].saved_feedback;
+      fb.classList.remove('opacity-0');
+      setTimeout(() => fb.classList.add('opacity-0'), 1500);
+    }
+
     function toggleCardZoom() {
       isZoomed = !isZoomed;
       const img = document.getElementById('card-img');
-      img.style.transform = isZoomed ? 'scale(1.2)' : 'scale(1)';
+      img.style.transform = isZoomed ? 'scale(1.25)' : 'scale(1)';
       img.style.transformOrigin = 'top center';
     }
 
@@ -578,11 +1411,29 @@
       }
     }
 
+    function prevProblem() {
+      if (currentQIndex > 0) {
+        selectQuestion(currentQIndex - 1);
+      }
+    }
+
     function pickRandomProblem() {
       if (globalQuestions.length > 0) {
         const rand = Math.floor(Math.random() * globalQuestions.length);
         selectQuestion(rand);
       }
+    }
+
+    function jumpToTwinLab() {
+      if (!globalQuestions.length) return;
+      const q = globalQuestions[currentQIndex];
+      const stem = q.tag.slice(0, -1);
+      const pairVal = `${q.exam_id}:::${stem}`;
+
+      switchTab('twins');
+      const sel = document.getElementById('pair-select');
+      sel.value = pairVal;
+      onPairChange();
     }
 
     function drillSubtopic(area, subtopic) {
@@ -596,9 +1447,29 @@
     async function fetchPairs() {
       const res = await fetch('/api/pairs');
       const data = await res.json();
+      allPairsList = data.pairs || [];
+      renderPairSelectOptions();
+    }
+
+    function onPairAreaFilterChange() {
+      renderPairSelectOptions();
+    }
+
+    function renderPairSelectOptions() {
+      const areaFilter = document.getElementById('pair-filter-area') ? document.getElementById('pair-filter-area').value : 'All';
       const sel = document.getElementById('pair-select');
-      sel.innerHTML = data.pairs.map(p => `<option value="${p.exam_id}:::${p.stem}">${p.exam_id} | ${p.stem} (${p.area} - ${p.subtopic})</option>`).join('');
-      if (data.pairs.length) onPairChange();
+      
+      const filtered = (areaFilter === 'All') 
+        ? allPairsList 
+        : allPairsList.filter(p => p.area === areaFilter);
+
+      sel.innerHTML = filtered.map(p => `
+        <option value="${p.exam_id}:::${p.stem}">[${p.exam_id}] ${p.stem} — ${p.area} ➔ ${p.subtopic}</option>
+      `).join('');
+
+      if (filtered.length) {
+        onPairChange();
+      }
     }
 
     async function onPairChange() {
@@ -606,37 +1477,190 @@
       if (!val) return;
       const res = await fetch(`/api/pair/${val}`);
       const data = await res.json();
-      document.getElementById('pair-label-a').innerText = `🅰️ Variant A (${data.qid_a})`;
-      document.getElementById('pair-label-b').innerText = `🅱️ Variant B (${data.qid_b})`;
+
+      const labelA = currentLang === 'en' ? 'Variant A' : (currentLang === 'es' ? 'Variante A' : 'Variante A');
+      const labelB = currentLang === 'en' ? 'Variant B' : (currentLang === 'es' ? 'Variante B' : 'Variante B');
+
+      document.getElementById('pair-label-a').innerText = `🏷️ ${labelA} (${data.qid_a})`;
+      document.getElementById('pair-label-b').innerText = `🏷️ ${labelB} (${data.qid_b})`;
+      document.getElementById('pair-stem-badge').innerText = `${data.exam_id} • ${data.stem} (${data.area})`;
+
       document.getElementById('pair-img-a').src = data.image_a;
       document.getElementById('pair-img-b').src = data.image_b;
+
+      const diffBox = document.getElementById('pair-diff-text');
+      const defaultDiff = currentLang === 'en' 
+        ? 'Identical physical setup with altered parameter values or alternate target variables.' 
+        : (currentLang === 'es' 
+          ? 'Mismo sistema físico con parámetros modificados o variables de incógnita alternadas.' 
+          : 'Mesmo sistema físico com parametrização modificada ou incógnitas alternadas.');
+      diffBox.innerText = data.diff || defaultDiff;
     }
 
     function updateErrorTable() {
       const tbody = document.getElementById('error-table-body');
       const flaggedQs = globalQuestions.filter(q => q.status === 'failed' || q.status === 'review');
       if (!flaggedQs.length) {
-        tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">✨ Error queue clean! No failed or review problems in current pool.</td></tr>';
+        const cleanMsg = currentLang === 'en' ? '✨ Error queue clean! No failed or review problems in current selection.' : (currentLang === 'es' ? '✨ Cola de errores limpia! No hay problemas pendientes de repaso.' : '✨ Fila de erros limpa! Nenhuma questão pendente de revisão.');
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-paper-400 font-mono">${cleanMsg}</td></tr>`;
         return;
       }
-      tbody.innerHTML = flaggedQs.map(q => `
-        <tr class="hover:bg-slate-50 transition">
-          <td class="p-3 font-bold text-slate-800">${q.id}</td>
-          <td class="p-3">${q.area} ➔ ${q.subtopic}</td>
-          <td class="p-3"><span class="px-2 py-0.5 rounded font-bold ${q.status==='failed'?'bg-rose-100 text-rose-700':'bg-amber-100 text-amber-700'}">${q.status}</span></td>
-          <td class="p-3 text-slate-600">${q.user_notes || '—'}</td>
-          <td class="p-3"><button onclick="switchTab('practice'); fetchQuestions();" class="text-indigo-600 font-bold hover:underline">Solve Now ➔</button></td>
+      const solveNowText = currentLang === 'en' ? 'Solve Now ➔' : (currentLang === 'es' ? 'Resolver ➔' : 'Resolver ➔');
+      tbody.innerHTML = flaggedQs.map((q) => `
+        <tr class="hover:bg-paper-50 transition">
+          <td class="p-2.5 font-mono font-bold text-paper-900">${q.id}</td>
+          <td class="p-2.5">${q.area} ➔ <span class="text-paper-500">${q.subtopic}</span></td>
+          <td class="p-2.5"><span class="px-2 py-0.5 rounded font-mono font-bold ${q.status==='failed'?'bg-rose-100 text-rose-800 border border-rose-300':'bg-amber-100 text-amber-800 border border-amber-300'}">${q.status}</span></td>
+          <td class="p-2.5 text-paper-700">${q.user_notes || '—'}</td>
+          <td class="p-2.5 text-right font-mono">
+            <button onclick="directSolveFromQueue('${q.id}')" class="text-slate-800 font-bold hover:underline">${solveNowText}</button>
+          </td>
         </tr>
       `).join('');
+    }
+
+    function directSolveFromQueue(qid) {
+      const idx = globalQuestions.findIndex(q => q.id === qid);
+      if (idx !== -1) {
+        switchTab('practice');
+        selectQuestion(idx);
+      }
     }
 
     function switchTab(tabId) {
       ['practice', 'twins', 'mindmap', 'progress'].forEach(t => {
         document.getElementById(`view-${t}`).classList.add('hidden');
-        document.getElementById(`tab-btn-${t}`).className = 'px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition';
+        document.getElementById(`tab-btn-${t}`).className = 'px-3 py-1.5 rounded text-slate-400 hover:text-slate-200 hover:bg-graphite-850 transition flex items-center gap-1.5';
       });
       document.getElementById(`view-${tabId}`).classList.remove('hidden');
-      document.getElementById(`tab-btn-${tabId}`).className = 'px-3 py-1.5 rounded-md bg-indigo-600 text-white transition';
+      document.getElementById(`tab-btn-${tabId}`).className = 'px-3 py-1.5 rounded bg-slate-800 text-white font-semibold border border-slate-700 shadow-sm transition flex items-center gap-1.5';
+    }
+
+    function toggleFormulaDrawer() {
+      isFormulaDrawerOpen = !isFormulaDrawerOpen;
+      const drawer = document.getElementById('formula-drawer');
+      const backdrop = document.getElementById('formula-backdrop');
+      if (isFormulaDrawerOpen) {
+        drawer.classList.remove('translate-x-full');
+        backdrop.classList.remove('hidden');
+        renderAllMath();
+      } else {
+        drawer.classList.add('translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+    }
+
+    function toggleShortcutsModal() {
+      const modal = document.getElementById('shortcuts-modal');
+      modal.classList.toggle('hidden');
+    }
+
+    // Deliberate Practice Timer
+    function toggleTimer() {
+      const t = DICT[currentLang];
+      if (isTimerRunning) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        document.getElementById('timer-toggle-btn').innerText = t.timer_start;
+        document.getElementById('timer-toggle-btn').className = 'text-[11px] font-mono font-bold bg-white hover:bg-paper-200 border border-paper-300 text-paper-800 px-2 py-0.5 rounded transition';
+      } else {
+        isTimerRunning = true;
+        document.getElementById('timer-toggle-btn').innerText = t.timer_pause;
+        document.getElementById('timer-toggle-btn').className = 'text-[11px] font-mono font-bold bg-signal-amber hover:opacity-90 text-white px-2 py-0.5 rounded transition';
+        timerInterval = setInterval(() => {
+          if (timerSeconds > 0) {
+            timerSeconds--;
+            updateTimerDisplay();
+          } else {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            const alertMsg = currentLang === 'en' ? '⏰ 15-Minute Practice Time Elapsed!' : (currentLang === 'es' ? '⏰ ¡Tiempo de 15 minutos finalizado!' : '⏰ Tempo de 15 minutos esgotado!');
+            alert(alertMsg);
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      timerSeconds = 15 * 60;
+      updateTimerDisplay();
+      document.getElementById('timer-toggle-btn').innerText = DICT[currentLang].timer_start;
+      document.getElementById('timer-toggle-btn').className = 'text-[11px] font-mono font-bold bg-white hover:bg-paper-200 border border-paper-300 text-paper-800 px-2 py-0.5 rounded transition';
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timerSeconds / 60);
+      const secs = timerSeconds % 60;
+      document.getElementById('timer-display').innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function renderAllMath() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    // Keyboard Shortcuts Setup
+    function setupKeyboardNavigation() {
+      document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+          if (e.key === 'Escape') e.target.blur();
+          return;
+        }
+
+        if (e.key === 'k' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          nextProblem();
+        } else if (e.key === 'j' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          prevProblem();
+        } else if (e.key === 's' || e.key === 'S') {
+          e.preventDefault();
+          setFastStatus('solved');
+        } else if (e.key === 'r' || e.key === 'R') {
+          e.preventDefault();
+          setFastStatus('review');
+        } else if (e.key === 'x' || e.key === 'X') {
+          e.preventDefault();
+          setFastStatus('failed');
+        } else if (e.key === 'z' || e.key === 'Z') {
+          e.preventDefault();
+          toggleCardZoom();
+        } else if (e.key === 't' || e.key === 'T') {
+          e.preventDefault();
+          jumpToTwinLab();
+        } else if (e.key === 'f' || e.key === 'F') {
+          e.preventDefault();
+          toggleFormulaDrawer();
+        } else if (e.key === '1') {
+          const d = document.getElementById('hint-det-1');
+          d.open = !d.open;
+        } else if (e.key === '2') {
+          const d = document.getElementById('hint-det-2');
+          d.open = !d.open;
+        } else if (e.key === '3') {
+          const d = document.getElementById('hint-det-3');
+          d.open = !d.open;
+        } else if (e.key === '4') {
+          const d = document.getElementById('hint-det-4');
+          d.open = !d.open;
+        } else if (e.key === '?' || (e.ctrlKey && e.key === 'k')) {
+          e.preventDefault();
+          toggleShortcutsModal();
+        } else if (e.key === 'Escape') {
+          if (isFormulaDrawerOpen) toggleFormulaDrawer();
+          const modal = document.getElementById('shortcuts-modal');
+          if (!modal.classList.contains('hidden')) toggleShortcutsModal();
+        }
+      });
     }
 
     let searchTimeout;

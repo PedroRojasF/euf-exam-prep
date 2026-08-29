@@ -2,7 +2,7 @@
   import type { Question, QuestionStatus } from '../types';
   import { profileStore } from '../storage.svelte';
   import { AREA_THEMES, OFFICIAL_FORMULAS, HINT_LEVELS } from '../constants';
-  import { mathAction } from '../math';
+  import { mathAction, parseAndRenderQuestion } from '../math';
   import confetti from 'canvas-confetti';
   import { 
     CheckCircle2, Bookmark, XCircle, Clock, 
@@ -14,10 +14,14 @@
 
   let {
     question,
-    onJumpToTwin
+    onJumpToTwin,
+    onSelectNext,
+    onSelectPrev
   }: {
     question: Question | null;
     onJumpToTwin?: (twinId: string) => void;
+    onSelectNext?: () => void;
+    onSelectPrev?: () => void;
   } = $props();
 
   let isZoomModalOpen = $state(false);
@@ -25,7 +29,29 @@
   let openClues = $state<Record<number, boolean>>({ 1: true, 2: false, 3: false, 4: false });
   let userNotes = $state<string>('');
   let isSavedNotice = $state<boolean>(false);
+  let showTranscription = $state<boolean>(false);
   let activeRightTab = $state<'hints' | 'notes' | 'formulas'>('hints');
+
+  // Mobile Touch Swipe Handling
+  let touchStartX = $state(0);
+  let touchStartY = $state(0);
+
+  function handleTouchStart(e: TouchEvent) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }
+
+  function handleTouchEnd(e: TouchEvent) {
+    const deltaX = e.changedTouches[0].clientX - touchStartX;
+    const deltaY = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(deltaX) > 60 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
+      if (deltaX < 0 && onSelectNext) {
+        onSelectNext();
+      } else if (deltaX > 0 && onSelectPrev) {
+        onSelectPrev();
+      }
+    }
+  }
 
   // Mobile Bottom Drawer State
   let isMobileDrawerOpen = $state<boolean>(false);
@@ -131,6 +157,24 @@
     { symbol: 'e', val: '1.602 \\times 10^{-19}\\text{ C}', label: 'Carga elementar' },
   ];
 
+  const activeClues = $derived.by(() => {
+    if (!question || !question.clues) return null;
+    const c = question.clues as any;
+    if (c[profileStore.lang]) {
+      return c[profileStore.lang];
+    }
+    return c;
+  });
+
+  function cleanTextForDisplay(raw: string): string {
+    if (!raw) return '';
+    return raw
+      .replace(/\x00/g, '')
+      .replace(/\ufffd/g, '')
+      .replace(/[\x01-\x08\x0b\x0c\x0e-\x1f]/g, ' ')
+      .replace(/[ \t]+/g, ' ')
+      .trim();
+  }
   // Helper for clue level icon component
   function getHintIcon(name: string) {
     if (name === 'Lightbulb') return Lightbulb;
@@ -148,13 +192,17 @@
     <span>{profileStore.t('selectQuestionPrompt')}</span>
   </div>
 {:else}
-  <div class="flex-1 h-full flex flex-col bg-[#FDFBF7] dark:bg-[#080d16] overflow-hidden transition-colors duration-200">
+  <div 
+    class="flex-1 h-full flex flex-col bg-[#FDFBF7] dark:bg-[#080d16] overflow-hidden transition-colors duration-200"
+    ontouchstart={handleTouchStart}
+    ontouchend={handleTouchEnd}
+  >
     <!-- Top Header: Strict Visual Hierarchy (1. What question -> 2. Progress/Timer -> 3. Actions) -->
     <div class="px-6 py-3 bg-white dark:bg-[#0c121e] border-b border-[#E8E2D8] dark:border-white/10 flex flex-wrap items-center justify-between gap-4 shrink-0 shadow-2xs">
       <!-- (1) PRIMARY HERO ANCHOR: Question Identity & Subtopic -->
       <div class="flex items-center space-x-3 min-w-0">
         <span class="px-2.5 py-1 rounded-lg text-xs font-sans font-bold border {theme?.badgeClass || 'bg-slate-100 text-slate-800'}">
-          {question.area}
+          {profileStore.tArea(question.area)}
         </span>
 
         <div>
@@ -167,7 +215,7 @@
             </span>
           </div>
           <div class="text-xs font-sans font-semibold text-slate-600 dark:text-slate-400 truncate mt-0.5">
-            {question.subtopic}
+            {profileStore.tSubtopic(question.subtopic)}
           </div>
         </div>
 
@@ -297,14 +345,49 @@
             />
           </div>
 
-          <!-- Mathematical Transcription with Generous Line Height & Padding -->
-          {#if question.text}
-            <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-[#E5DFD4] dark:border-slate-800 text-slate-800 dark:text-slate-200 text-sm font-serif leading-relaxed shadow-2xs space-y-2">
-              <div class="text-[11px] font-sans uppercase font-bold text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
-                <FileText size={13} />
-                <span>{profileStore.t('mathTranscription')}</span>
-              </div>
-              <div class="pt-1 leading-loose" use:mathAction={question.text}></div>
+          <!-- Mathematical Transcription Collapsible Section -->
+          {#if question.text && question.text.trim().length > 10}
+            <div class="rounded-2xl bg-white dark:bg-slate-900 border border-[#E5DFD4] dark:border-slate-800 text-slate-800 dark:text-slate-200 text-sm font-serif shadow-2xs overflow-hidden">
+              <button
+                onclick={() => showTranscription = !showTranscription}
+                class="w-full px-5 py-3 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer font-sans"
+              >
+                <div class="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400">
+                  <FileText size={14} class="text-slate-500" />
+                  <span>{profileStore.t('mathTranscription')}</span>
+                  <span class="text-[10px] font-normal text-slate-400">({showTranscription ? 'Ocultar' : 'Texto OCR / Busca'})</span>
+                </div>
+                {#if showTranscription}
+                  <ChevronUp size={15} class="text-slate-400" />
+                {:else}
+                  <ChevronDown size={15} class="text-slate-400" />
+                {/if}
+              </button>
+              {#if showTranscription}
+                {@const parsed = parseAndRenderQuestion(question.text, profileStore.lang)}
+                <div class="px-6 pb-6 pt-4 border-t border-slate-100 dark:border-[#3e4451] space-y-4">
+                  <!-- Statement with KaTeX & Spanish/Portuguese Translation -->
+                  <div class="leading-relaxed font-serif text-sm text-slate-700 dark:text-[#abb2bf] select-text">
+                    {@html parsed.statementHtml}
+                  </div>
+
+                  <!-- Options List (Strictly non-nested) -->
+                  {#if parsed.options && parsed.options.length > 0}
+                    <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-[#353b45]/60">
+                      {#each parsed.options as opt}
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-[#21252b] border border-slate-200 dark:border-[#3e4451] flex items-start gap-3 transition hover:border-sky-400">
+                          <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white dark:bg-[#2c313a] text-sky-600 dark:text-[#61afef] font-sans font-black text-xs shrink-0 border border-slate-200 dark:border-[#3e4451] shadow-2xs">
+                            {opt.letter}
+                          </span>
+                          <div class="flex-1 font-serif text-slate-800 dark:text-[#abb2bf] text-sm leading-relaxed overflow-x-auto select-text">
+                            {@html opt.html}
+                          </div>
+                        </div>
+                      {/each}
+                    </div>
+                  {/if}
+                </div>
+              {/if}
             </div>
           {/if}
         </div>
@@ -352,9 +435,9 @@
               <!-- Header Card -->
               <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-[#E5DFD4] dark:border-slate-800 text-xs font-sans text-slate-700 dark:text-slate-300 shadow-2xs space-y-1">
                 <div class="flex items-center justify-between">
-                  <strong class="font-bold text-slate-950 dark:text-white text-sm block">{question.clues.title}</strong>
+                  <strong class="font-bold text-slate-950 dark:text-white text-sm block">{activeClues?.title || question.subtopic}</strong>
                   <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                    4 Níveis
+                    4 {profileStore.t('levelsCount')}
                   </span>
                 </div>
                 <div class="text-[11px] text-slate-500 dark:text-slate-400">{profileStore.t('hintsInstruction')}</div>
@@ -364,7 +447,7 @@
               {#each HINT_LEVELS as hl}
                 {@const IconComponent = getHintIcon(hl.iconName)}
                 {@const isUnlocked = openClues[hl.level]}
-                {@const clueText = question.clues[`level${hl.level}` as keyof typeof question.clues]}
+                {@const clueText = activeClues ? activeClues[`level${hl.level}` as keyof typeof activeClues] : ''}
 
                 <div class="rounded-2xl border transition-all duration-200 overflow-hidden shadow-2xs {isUnlocked ? `${hl.badgeBg} ring-1 ring-black/5 dark:ring-white/10` : 'bg-white dark:bg-slate-900 border-[#E5DFD4] dark:border-slate-800'}">
                   <button

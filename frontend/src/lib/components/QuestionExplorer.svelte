@@ -219,7 +219,7 @@
           >
             <option value="All">{profileStore.t('allSubtopics')}</option>
             {#each availableSubtopics() as sub}
-              <option value={sub}>{sub}</option>
+              <option value={sub}>{profileStore.tSubtopic(sub)}</option>
             {/each}
           </select>
         </div>
@@ -294,7 +294,7 @@
             </div>
 
             <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate font-sans">
-              {q.subtopic}
+              {profileStore.tSubtopic(q.subtopic)}
             </div>
 
             {#if q.flag}

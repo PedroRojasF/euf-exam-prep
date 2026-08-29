@@ -63,7 +63,7 @@
             <!-- Area Header -->
             <div class="flex items-center justify-between pb-2 border-b border-slate-200">
               <span class="text-xs font-mono font-bold px-2 py-0.5 rounded border {areaColor.badge}">
-                {area}
+                {profileStore.tArea(area)}
               </span>
               <span class="text-xs font-mono font-bold text-slate-700">
                 {areaStats.solved} / {areaStats.total} ({areaStats.pct}%)
@@ -88,7 +88,7 @@
                 >
                   <div class="min-w-0 pr-2">
                     <div class="font-medium text-slate-800 truncate text-[11px] group-hover:text-sky-700">
-                      {sub.name}
+                      {profileStore.tSubtopic(sub.name)}
                     </div>
                   </div>
                   <div class="shrink-0 flex items-center space-x-1 font-mono text-[10px]">

@@ -8,10 +8,11 @@
   import TwinLabView from './lib/components/TwinLabView.svelte';
   import TaxonomyMapView from './lib/components/TaxonomyMapView.svelte';
   import FormulaSheet from './lib/components/FormulaSheet.svelte';
+  import MockExamView from './lib/components/MockExamView.svelte';
   import KeyboardHelpModal from './lib/components/KeyboardHelpModal.svelte';
 
   let bankData = $state<BankData | null>(null);
-  let activeTab = $state<'practice' | 'twins' | 'concept' | 'formula'>('practice');
+  let activeTab = $state<'practice' | 'twins' | 'mock' | 'concept' | 'formula'>('practice');
   let selectedAreaFilter = $state<string>('All');
   let selectedQuestion = $state<Question | null>(null);
   let isHelpOpen = $state(false);
@@ -123,7 +124,7 @@
   }
 </script>
 
-<div class="h-screen w-screen overflow-hidden flex flex-row bg-[#FBF9F5] dark:bg-[#080d16] text-slate-800 dark:text-slate-200 antialiased font-sans transition-colors duration-200">
+<div class="h-screen w-screen overflow-hidden flex flex-col md:flex-row bg-[#FBF9F5] dark:bg-[#080d16] text-slate-800 dark:text-slate-200 antialiased font-sans transition-colors duration-200 pb-14 md:pb-0">
   <!-- 1. Left Tool & Area Rail (64px) -->
   <SidebarRail
     {bankData}
@@ -164,6 +165,8 @@
           bind:this={canvasComponent}
           question={selectedQuestion}
           onJumpToTwin={jumpToTwin}
+          onSelectNext={() => explorerComponent?.selectNext()}
+          onSelectPrev={() => explorerComponent?.selectPrev()}
         />
       </div>
     {:else if activeTab === 'twins'}
@@ -171,6 +174,12 @@
       <TwinLabView
         pairs={bankData?.pairs || []}
         onSelectQuestionById={jumpToTwin}
+      />
+    {:else if activeTab === 'mock'}
+      <!-- Dedicated Timed 4-Hour Mock Exam Simulator -->
+      <MockExamView
+        {bankData}
+        onJumpToQuestion={handleSelectQuestion}
       />
     {:else if activeTab === 'concept'}
       <!-- Dedicated Knowledge Taxonomy & Mastery Map -->

@@ -131,10 +131,10 @@ def get_question_crop_rect(doc_page, target_tag):
             return pymupdf.Rect(5, 5, w - 5, h - 5)
 
     y_start = max(5, headers[match_idx][0] - 12)
-    y_end = headers[match_idx + 1][0] - 4 if (match_idx + 1 < len(headers)) else (h - 8)
-
-    if y_end - y_start < 80:
-        y_end = min(h - 5, y_start + 250)
+    if match_idx + 1 < len(headers):
+        y_end = max(y_start + 40, headers[match_idx + 1][0] - 4)
+    else:
+        y_end = max(min(h - 5, y_start + 250), h - 15)
 
     return pymupdf.Rect(5, y_start, w - 5, y_end)
 

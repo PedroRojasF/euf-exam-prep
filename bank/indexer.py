@@ -278,11 +278,17 @@ def parse_pdf_document(pdf_path, year, sem, exam_id):
         has_imgs = len(page.get_images()) > 0
 
         p_lower = p_text.lower()
-        if "instruções para a prova" in p_lower and len(p_text) < 600:
+        if ("instruções para a prova" in p_lower or "intruções para a prova" in p_lower or "instructions for the exam" in p_lower) and len(p_text) < 1200:
             continue
-        if "folha de respostas" in p_lower or ("gabarito" in p_lower and "questão 1 :" in p_lower):
+        if "folha de respostas" in p_lower or "answer sheet" in p_lower:
             continue
         if "formulário" in p_lower and ("constantes físicas" in p_lower or "regras de propagação" in p_lower):
+            continue
+        if re.search(r'Q\.\s*\d+\s*:\s*\n\s*A\s*\n\s*B', p_text) or re.search(r'Quest[ãa]o\s*\d+\s*:\s*\n\s*A\s*\n\s*B', p_text):
+            continue
+        if '\x00\x01\x02' in p_text and page_idx >= len(doc) - 3:
+            continue
+        if 'esta prova contém questões de' in p_lower and len(p_text) < 400:
             continue
 
         # 1. Check for AMC tag matches like [mcPT1a] or [mc1a]
@@ -438,7 +444,7 @@ def run_indexer():
         seen_ids = set()
         for q in exam_questions:
             if q["id"] in seen_ids:
-                q["id"] = f"{q['id']}-p{q['page']}"
+                continue
             seen_ids.add(q["id"])
 
             cur.execute("""
