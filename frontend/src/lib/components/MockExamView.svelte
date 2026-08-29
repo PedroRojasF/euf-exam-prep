@@ -2,11 +2,13 @@
   import type { BankData, Question } from '../types';
   import { profileStore } from '../storage.svelte';
   import { AREA_THEMES } from '../constants';
+  import { renderMathInString } from '../math';
   import confetti from 'canvas-confetti';
   import { 
     Clock, Award, CheckCircle2, Bookmark, AlertCircle,
     Play, Pause, RotateCcw, ArrowRight, ArrowLeft,
-    Check, X, FileText, Send, Sparkles, Split, ChevronRight
+    Check, X, FileText, Send, Sparkles, Split, ChevronRight,
+    ArrowUpRight, Gauge, Shuffle
   } from 'lucide-svelte';
 
   let {
@@ -20,12 +22,14 @@
   // Mock Exam States: 'setup' | 'running' | 'completed'
   let examState = $state<'setup' | 'running' | 'completed'>('setup');
   let selectedMode = $state<string>('random_40');
+  let shuffleOptions = $state<boolean>(false);
   let examQuestions = $state<Question[]>([]);
   let currentIdx = $state<number>(0);
 
   // User Answers: qid -> 'A' | 'B' | 'C' | 'D' | 'E'
   let userAnswers = $state<Record<string, string>>({});
   let flaggedQuestions = $state<Record<string, boolean>>({});
+  let questionTimeSpent = $state<Record<string, number>>({}); // qid -> seconds spent
 
   // 4-Hour Timer (4 * 3600 seconds)
   let timerSeconds = $state(4 * 3600);
@@ -66,19 +70,20 @@
     Object.keys(userAnswers).filter(k => userAnswers[k]).length
   );
 
+  const totalElapsedSeconds = $derived(
+    (4 * 3600) - timerSeconds
+  );
+
+  const avgSecondsPerAnswered = $derived(
+    answeredCount > 0 ? Math.round(totalElapsedSeconds / answeredCount) : 0
+  );
+
   function startExam() {
     if (!bankData || !bankData.questions || bankData.questions.length === 0) return;
 
     let pool: Question[] = [];
 
     if (selectedMode === 'random_40') {
-      // 40 questions in strict canonical EUF order:
-      // 1. Mecânica Clássica (8 Qs)
-      // 2. Eletromagnetismo (8 Qs)
-      // 3. Termodinâmica (4 Qs)
-      // 4. Física Estatística (4 Qs)
-      // 5. Física Moderna (8 Qs)
-      // 6. Mecânica Quântica (8 Qs)
       const areaQuotas: [string, number][] = [
         ['Mecânica Clássica', 8],
         ['Eletromagnetismo', 8],
@@ -96,7 +101,6 @@
         pool.push(...areaQs);
       }
 
-      // If pool has fewer than 40 due to filters, pad from remaining
       if (pool.length < 40) {
         const remaining = bankData.questions
           .filter(q => !pool.some(p => p.id === q.id) && q.question_type === 'múltipla escolha')
@@ -105,9 +109,8 @@
         pool.push(...remaining);
       }
     } else {
-      // Selected specific exam (e.g. 2026-1, 2025-1, etc.)
       const examQs = bankData.questions
-        .filter(q => q.exam_id === selectedMode && q.tag.endsWith('a')) // Standard Variant A
+        .filter(q => q.exam_id === selectedMode && q.tag.endsWith('a'))
         .slice(0, 40);
       
       if (examQs.length > 0) {
@@ -117,10 +120,10 @@
       }
     }
 
-    // Always sort by strict canonical EUF order (Mecânica Clássica first)
     examQuestions = sortQuestionsInOfficialOrder(pool);
     userAnswers = {};
     flaggedQuestions = {};
+    questionTimeSpent = {};
     currentIdx = 0;
     timerSeconds = 4 * 3600;
     isTimerPaused = false;
@@ -131,6 +134,9 @@
       if (!isTimerPaused) {
         if (timerSeconds > 0) {
           timerSeconds--;
+          if (currentQuestion) {
+            questionTimeSpent[currentQuestion.id] = (questionTimeSpent[currentQuestion.id] || 0) + 1;
+          }
         } else {
           submitExam();
         }
@@ -176,6 +182,7 @@
     isCancelModalOpen = false;
     userAnswers = {};
     flaggedQuestions = {};
+    questionTimeSpent = {};
     examQuestions = [];
     examState = 'setup';
   }
@@ -185,6 +192,12 @@
     const m = Math.floor((secs % 3600) / 60);
     const s = secs % 60;
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
+
+  function formatDurationMinutes(secs: number): string {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}m ${s}s`;
   }
 
   function getAreaScore(area: string) {
@@ -225,7 +238,7 @@
               onclick={() => selectedMode = 'random_40'}
               class="p-4 rounded-2xl border text-left transition cursor-pointer {selectedMode === 'random_40' ? 'bg-sky-50 dark:bg-sky-950/60 border-sky-500 text-sky-900 dark:text-sky-200 ring-2 ring-sky-500/20' : 'bg-[#FAF8F5] dark:bg-slate-950 border-[#E5DFD4] dark:border-slate-800 hover:border-slate-400'}"
             >
-              <div class="font-bold text-sm">🎲 Simulacro Oficial Ordenado</div>
+              <div class="font-bold text-sm">🎯 Simulacro Oficial Ordenado</div>
               <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">40 preguntas canónicas en orden estricto (1. Mecánica, 2. Electromag, 3. Termo, 4. Estat, 5. Moderna, 6. Cuántica)</div>
             </button>
 
@@ -250,21 +263,20 @@
           </div>
         </div>
 
-        <!-- Rules Briefing -->
-        <div class="p-5 rounded-2xl bg-[#FAF8F5] dark:bg-slate-950 border border-[#E8E2D8] dark:border-slate-800 text-xs font-sans space-y-2 text-slate-600 dark:text-slate-300">
-          <div class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-            <AlertCircle size={14} class="text-amber-500" />
-            Condiciones Oficiales del Examen:
+        <!-- Rules and Target Pace info -->
+        <div class="p-5 rounded-2xl bg-[#FAF8F5] dark:bg-slate-950 border border-[#E5DFD4] dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 font-sans space-y-2.5">
+          <div class="font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+            <Gauge size={14} class="text-sky-500" />
+            <span>Condiciones Oficiales de Entrenamiento:</span>
           </div>
-          <ul class="list-disc list-inside space-y-1 text-slate-500 dark:text-slate-400">
-            <li>Orden oficial: <strong>Mecánica Clásica (Q1-Q8)</strong>, <strong>Electromagnetismo (Q9-Q16)</strong>, <strong>Termodinámica (Q17-Q20)</strong>, <strong>Física Estadística (Q21-Q24)</strong>, <strong>Física Moderna (Q25-Q32)</strong> y <strong>Mecánica Cuántica (Q33-Q40)</strong>.</li>
-            <li>Duración máxima: <strong>4 horas (240 minutos)</strong> cronometradas.</li>
-            <li>Hoja de respuestas interactiva (A, B, C, D, E).</li>
-            <li>Opción de cancelar o entregar la prueba en cualquier momento.</li>
+          <ul class="space-y-1.5 list-disc list-inside">
+            <li><strong>Tiempo Total:</strong> 4 Horas (240 minutos cronometrados).</li>
+            <li><strong>Ritmo Objetivo:</strong> 3.0 minutos por pregunta para 80 preguntas (o 6.0 min para 40).</li>
+            <li><strong>Orden Canónico:</strong> Mecânica Clássica → Eletromagnetismo → Termodinâmica → Física Estatística → Física Moderna → Mecânica Quântica.</li>
+            <li><strong>Hoja de Respuestas:</strong> Marcado directo de alternativas (A, B, C, D, E) y marcadores para revisión.</li>
           </ul>
         </div>
 
-        <!-- Start Button -->
         <button
           onclick={startExam}
           class="w-full py-4 rounded-2xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-sans font-bold text-base shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-center gap-2"
@@ -275,125 +287,143 @@
       </div>
     </div>
 
-  {:else if examState === 'running' && currentQuestion}
-    <!-- ACTIVE EXAM RUNNER -->
-    <!-- Top Timer & Control Bar -->
-    <div class="px-6 py-3 bg-white dark:bg-[#0c121e] border-b border-[#E8E2D8] dark:border-white/10 flex items-center justify-between gap-4 shrink-0 shadow-2xs">
-      <div class="flex items-center space-x-4">
-        <span class="px-3 py-1 rounded-xl text-xs font-sans font-bold border {AREA_THEMES[currentQuestion.area]?.badgeClass || 'bg-slate-100'}">
-          {profileStore.tArea(currentQuestion.area)}
+  {:else if examState === 'running'}
+    <!-- RUNNING EXAM COCKPIT -->
+    <!-- Top Control Bar -->
+    <div class="px-6 py-3 bg-white dark:bg-[#0c121e] border-b border-[#E8E2D8] dark:border-white/10 flex items-center justify-between gap-4 shrink-0 shadow-2xs font-sans">
+      <div class="flex items-center space-x-3">
+        <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
+          Q {currentIdx + 1} / {examQuestions.length}
         </span>
-        <span class="font-sans font-bold text-sm text-slate-900 dark:text-white">
-          {profileStore.t('questionOf')} {currentIdx + 1} / {examQuestions.length}
-        </span>
-        <span class="text-xs text-slate-400 font-sans">
-          ({answeredCount} {profileStore.t('answeredCount')})
-        </span>
+        {#if currentQuestion}
+          {@const th = AREA_THEMES[currentQuestion.area]}
+          <span class="px-2.5 py-1 rounded-lg text-xs font-bold border {th?.badgeClass || 'bg-slate-100 text-slate-800'}">
+            {profileStore.tArea(currentQuestion.area)}
+          </span>
+        {/if}
       </div>
 
-      <!-- Timer & Actions -->
+      <!-- Real-time Timer & Pace Gauge -->
       <div class="flex items-center space-x-3">
+        <!-- Live Pace Badge -->
+        <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-mono {avgSecondsPerAnswered <= 180 && avgSecondsPerAnswered > 0 ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300' : 'bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'}">
+          <Gauge size={13} />
+          <span>Ritmo: {avgSecondsPerAnswered > 0 ? `${(avgSecondsPerAnswered / 60).toFixed(1)}m/q` : '—'}</span>
+          <span class="text-[10px] text-slate-400">(Meta: 3.0m)</span>
+        </div>
+
         <!-- 4-Hour Countdown Clock -->
-        <div class="flex items-center space-x-2 bg-[#FAF8F5] dark:bg-slate-900 border border-[#DDD6C8] dark:border-slate-700 px-3.5 py-1.5 rounded-xl shadow-2xs font-mono font-bold text-sm {timerSeconds < 900 ? 'text-rose-600 animate-pulse' : 'text-slate-800 dark:text-sky-300'}">
-          <Clock size={15} />
+        <div class="px-4 py-1.5 rounded-xl bg-slate-900 text-white font-mono font-bold text-sm tracking-wider flex items-center gap-2 shadow-xs">
+          <Clock size={15} class={timerSeconds < 1800 ? 'text-rose-400 animate-pulse' : 'text-sky-400'} />
           <span>{formatTime(timerSeconds)}</span>
         </div>
 
-        <!-- Cancel Exam Button -->
         <button
-          onclick={() => isCancelModalOpen = true}
-          class="px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 font-sans font-bold text-xs hover:bg-rose-100 dark:hover:bg-rose-900/60 transition cursor-pointer flex items-center gap-1.5"
-          title={profileStore.t('cancelMockExam')}
+          onclick={() => isTimerPaused = !isTimerPaused}
+          class="p-2 rounded-xl border border-[#DDD6C8] dark:border-slate-700 bg-[#FAF8F5] dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-[#F2ECE0] transition cursor-pointer"
+          title={isTimerPaused ? 'Reanudar' : 'Pausar'}
         >
-          <X size={14} />
-          <span>{profileStore.t('cancelMockExam')}</span>
+          {#if isTimerPaused}<Play size={15} />{:else}<Pause size={15} />{/if}
         </button>
 
-        <!-- Submit Exam Button -->
         <button
           onclick={() => isConfirmModalOpen = true}
-          class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-sans font-bold text-xs shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+          class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition cursor-pointer flex items-center gap-1.5"
         >
           <Send size={14} />
           <span>{profileStore.t('submitExam')}</span>
         </button>
+
+        <button
+          onclick={() => isCancelModalOpen = true}
+          class="px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 font-bold text-xs hover:bg-rose-100 transition cursor-pointer"
+        >
+          {profileStore.t('cancelExam')}
+        </button>
       </div>
     </div>
 
-    <!-- Main Exam Workspace -->
+    <!-- Main Viewport: Question Card & Bubble Sheet -->
     <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
-      <!-- Problem Center Canvas (Cols 1-8) -->
-      <div class="lg:col-span-8 h-full flex flex-col border-r border-[#E8E2D8] dark:border-white/10 overflow-hidden bg-study-grid">
-        <!-- Image Viewport -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-8 space-y-6">
-          <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 shadow-xs border border-[#E5DFD4] dark:border-slate-800 select-none">
-            <img
-              src={currentQuestion.image}
-              alt={currentQuestion.id}
-              class="w-full h-auto object-contain mx-auto"
-              loading="eager"
-            />
-          </div>
-        </div>
-
-        <!-- Bottom Option Bar -->
-        <div class="p-4 bg-white dark:bg-[#0c121e] border-t border-[#E8E2D8] dark:border-white/10 flex flex-wrap items-center justify-between gap-4 font-sans">
-          <!-- Answer Letters A, B, C, D, E -->
-          <div class="flex items-center space-x-2">
-            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 mr-1">Alternativa:</span>
-            {#each ['A', 'B', 'C', 'D', 'E'] as opt}
-              {@const isPicked = userAnswers[currentQuestion.id] === opt}
+      <!-- Question Presentation Canvas (Cols 1-8) -->
+      <div class="lg:col-span-8 h-full overflow-y-auto custom-scrollbar p-6 space-y-5">
+        {#if currentQuestion}
+          <div class="bg-white dark:bg-slate-900 border border-[#E5DFD4] dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-bold text-slate-400">
+                {currentQuestion.id} • {currentQuestion.tag}
+              </span>
               <button
-                onclick={() => selectAnswer(opt)}
-                class="w-10 h-10 rounded-xl font-bold text-sm transition border cursor-pointer flex items-center justify-center {isPicked ? 'bg-sky-600 text-white border-sky-600 shadow-sm scale-105' : 'bg-[#FAF8F5] dark:bg-slate-900 hover:bg-sky-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border-[#DDD6C8] dark:border-slate-700'}"
+                onclick={toggleFlag}
+                class="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer {flaggedQuestions[currentQuestion.id] ? 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800'}"
               >
-                {opt}
+                <Bookmark size={14} />
+                <span>{flaggedQuestions[currentQuestion.id] ? profileStore.t('flaggedForReview') : profileStore.t('flagForReview')}</span>
               </button>
-            {/each}
+            </div>
+
+            <!-- Problem Graphic Image or Cropped Scan -->
+            <div class="rounded-2xl bg-[#FAF8F5] dark:bg-slate-950 border border-[#E5DFD4] dark:border-slate-800 p-4 text-center select-none">
+              <img
+                src={currentQuestion.image}
+                alt={currentQuestion.id}
+                class="max-h-[460px] mx-auto object-contain w-full"
+                loading="eager"
+              />
+            </div>
           </div>
-
-          <!-- Flag & Nav Controls -->
-          <div class="flex items-center space-x-2">
-            <button
-              onclick={toggleFlag}
-              class="px-3 py-2 rounded-xl text-xs font-bold border transition cursor-pointer flex items-center gap-1.5 {flaggedQuestions[currentQuestion.id] ? 'bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 border-amber-300' : 'bg-[#FAF8F5] dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-[#DDD6C8] dark:border-slate-700'}"
-            >
-              <Bookmark size={14} class={flaggedQuestions[currentQuestion.id] ? 'fill-amber-500 text-amber-500' : ''} />
-              <span>{profileStore.t('reviewLater')}</span>
-            </button>
-
-            <button
-              disabled={currentIdx === 0}
-              onclick={() => currentIdx--}
-              class="p-2.5 rounded-xl border border-[#DDD6C8] dark:border-slate-700 bg-[#FAF8F5] dark:bg-slate-900 disabled:opacity-30 cursor-pointer"
-            >
-              <ArrowLeft size={16} />
-            </button>
-
-            <button
-              disabled={currentIdx === examQuestions.length - 1}
-              onclick={() => currentIdx++}
-              class="p-2.5 rounded-xl border border-[#DDD6C8] dark:border-slate-700 bg-[#FAF8F5] dark:bg-slate-900 disabled:opacity-30 cursor-pointer"
-            >
-              <ArrowRight size={16} />
-            </button>
-          </div>
-        </div>
+        {/if}
       </div>
 
-      <!-- Right Bubble Sheet Grid (Cols 9-12) -->
-      <div class="lg:col-span-4 h-full flex flex-col bg-[#FAF8F5] dark:bg-[#0b101c] overflow-hidden p-5 space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-[#E8E2D8] dark:border-slate-800">
-          <span class="font-sans font-bold text-xs text-slate-800 dark:text-slate-200">
-            Hoja de Respuestas (40 Qs)
-          </span>
-          <span class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-            {answeredCount} / {examQuestions.length}
-          </span>
+      <!-- Bubble Sheet & Navigation Grid (Cols 9-12) -->
+      <div class="lg:col-span-4 h-full bg-white dark:bg-[#0c121e] border-l border-[#E8E2D8] dark:border-white/10 flex flex-col overflow-hidden">
+        <div class="p-4 border-b border-[#E8E2D8] dark:border-white/10 space-y-3 font-sans">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-800 dark:text-slate-200">
+            <span>{profileStore.t('answerSheetTitle')}</span>
+            <span class="text-sky-600 dark:text-sky-400">{answeredCount} / {examQuestions.length}</span>
+          </div>
+
+          <!-- Answer Option Selector for Active Question -->
+          {#if currentQuestion}
+            <div class="p-3 rounded-2xl bg-[#FAF8F5] dark:bg-slate-900 border border-[#E5DFD4] dark:border-slate-800 space-y-2">
+              <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                Seleccionar Alternativa (Q{currentIdx + 1}):
+              </div>
+              <div class="grid grid-cols-5 gap-2">
+                {#each ['A', 'B', 'C', 'D', 'E'] as opt}
+                  {@const isSelected = userAnswers[currentQuestion.id] === opt}
+                  <button
+                    onclick={() => selectAnswer(opt)}
+                    class="py-3 rounded-xl font-bold font-sans text-sm transition cursor-pointer {isSelected ? 'bg-sky-600 text-white shadow-md scale-105' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-sky-400'}"
+                  >
+                    {opt}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {/if}
+
+          <!-- Prev / Next Navigation -->
+          <div class="flex items-center space-x-2">
+            <button
+              onclick={() => currentIdx = Math.max(0, currentIdx - 1)}
+              disabled={currentIdx === 0}
+              class="flex-1 py-2 rounded-xl border border-[#DDD6C8] dark:border-slate-700 text-xs font-bold flex items-center justify-center gap-1 transition cursor-pointer disabled:opacity-30"
+            >
+              <ArrowLeft size={14} /> <span>Anterior</span>
+            </button>
+            <button
+              onclick={() => currentIdx = Math.min(examQuestions.length - 1, currentIdx + 1)}
+              disabled={currentIdx === examQuestions.length - 1}
+              class="flex-1 py-2 rounded-xl border border-[#DDD6C8] dark:border-slate-700 text-xs font-bold flex items-center justify-center gap-1 transition cursor-pointer disabled:opacity-30"
+            >
+              <span>Siguiente</span> <ArrowRight size={14} />
+            </button>
+          </div>
         </div>
 
-        <!-- 40 Question Grid -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar grid grid-cols-4 sm:grid-cols-5 gap-2 pr-1 content-start">
+        <!-- 40-Question Bubble Matrix -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-4 grid grid-cols-4 gap-2 font-sans text-xs">
           {#each examQuestions as q, idx}
             {@const ans = userAnswers[q.id]}
             {@const isFlag = flaggedQuestions[q.id]}
@@ -405,7 +435,7 @@
             >
               <div class="flex items-center gap-1 text-[10px] font-mono">
                 <span>Q{idx + 1}</span>
-                {#if isFlag}<span class="text-amber-500">📌</span>{/if}
+                {#if isFlag}<span class="text-amber-500">🚩</span>{/if}
               </div>
               <div class="text-xs font-sans font-extrabold mt-0.5 {ans ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-300 dark:text-slate-600'}">
                 {ans || '—'}
@@ -485,7 +515,7 @@
     {/if}
 
   {:else if examState === 'completed'}
-    <!-- DIAGNOSTIC & SCORE REPORT -->
+    <!-- DIAGNOSTIC & ADVANCED PACE SCORE REPORT -->
     <div class="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-10 flex items-center justify-center bg-study-grid">
       <div class="max-w-3xl w-full bg-white dark:bg-slate-900 border border-[#E5DFD4] dark:border-slate-800 rounded-3xl p-8 sm:p-10 shadow-lg space-y-8">
         <div class="text-center space-y-3">
@@ -496,21 +526,26 @@
             {profileStore.t('mockExamCompleted')}
           </h1>
           <p class="text-sm text-slate-500 dark:text-slate-400 font-sans">
-            Completaste el simulacro en <strong>{formatTime(4 * 3600 - timerSeconds)}</strong>.
+            Completaste el simulacro en <strong>{formatTime(totalElapsedSeconds)}</strong>.
           </p>
         </div>
 
-        <!-- Score Banner -->
-        <div class="p-6 rounded-2xl bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-slate-950 dark:to-slate-900 border border-sky-200 dark:border-slate-800 flex items-center justify-around text-center">
+        <!-- Score & Pace Metrics Banner -->
+        <div class="p-6 rounded-2xl bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-slate-950 dark:to-slate-900 border border-sky-200 dark:border-slate-800 grid grid-cols-3 gap-4 text-center">
           <div>
             <div class="text-xs font-sans font-bold text-slate-500 dark:text-slate-400 uppercase">Respondidas</div>
             <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">{answeredCount} / {examQuestions.length}</div>
           </div>
-          <div class="w-px h-10 bg-slate-200 dark:bg-slate-800"></div>
-          <div>
-            <div class="text-xs font-sans font-bold text-slate-500 dark:text-slate-400 uppercase">Porcentaje de Cobertura</div>
+          <div class="border-x border-slate-200 dark:border-slate-800 px-2">
+            <div class="text-xs font-sans font-bold text-slate-500 dark:text-slate-400 uppercase">Cobertura</div>
             <div class="text-2xl font-black text-sky-600 dark:text-sky-400 mt-1">
               {Math.round((answeredCount / examQuestions.length) * 100)}%
+            </div>
+          </div>
+          <div>
+            <div class="text-xs font-sans font-bold text-slate-500 dark:text-slate-400 uppercase">Ritmo Medio</div>
+            <div class="text-2xl font-black {avgSecondsPerAnswered <= 180 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'} mt-1">
+              {(avgSecondsPerAnswered / 60).toFixed(1)} <span class="text-xs font-normal">min/preg</span>
             </div>
           </div>
         </div>
@@ -534,6 +569,39 @@
                   </div>
                 </div>
               {/if}
+            {/each}
+          </div>
+        </div>
+
+        <!-- Questions Review Drawer with 1-Click Jump to Study Canvas -->
+        <div class="space-y-3 font-sans pt-2 border-t border-[#E8E2D8] dark:border-slate-800">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center justify-between">
+            <span>Revisión Detallada de Preguntas:</span>
+            <span class="text-[11px] font-normal text-slate-400">Toca para estudiar en Canvas</span>
+          </h3>
+
+          <div class="max-h-60 overflow-y-auto custom-scrollbar space-y-1.5">
+            {#each examQuestions as q, idx}
+              {@const ans = userAnswers[q.id]}
+              {@const time = questionTimeSpent[q.id] || 0}
+              <div class="p-2.5 rounded-xl bg-[#FAF8F5] dark:bg-slate-950 border border-[#E5DFD4] dark:border-slate-800 flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono font-bold w-7 text-slate-400">Q{idx + 1}</span>
+                  <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-bold text-[10px]">{profileStore.tArea(q.area)}</span>
+                  <span class="font-mono text-slate-600 dark:text-slate-300 font-bold">Resp: {ans || '—'}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="text-[11px] text-slate-400 font-mono">{formatDurationMinutes(time)}</span>
+                  {#if onJumpToQuestion}
+                    <button
+                      onclick={() => onJumpToQuestion?.(q)}
+                      class="px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-300 font-bold text-[11px] hover:bg-sky-100 flex items-center gap-1 cursor-pointer"
+                    >
+                      Estudiar <ArrowUpRight size={12} />
+                    </button>
+                  {/if}
+                </div>
+              </div>
             {/each}
           </div>
         </div>

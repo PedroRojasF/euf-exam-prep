@@ -182,6 +182,19 @@ export class AppStore {
       last_updated: new Date().toISOString()
     };
     this.persistCurrentProfile();
+
+    // Background server synchronization
+    if (typeof fetch !== 'undefined') {
+      fetch('/api/user/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question_id: qid,
+          status,
+          profile: this.activeProfileName
+        })
+      }).catch(() => { /* silent fail for offline PWA */ });
+    }
   }
 
   updateQuestionNotes(qid: string, notes: string) {
@@ -192,6 +205,19 @@ export class AppStore {
       last_updated: new Date().toISOString()
     };
     this.persistCurrentProfile();
+
+    // Background server synchronization
+    if (typeof fetch !== 'undefined') {
+      fetch('/api/user/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question_id: qid,
+          notes,
+          profile: this.activeProfileName
+        })
+      }).catch(() => { /* silent fail for offline PWA */ });
+    }
   }
 
   private persistCurrentProfile() {

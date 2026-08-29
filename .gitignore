@@ -24,8 +24,8 @@ frontend/dist/
 # Marimo temporary
 .marimo/
 
-# Large textbook PDFs (Libgen textbooks)
-*Nussenzveig*.pdf
+# Exam and textbook PDF booklets (keep raw files locally/VPS only)
+*.pdf
 
 # User private profile state (keep default.json)
 profiles/*.json
