@@ -1,6 +1,6 @@
-# ⚛️ EUF Exam Master
+# ⚛️ EUF Exam Prep
 
-> **Interactive Precision Study Suite & Problem Bank for the Unified Graduate Physics Examination (Exame Unificado das Pós-Graduações em Física — Brasil).**
+> **Interactive Precision Study Suite & Problem Bank for the Brazilian Unified Physics Graduate Examination (Exame Unificado das Pós-Graduações em Física — Brasil).**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Framework: Svelte 5](https://img.shields.io/badge/Framework-Svelte_5-orange.svg)](https://svelte.dev/)
@@ -11,15 +11,15 @@
 
 ## 📖 Overview
 
-**EUF Exam Master** is a high-density, deliberate-practice web application and CLI toolkit designed for graduate candidates preparing for the **EUF** (the admission exam for MSc/PhD programs in Physics across top Brazilian universities, including USP, UNICAMP, UNESP, UFRJ, UFMG, CBPF, and others).
+**EUF Exam Prep** is a high-density, deliberate-practice web application and CLI toolkit designed for graduate candidates preparing for the **EUF** (the admission exam for MSc/PhD programs in Physics across top Brazilian universities, including USP, UNICAMP, UNESP, UFRJ, UFMG, CBPF, and others).
 
-It consolidates all official exam editions (2010–2026) into a structured taxonomy across the 6 core physical domains, providing high-resolution vector crops, step-by-step Socratic physics hints in 3 languages, side-by-side twin variant analysis, and a personal spaced repetition error diary.
+It consolidates official exam editions (2010–2026) into a structured taxonomy across the 6 core physical domains, providing high-resolution vector crops, step-by-step Socratic physics hints in 3 languages, side-by-side twin variant analysis, and a personal spaced repetition error diary.
 
 ---
 
 ## ✨ Key Features
 
-- 🎯 **783+ Official Questions (2010–2026)**:
+- 🎯 **780+ Official Questions (2010–2026)**:
   Every question is indexed and tagged by subject domain, specific subtopic, and exam edition.
 - 📐 **Vector High-Fidelity Problem Cards**:
   Displays clean, vector-rendered crops of the original exam sheets, preserving complex multi-line LaTeX equations, circuit schematics, graphs, and formatting.
@@ -38,7 +38,7 @@ It consolidates all official exam editions (2010–2026) into a structured taxon
 - 🌐 **Tri-Lingual Interface**:
   Instant switching between **Português**, **Español**, and **English**.
 - 🚀 **100% Client-Side Static SPA**:
-  Runs locally or hosted on GitHub Pages / Cloudflare Pages with zero backend server requirement.
+  Runs locally or hosted on Cloudflare Pages / GitHub Pages with zero backend server requirement.
 
 ---
 
@@ -60,9 +60,9 @@ It consolidates all official exam editions (2010–2026) into a structured taxon
 ### 1. Web Application (Svelte 5 + Vite)
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/euf-master.git
-cd euf-master
+# Clone repository
+git clone https://github.com/PedroRojasF/euf-exam-prep.git
+cd euf-exam-prep
 
 # Enter frontend directory
 cd frontend
@@ -79,7 +79,7 @@ Visit `http://localhost:5173` in your browser.
 To compile a production-ready static build:
 ```bash
 npm run build
-# Output is generated in frontend/dist/ (ready for GitHub Pages or Cloudflare Pages)
+# Output is generated in frontend/dist/ (ready for Cloudflare Pages or static hosting)
 ```
 
 ---
@@ -118,27 +118,23 @@ python euf.py vps-build --host my-vps
 
 **How it works:**
 1. Connects to your configured VPS via SSH.
-2. Transfers new PDF exam booklets.
+2. Transfers new exam files.
 3. Runs parallel multi-core OCR and vector cropping on the VPS.
-4. Downloads the updated `questions.json`, SQLite database, and new rendered image cards back to your local machine.
+4. Downloads the updated `questions.json`, SQLite database, and newly rendered image cards back to your local machine.
 
 ---
 
-## 🌐 Public Deployment (GitHub Pages / Cloudflare)
+## 🌐 Public Web Deployment (Cloudflare Pages)
 
 Since the entire application runs as a static Single-Page Application (SPA) reading from `questions.json`:
 
-### Cloudflare Pages (Recommended - 0ms Cold Start)
-1. Link your GitHub repository in Cloudflare Pages dashboard.
+1. Link your repository in Cloudflare Pages dashboard.
 2. Build settings:
    - **Framework preset**: `Vite`
    - **Root directory**: `frontend`
    - **Build command**: `npm run build`
    - **Build output directory**: `dist`
-
-### GitHub Pages
-1. A GitHub Actions workflow is included at `.github/workflows/deploy.yml`.
-2. Go to repository **Settings -> Pages -> Source** and select **GitHub Actions**.
+3. Deploy!
 
 ---
 

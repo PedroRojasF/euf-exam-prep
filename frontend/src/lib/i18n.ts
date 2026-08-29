@@ -143,7 +143,7 @@ export interface Translations {
 
 export const DICTIONARY: Record<Language, Translations> = {
   pt: {
-    appTitle: "EUF Exam Master",
+    appTitle: "EUF Exam Prep",
     appSubtitle: "Exame Unificado de Pós-Graduação em Física",
     bankTotal: "Banco de Questões",
     mastered: "Dominadas",
@@ -273,7 +273,7 @@ export const DICTIONARY: Record<Language, Translations> = {
     scEsc: "Fechar Modais"
   },
   es: {
-    appTitle: "EUF Exam Master",
+    appTitle: "EUF Exam Prep",
     appSubtitle: "Examen Unificado de Posgrado en Física",
     bankTotal: "Banco de Preguntas",
     mastered: "Dominadas",
@@ -403,7 +403,7 @@ export const DICTIONARY: Record<Language, Translations> = {
     scEsc: "Cerrar Modales"
   },
   en: {
-    appTitle: "EUF Exam Master",
+    appTitle: "EUF Exam Prep",
     appSubtitle: "Unified Physics Graduate Examination Practice System",
     bankTotal: "Question Bank",
     mastered: "Mastered",
