@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { TwinPair } from '../types';
-  import { profileStore } from '../storage.svelte';
+  import { profileStore, resolveImageUrl } from '../storage.svelte';
   import { AREA_THEMES } from '../constants';
   import { renderMathInString } from '../math';
   import { Split, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-svelte';
@@ -175,7 +175,7 @@
 
           <div class="bg-[#FAF8F5] dark:bg-slate-950 rounded-xl p-3 text-center border border-[#E5DFD4] dark:border-slate-800 select-none">
             <img
-              src={activePair.image_a}
+              src={resolveImageUrl(activePair.image_a)}
               alt={activePair.qid_a}
               class="w-full h-auto object-contain max-h-[420px] mx-auto"
               loading="lazy"
@@ -204,7 +204,7 @@
 
           <div class="bg-[#FAF8F5] dark:bg-slate-950 rounded-xl p-3 text-center border border-[#E5DFD4] dark:border-slate-800 select-none">
             <img
-              src={activePair.image_b}
+              src={resolveImageUrl(activePair.image_b)}
               alt={activePair.qid_b}
               class="w-full h-auto object-contain max-h-[420px] mx-auto"
               loading="lazy"

@@ -253,3 +253,14 @@ export class AppStore {
 }
 
 export const profileStore = new AppStore();
+
+export function resolveImageUrl(imgPath: string | undefined | null): string {
+  if (!imgPath) return '';
+  if (imgPath.startsWith('http://') || imgPath.startsWith('https://') || imgPath.startsWith('data:')) {
+    return imgPath;
+  }
+  const base = import.meta.env.BASE_URL || './';
+  const cleanBase = base.endsWith('/') ? base : `${base}/`;
+  const cleanPath = imgPath.startsWith('/') ? imgPath.slice(1) : imgPath;
+  return `${cleanBase}${cleanPath}`;
+}

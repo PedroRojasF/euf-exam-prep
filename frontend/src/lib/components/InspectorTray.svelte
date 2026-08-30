@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Question, BankData } from '../types';
-  import { profileStore } from '../storage.svelte';
+  import { profileStore, resolveImageUrl } from '../storage.svelte';
   import { OFFICIAL_FORMULAS, AREA_THEMES } from '../constants';
   import { mathAction } from '../math';
   import { 
@@ -287,7 +287,7 @@
               {#if twinQuestion}
                 <div class="bg-white rounded-xl p-3 text-center border border-[#E5DFD4] shadow-2xs">
                   <img
-                    src={twinQuestion.image}
+                    src={resolveImageUrl(twinQuestion.image)}
                     alt={twinQuestion.id}
                     class="max-w-full h-auto object-contain max-h-[220px] mx-auto"
                     loading="lazy"

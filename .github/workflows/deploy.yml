@@ -1,4 +1,4 @@
-name: Deploy EUF Exam Master to GitHub Pages
+name: Deploy EUF Exam Prep to GitHub Pages
 
 on:
   push:

@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { BankData, Question } from '../types';
-  import { profileStore } from '../storage.svelte';
+  import { profileStore, resolveImageUrl } from '../storage.svelte';
   import { AREA_THEMES } from '../constants';
   import { renderMathInString } from '../math';
   import confetti from 'canvas-confetti';
@@ -365,7 +365,7 @@
             <!-- Problem Graphic Image or Cropped Scan -->
             <div class="rounded-2xl bg-[#FAF8F5] dark:bg-slate-950 border border-[#E5DFD4] dark:border-slate-800 p-4 text-center select-none">
               <img
-                src={currentQuestion.image}
+                src={resolveImageUrl(currentQuestion.image)}
                 alt={currentQuestion.id}
                 class="max-h-[460px] mx-auto object-contain w-full"
                 loading="eager"

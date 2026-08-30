@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Question, QuestionStatus } from '../types';
-  import { profileStore } from '../storage.svelte';
+  import { profileStore, resolveImageUrl } from '../storage.svelte';
   import { AREA_THEMES, OFFICIAL_FORMULAS, HINT_LEVELS } from '../constants';
   import { mathAction, parseAndRenderQuestion } from '../math';
   import confetti from 'canvas-confetti';
@@ -335,7 +335,7 @@
           <!-- Vector Cropped Card with Breathable Margin & Shadow -->
           <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 shadow-xs border border-[#E5DFD4] dark:border-slate-800 select-none">
             <img
-              src={question.image}
+              src={resolveImageUrl(question.image)}
               alt={`Problema ${question.id}`}
               class="w-full h-auto object-contain mx-auto transition-transform duration-200 {isImageExpanded ? 'scale-105 my-2' : ''}"
               loading="eager"
@@ -565,7 +565,7 @@
         ✕ {profileStore.t('closeEsc')}
       </button>
       <img
-        src={question.image}
+        src={resolveImageUrl(question.image)}
         alt={`Zoom ${question.id}`}
         class="max-w-full h-auto mx-auto"
       />
