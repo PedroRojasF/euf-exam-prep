@@ -25,7 +25,9 @@
 
   onMount(async () => {
     try {
-      const res = await fetch('/questions.json');
+      const baseUrl = import.meta.env.BASE_URL || './';
+      const jsonPath = baseUrl.endsWith('/') ? `${baseUrl}questions.json` : `${baseUrl}/questions.json`;
+      const res = await fetch(jsonPath);
       if (!res.ok) {
         throw new Error(`Falha ao carregar banco de dados estático (HTTP ${res.status})`);
       }
